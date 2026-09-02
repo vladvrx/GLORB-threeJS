@@ -1,13 +1,14 @@
-import { objectInsideCrop, sceneCrop, trimCurveToCrop } from "@/lib/crop";
+import { isCropActive, objectInsideCrop, sceneCrop, trimCurveToCrop } from "@/lib/crop";
 import { serializeDialogs } from "@/lib/project";
 import type { EditorObject, SceneData, StudioProject } from "@/lib/types";
 
 function gameSceneFromEditor(scene: SceneData) {
   const crop = sceneCrop(scene);
-  const objects = crop
+  const cropped = isCropActive(scene);
+  const objects = cropped && crop
     ? scene.objects.filter((object) => objectInsideCrop(object, crop))
     : scene.objects;
-  const curves = crop
+  const curves = cropped && crop
     ? scene.curves.map((curve) => trimCurveToCrop(curve, crop)).filter((curve) => Boolean(curve))
     : scene.curves;
 

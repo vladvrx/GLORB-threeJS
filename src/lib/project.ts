@@ -231,6 +231,29 @@ export function withFullBounds(project: StudioProject, bundle?: StudioBundle | n
   return { ...project, scenes };
 }
 
+export function mergeShippedAnchors(project: StudioProject, bundle?: StudioBundle | null): StudioProject {
+  const next = withFullBounds(project, bundle);
+  if (!bundle) return next;
+  for (const [id, raw] of Object.entries(bundle.scenes)) {
+    const scene = next.scenes[id];
+    if (!scene) continue;
+    const shipped = sceneFromRaw(raw);
+    const haveIds = new Set(scene.objects.map((object) => object.id));
+    const havePointNames = new Set(
+      scene.objects.filter((object) => object.kind === "point").map((object) => object.name),
+    );
+    const missing = shipped.objects.filter((object) => {
+      if (object.kind === "actor") return !haveIds.has(object.id);
+      if (object.kind === "point") return !haveIds.has(object.id) && !havePointNames.has(object.name);
+      return false;
+    });
+    if (missing.length) {
+      scene.objects = [...scene.objects, ...missing];
+    }
+  }
+  return next;
+}
+
 export function projectFromBundle(bundle: StudioBundle): StudioProject {
   const scenes: Record<string, SceneData> = {};
   for (const [id, raw] of Object.entries(bundle.scenes)) {

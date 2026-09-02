@@ -4,6 +4,7 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
 import { applyGameTransform, GAME_TO_WORLD, readGameTransform, roundTo } from "@/lib/coords";
 import {
   aabbAlmostEqual,
+  isCropActive,
   sceneCrop,
   sceneFullBounds,
   worldClipPlanes,
@@ -580,12 +581,13 @@ export class ViewportEngine {
     this.clipPlanes = active && crop ? worldClipPlanes(crop) : [];
     this.renderer.localClippingEnabled = this.clipPlanes.length > 0;
     this.applyClipping(this.island);
-    if (crop) this.fitWater(crop);
+    if (active && crop) this.fitWater(crop);
+    else this.resetWater();
     this.updateCropHelper(active ? crop : null);
     for (const object of scene.objects) {
       const node = this.objects.get(object.id);
       if (!node) continue;
-      node.userData.outsideCrop = crop ? !objectInsideCrop(object, crop) : false;
+      node.userData.outsideCrop = active && crop ? !objectInsideCrop(object, crop) : false;
     }
     const editor = useEditor.getState();
     this.setLayers({
@@ -596,6 +598,12 @@ export class ViewportEngine {
       layerActors: this.playing ? true : editor.layerActors,
       layerHelpers: this.playing ? false : editor.layerHelpers,
     });
+  }
+
+  private resetWater() {
+    if (!this.water) return;
+    this.water.position.set(0, 0.15, 0);
+    this.water.scale.set(1, 1, 1);
   }
 
   private fitWater(crop: NonNullable<ReturnType<typeof sceneCrop>>) {
@@ -642,7 +650,9 @@ export class ViewportEngine {
       const existing = this.objects.get(object.id);
       if (!existing) continue;
       existing.userData.wantVisible = object.visible;
-      existing.userData.outsideCrop = scene.bounds ? !objectInsideCrop(object, scene.bounds) : false;
+      existing.userData.outsideCrop = isCropActive(scene) && scene.bounds
+        ? !objectInsideCrop(object, scene.bounds)
+        : false;
       existing.visible = object.visible;
       if (this.dragging && this.transform.object === existing) continue;
       applyGameTransform(existing, object.transform);
@@ -680,7 +690,13 @@ export class ViewportEngine {
         this.water = water;
         this.island.add(water);
       }
-      const spawn = scene.objects.find((item) => item.kind === "point");
+      const spawn =
+        scene.objects.find(
+          (item) => item.kind === "actor" && /intro/i.test(`${item.name} ${item.params?.subtype ?? ""} ${item.id}`),
+        ) ??
+        scene.objects.find((item) => item.kind === "point" && /boatintro|intro/i.test(item.name)) ??
+        scene.objects.find((item) => item.kind === "point" && /spawn/i.test(item.name)) ??
+        scene.objects.find((item) => item.kind === "point");
       if (spawn) {
         const world = new THREE.Vector3(
           spawn.transform[0],

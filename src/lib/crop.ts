@@ -36,6 +36,12 @@ export function sceneCrop(scene?: SceneData | null): GameAabb | null {
   return copyAabb(scene.bounds ?? scene.fullBounds);
 }
 
+export function isCropActive(scene?: SceneData | null) {
+  const crop = sceneCrop(scene);
+  const full = scene ? sceneFullBounds(scene) : null;
+  return Boolean(crop && full && !aabbAlmostEqual(crop, full));
+}
+
 export function aabbAlmostEqual(a: GameAabb | null, b: GameAabb | null, epsilon = 0.4) {
   if (!a || !b) return a === b;
   for (let corner = 0; corner < 2; corner += 1) {

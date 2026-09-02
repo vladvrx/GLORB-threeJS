@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { applyCropToScene, halvedCrop, type GameAabb } from "@/lib/crop";
-import { ACTOR_ASSETS, cloneObject, newProp, projectFromBundle, withFullBounds } from "@/lib/project";
+import { ACTOR_ASSETS, cloneObject, mergeShippedAnchors, newProp, projectFromBundle } from "@/lib/project";
 import { identityTransform, worldPosToGame } from "@/lib/coords";
 import { exportGamePack } from "@/lib/export";
 import { assetFromStored, deleteStoredMesh, importMeshFiles, loadStoredMeshes } from "@/lib/custom-assets";
@@ -167,7 +167,7 @@ export const useEditor = create<EditorState>((set, get) => {
           try {
             const parsed = JSON.parse(saved) as StudioProject;
             if (parsed.format === "datab-each-studio-v1" && parsed.scenes) {
-              project = withFullBounds(parsed, bundle);
+              project = mergeShippedAnchors(parsed, bundle);
             }
           } catch {
             // keep shipped island
@@ -445,7 +445,7 @@ export const useEditor = create<EditorState>((set, get) => {
         throw new Error("This file is not a Data B-each Studio project.");
       }
       set({
-        project: withFullBounds(parsed, bundleCache),
+        project: mergeShippedAnchors(parsed, bundleCache),
         selectedId: null,
         dirty: true,
         past: [],

@@ -298,14 +298,14 @@ function replaceSceneManifest(source, sceneName, overlay) {
   const jsonEnd = jsStringEnd(source, jsonStart);
   if (jsonEnd < 0) throw new Error(`Unclosed scene manifest for ${sceneName}`);
   const current = JSON.parse(source.slice(jsonStart, jsonEnd).replaceAll("\\'", "'"));
-  if (overlay.points) current.points = overlay.points;
+  if (overlay.actors && overlay.actors.length) current.actors = overlay.actors;
+  if (overlay.points && Object.keys(overlay.points).length) current.points = overlay.points;
   if (overlay.areas) current.areas = overlay.areas;
   if (overlay.curves) current.curves = overlay.curves;
-  if (overlay.actors) current.actors = overlay.actors;
   if (overlay.assets) current.assets = overlay.assets;
   if (overlay.bounds) current.bounds = overlay.bounds;
   if (overlay.dataBeachIslandOffset) current.dataBeachIslandOffset = overlay.dataBeachIslandOffset;
-  if (overlay.props) current.props = overlay.props;
+  if (overlay.props && overlay.props.length) current.props = overlay.props;
   const encoded = JSON.stringify(current).replaceAll("'", "\\'");
   return source.slice(0, jsonStart) + encoded + source.slice(jsonEnd);
 }
@@ -333,12 +333,12 @@ window.__STUDIO_APPLY__=function(id,manifest,runtime,phase){
   const scene=window.__STUDIO_OVERLAY__[id]||window.__STUDIO_OVERLAY__["Scene_"+id];
   if(!scene||!manifest)return;
   if(phase!=="props"){
-    if(scene.actors)manifest.actors=scene.actors;
-    if(scene.points)manifest.points=scene.points;
+    if(scene.actors&&scene.actors.length)manifest.actors=scene.actors;
+    if(scene.points&&Object.keys(scene.points).length)manifest.points=scene.points;
     if(scene.areas)manifest.areas=scene.areas;
     if(scene.curves)manifest.curves=scene.curves;
     if(scene.assets)manifest.assets=scene.assets;
-    if(scene.props)manifest.props=scene.props;
+    if(scene.props&&scene.props.length)manifest.props=scene.props;
   }
   if(phase!=="manifest"&&runtime&&scene.props)runtime.props=[];
 };
