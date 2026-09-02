@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack -p 43180 -H 0.0.0.0",
     "build": "next build --turbopack",
     "start": "next start -p 43180 -H 0.0.0.0",
-    "lint": "eslint"
+    "lint": "eslint",
+    "apply-game": "node scripts/apply-to-datab-each.mjs --ensure --start --pack public/game/data/bundle.json"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

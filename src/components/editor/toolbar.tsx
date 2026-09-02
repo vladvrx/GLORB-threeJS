@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   BoxSelect,
   Download,
@@ -15,6 +16,7 @@ import {
   Square,
   Trash2,
   Undo2,
+  Upload,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -44,11 +46,13 @@ export function EditorToolbar() {
   const requestFocus = useEditor((state) => state.requestFocus);
   const exportStudio = useEditor((state) => state.exportStudio);
   const exportGamePack = useEditor((state) => state.exportGamePack);
+  const applyToGame = useEditor((state) => state.applyToGame);
   const importStudio = useEditor((state) => state.importStudio);
   const resetToBundle = useEditor((state) => state.resetToBundle);
   const playing = useEditor((state) => state.playing);
   const startPlay = useEditor((state) => state.startPlay);
   const stopPlay = useEditor((state) => state.stopPlay);
+  const [applying, setApplying] = useState(false);
 
   if (!project) return null;
 
@@ -136,6 +140,27 @@ export function EditorToolbar() {
         >
           <Download className="size-3.5" />
           Game pack
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          className="bg-teal-400/20"
+          disabled={applying}
+          onClick={async () => {
+            setApplying(true);
+            try {
+              const result = await applyToGame();
+              toast.success("Applied to DATAB-EACH — opening the game");
+              window.open(result.gameUrl, "_blank", "noopener,noreferrer");
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "Apply failed");
+            } finally {
+              setApplying(false);
+            }
+          }}
+        >
+          <Upload className="size-3.5" />
+          {applying ? "Applying…" : "Apply to game"}
         </Button>
         <label className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-lg px-2 text-sm hover:bg-white/10">
           <FolderOpen className="size-3.5" />

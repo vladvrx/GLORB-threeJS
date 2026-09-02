@@ -75,6 +75,7 @@ type EditorState = {
   exportGamePack: () => void;
   importStudio: (file: File) => Promise<void>;
   resetToBundle: () => Promise<void>;
+  applyToGame: () => Promise<{ gameUrl: string }>;
   importMeshes: (files: File[]) => Promise<AssetInfo[]>;
   removeImportedAsset: (id: string) => Promise<void>;
   playing: boolean;
@@ -419,6 +420,19 @@ export const useEditor = create<EditorState>((set, get) => {
         past: [],
         future: [],
       });
+    },
+    async applyToGame() {
+      const { project } = get();
+      if (!project) throw new Error("Nothing to apply.");
+      get().persist();
+      const response = await fetch("/api/apply-game", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ project }),
+      });
+      const payload = (await response.json()) as { error?: string; gameUrl?: string };
+      if (!response.ok) throw new Error(payload.error ?? "Could not apply to the game");
+      return { gameUrl: payload.gameUrl ?? "http://127.0.0.1:43173" };
     },
     async importMeshes(files) {
       const imported = await importMeshFiles(files);
