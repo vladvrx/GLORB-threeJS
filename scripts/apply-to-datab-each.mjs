@@ -359,10 +359,26 @@ const PRELOADER_CSS = `#preloader .preloader-foreground {
 #preloader .preloader-counter,
 #preloader .preloader-baseline .default {
   color: #0d4a6b;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 #preloader .logo {
-  mix-blend-mode: screen;
+  mix-blend-mode: normal !important;
+  z-index: 3;
+  width: min(84vw, 560px) !important;
+  height: auto !important;
+  padding: 1.35rem 1.8rem;
+  border-radius: 1.5rem;
+  background: #07182a;
+  box-shadow: 0 18px 48px rgba(7, 24, 42, 0.38);
+}
+
+#preloader .preloader-spinner {
+  border-top-color: rgba(13, 74, 107, 0.22) !important;
+  border-right-color: rgba(13, 74, 107, 0.22) !important;
+  border-bottom-color: rgba(13, 74, 107, 0.22) !important;
+  border-left-color: #0d4a6b !important;
 }
 `;
 
@@ -411,12 +427,14 @@ function patchIndex(file) {
     source = source.replace(/studio-bridge\.js(?:\?v=\d+)?/g, `studio-bridge.js?v=${stamp}`);
   }
   if (!source.includes("studio-preloader.css")) {
-    const tag = '    <link rel="stylesheet" href="./reference/assets/studio-preloader.css">\n';
+    const tag = `    <link rel="stylesheet" href="./reference/assets/studio-preloader.css?v=${stamp}">\n`;
     const next = source.includes("</head>")
       ? source.replace("</head>", `${tag}  </head>`)
       : source.replace('<div id="app"></div>', `<div id="app"></div>\n    ${tag}`);
     if (next === source) throw new Error("Could not inject studio-preloader.css into index.html");
     source = next;
+  } else {
+    source = source.replace(/studio-preloader\.css(?:\?v=\d+)?/g, `studio-preloader.css?v=${stamp}`);
   }
   if (source.includes('content="#05051a"')) {
     source = source.replace('content="#05051a"', 'content="#70bfe4"');
