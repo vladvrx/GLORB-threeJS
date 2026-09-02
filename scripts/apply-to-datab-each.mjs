@@ -274,6 +274,23 @@ function listHashed(dir, prefix) {
     .map((name) => path.join(dir, name));
 }
 
+const WATER_COLOR_SWAPS = [
+  ["#3fbfff", "#39ff14"],
+  ["#6db6e4", "#00e83a"],
+  ["#4189fd", "#39ff14"],
+  ["#7992ff", "#00e83a"],
+  ["#0a2a52", "#0ad64a"],
+  ["#164a73", "#00b83a"],
+];
+
+function patchWaterColors(source) {
+  let next = source;
+  for (const [from, to] of WATER_COLOR_SWAPS) {
+    if (next.includes(from)) next = next.split(from).join(to);
+  }
+  return next;
+}
+
 function patchWebgl(file) {
   if (!fs.existsSync(file)) return false;
   const original = fs.readFileSync(file, "utf8");
@@ -286,6 +303,7 @@ function patchWebgl(file) {
   if (!source.includes("__STUDIO_APPLY__")) {
     throw new Error(`Could not patch ${path.basename(file)}: missing scene-load marker`);
   }
+  source = patchWaterColors(source);
   if (source !== original) fs.writeFileSync(file, source);
   return true;
 }

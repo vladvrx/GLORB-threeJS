@@ -23,6 +23,9 @@ const HELPER_COLORS = {
   actor: 0xf472b6,
 };
 
+const NEON_WATER = 0x39ff14;
+const NEON_WATER_GLOW = 0x22ff00;
+
 export let activeViewport: ViewportEngine | null = null;
 
 function setActiveViewport(engine: ViewportEngine | null) {
@@ -598,12 +601,25 @@ export class ViewportEngine {
       layerActors: this.playing ? true : editor.layerActors,
       layerHelpers: this.playing ? false : editor.layerHelpers,
     });
+    this.paintWater();
+  }
+
+  private paintWater() {
+    if (!this.water) return;
+    const material = this.water.material;
+    if (!("color" in material)) return;
+    const water = material as THREE.MeshStandardMaterial;
+    water.color.setHex(NEON_WATER);
+    water.emissive.setHex(NEON_WATER_GLOW);
+    water.emissiveIntensity = 0.55;
+    water.roughness = 0.12;
   }
 
   private resetWater() {
     if (!this.water) return;
     this.water.position.set(0, 0.15, 0);
     this.water.scale.set(1, 1, 1);
+    this.paintWater();
   }
 
   private fitWater(crop: NonNullable<ReturnType<typeof sceneCrop>>) {
@@ -615,6 +631,7 @@ export class ViewportEngine {
     const radius = Math.max(rx, rz);
     this.water.position.set(cx, 0.15, cz);
     this.water.scale.set(radius / 220, radius / 220, 1);
+    this.paintWater();
   }
 
   private updateCropHelper(crop: ReturnType<typeof sceneCrop>) {
@@ -678,11 +695,13 @@ export class ViewportEngine {
         const water = new THREE.Mesh(
           new THREE.CircleGeometry(220, 64),
           new THREE.MeshStandardMaterial({
-            color: 0x1b7f92,
-            roughness: 0.18,
-            metalness: 0.12,
+            color: NEON_WATER,
+            emissive: NEON_WATER_GLOW,
+            emissiveIntensity: 0.55,
+            roughness: 0.12,
+            metalness: 0.08,
             transparent: true,
-            opacity: 0.88,
+            opacity: 0.9,
           }),
         );
         water.rotation.x = -Math.PI / 2;
