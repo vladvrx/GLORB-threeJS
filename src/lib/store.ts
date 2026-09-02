@@ -477,7 +477,7 @@ export const useEditor = create<EditorState>((set, get) => {
       });
       const payload = (await response.json()) as { error?: string; gameUrl?: string };
       if (!response.ok) throw new Error(payload.error ?? "Could not apply to the game");
-      return { gameUrl: payload.gameUrl ?? "http://127.0.0.1:43173" };
+      return { gameUrl: payload.gameUrl ?? "http://127.0.0.1:43173/three-js" };
     },
     async importMeshes(files) {
       const imported = await importMeshFiles(files);

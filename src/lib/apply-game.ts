@@ -61,7 +61,7 @@ export async function applyProjectToGame(project: StudioProject) {
     // keep raw stdout when the script prints a non-JSON warning first
   }
   return {
-    gameUrl: `${GAME_ORIGIN}/?applied=${Date.now()}`,
+    gameUrl: `${GAME_ORIGIN}/three-js?applied=${Date.now()}`,
     root,
     details,
   };

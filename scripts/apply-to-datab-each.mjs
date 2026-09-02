@@ -511,7 +511,20 @@ export async function ensureGameRoot(root) {
 }
 
 export async function ensureGameInstall(root) {
-  const marker = path.join(root, "node_modules", "next", "package.json");
+  const pkgPath = path.join(root, "package.json");
+  if (!fs.existsSync(pkgPath)) {
+    throw new Error(`No package.json in ${root}`);
+  }
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+  const needsNext = String(pkg.scripts?.dev || "").includes("next");
+  const hasDeps = Boolean(
+    (pkg.dependencies && Object.keys(pkg.dependencies).length) ||
+      (pkg.devDependencies && Object.keys(pkg.devDependencies).length),
+  );
+  if (!hasDeps) return { installed: false, skipped: true };
+  const marker = needsNext
+    ? path.join(root, "node_modules", "next", "package.json")
+    : path.join(root, "node_modules");
   if (fs.existsSync(marker)) return { installed: false };
   const lock = path.join(root, "package-lock.json");
   if (fs.existsSync(lock)) {
@@ -602,6 +615,7 @@ export function applyPack(root, pack) {
     if (patchPreloaderCss(file)) patched.preloader.push(path.relative(root, file));
   }
   patchIndex(path.join(root, "index.html"));
+  patchIndex(path.join(root, "three-js", "index.html"));
   patchNextConfig(path.join(root, "next.config.ts"));
   patchGamePackage(path.join(root, "package.json"));
 

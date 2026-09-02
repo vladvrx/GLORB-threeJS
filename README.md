@@ -2,7 +2,7 @@
 
 A Z-up level and content editor for the [DATAB-EACH](https://github.com/vladvrx/DATAB-EACH) Three.js island. Place, swap, move, rotate, and scale the original Cove meshes, then edit quests, notifications, characters, and dialogue without another AI pass.
 
-The playable game’s **Three.js recreation** (start screen, dialogue, menus, original `loadWebGL` island — no phone or map) lives in that repo at `/three-js/` when you run `npm run dev` there, or after **Apply to game** at [http://127.0.0.1:43173/three-js/](http://127.0.0.1:43173/three-js/).
+The playable game’s **Three.js recreation** (start screen, dialogue, menus, original `loadWebGL` island — no phone or map) lives in DATAB-EACH at `/three-js` and in the standalone [datab-each-threejs](https://github.com/vladvrx/datab-each-threejs) repo. **Apply to game** opens [http://127.0.0.1:43173/three-js](http://127.0.0.1:43173/three-js).
 
 The viewport treats **Z as up**. DATAB-EACH stores transforms in Three.js Y-up; the editor converts on the way in and out so exported JSON matches the game.
 
@@ -41,7 +41,9 @@ Open [http://127.0.0.1:43180](http://127.0.0.1:43180).
 
 ## Files
 
-Edits autosave in `localStorage`. **Apply to game** clones [DATAB-EACH](https://github.com/vladvrx/DATAB-EACH) if needed (`DATAB_EACH_ROOT`, default `/tmp/datab-each`), writes quests, dialogue, characters, actors, and island props into that copy, starts the real game on [http://127.0.0.1:43173](http://127.0.0.1:43173), and opens it. From a terminal you can do the same with `npm run apply-game`. **Studio** downloads the full project; **Game pack** is the raw JSON if you want to copy files yourself.
+Edits autosave in `localStorage`. **Start** playtests the island inside this editor. **Apply to game** writes quests, dialogue, characters, actors, and island props into the Three.js DATAB-EACH checkout (`DATAB_EACH_ROOT`, default `/tmp/datab-each`), patches the original `loadWebGL` bundles, starts the game on [http://127.0.0.1:43173](http://127.0.0.1:43173), and opens the Three.js build at `/three-js`. From a terminal you can do the same with `npm run apply-game`. **Studio** downloads the full project; **Game pack** is the raw JSON if you want to copy files yourself.
+
+The Three.js game uses the same GLBs, locale JSON, and WebGL runtime Studio already edits. Custom imported GLB/FBX meshes stay in Studio playtest; Apply only ships original Cove assets.
 
 Custom imported GLB/FBX meshes stay in Studio playtest; the original game only knows its shipped Cove assets. Apply also restyles the DATAB-EACH loading screen to light blue.
 
