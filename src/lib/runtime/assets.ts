@@ -27,20 +27,58 @@ function categoryOf(name: string): keyof typeof PLACEHOLDER_COLORS {
   return "props";
 }
 
+const placeholderTemplates = new Map<string, THREE.Group>();
+
 function placeholderMesh(asset: string) {
-  const geometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
-  const material = new THREE.MeshStandardMaterial({
-    color: PLACEHOLDER_COLORS[categoryOf(asset)],
-    roughness: 0.62,
-    metalness: 0.04,
+  const category = categoryOf(asset);
+  let template = placeholderTemplates.get(category);
+  if (!template) {
+    const geometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+    const material = new THREE.MeshStandardMaterial({
+      color: PLACEHOLDER_COLORS[category],
+      roughness: 0.62,
+      metalness: 0.04,
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = false;
+    mesh.receiveShadow = true;
+    mesh.position.y = 0.6;
+    template = new THREE.Group();
+    template.userData.placeholder = true;
+    template.add(mesh);
+    placeholderTemplates.set(category, template);
+  }
+  const clone = template.clone(true);
+  clone.userData.placeholder = true;
+  return clone;
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string) {
+  return new Promise<T>((resolve, reject) => {
+    const timer = window.setTimeout(() => reject(new Error(`${label} timed out`)), ms);
+    promise.then(
+      (value) => {
+        window.clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        window.clearTimeout(timer);
+        reject(error);
+      },
+    );
   });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  mesh.position.y = 0.6;
-  const group = new THREE.Group();
-  group.add(mesh);
-  return group;
+}
+
+async function mapPool<T>(items: T[], limit: number, worker: (item: T) => Promise<void>) {
+  let cursor = 0;
+  const run = async () => {
+    while (cursor < items.length) {
+      const index = cursor;
+      cursor += 1;
+      await worker(items[index]);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) || 1 }, () => run()));
 }
 
 export class AssetLibrary {
@@ -69,12 +107,14 @@ export class AssetLibrary {
     const promise = (async () => {
       if (!file) {
         const fallback = placeholderMesh(asset);
+        fallback.userData.placeholder = true;
         this.resolved.set(asset, fallback);
         return fallback;
       }
       try {
-        const gltf = await this.loader.loadAsync(file);
+        const gltf = await withTimeout(this.loader.loadAsync(file), 12000, asset);
         const root = gltf.scene;
+        root.userData.placeholder = false;
         root.traverse((node) => {
           const name = (node.name || node.userData?.name || "").toLowerCase();
           if (name.includes("collider") || name.includes("bounds")) {
@@ -83,21 +123,15 @@ export class AssetLibrary {
           }
           const mesh = node as THREE.Mesh;
           if (mesh.isMesh) {
-            mesh.castShadow = !/tree|bush|flower/.test(asset.toLowerCase());
+            mesh.castShadow = false;
             mesh.receiveShadow = true;
-            if (Array.isArray(mesh.material)) {
-              mesh.material.forEach((material) => {
-                material.side = THREE.DoubleSide;
-              });
-            } else if (mesh.material) {
-              mesh.material.side = THREE.DoubleSide;
-            }
           }
         });
         this.resolved.set(asset, root);
         return root;
       } catch {
         const fallback = placeholderMesh(asset);
+        fallback.userData.placeholder = true;
         this.resolved.set(asset, fallback);
         return fallback;
       }
@@ -107,24 +141,37 @@ export class AssetLibrary {
     return promise;
   }
 
-  async preload(assets: string[]) {
-    await Promise.all(assets.filter(Boolean).map((asset) => this.loadTemplate(asset)));
+  async preload(assets: string[], onProgress?: (done: number, total: number, asset: string) => void) {
+    const unique = [...new Set(assets.filter(Boolean))];
+    let done = 0;
+    await mapPool(unique, 6, async (asset) => {
+      await this.loadTemplate(asset);
+      done += 1;
+      onProgress?.(done, unique.length, asset);
+    });
+  }
+
+  isReady(asset: string) {
+    const template = this.resolved.get(asset);
+    return Boolean(template && !template.userData.placeholder);
   }
 
   instantiate(asset: string) {
-    const template = this.resolved.get(asset) ?? placeholderMesh(asset);
-    return template.clone(true);
+    const template = this.resolved.get(asset);
+    if (template) return template.clone(true);
+    const fallback = placeholderMesh(asset);
+    fallback.userData.placeholder = true;
+    return fallback;
   }
 
   async loadSceneBase(url: string) {
-    const gltf = await this.loader.loadAsync(url);
+    const gltf = await withTimeout(this.loader.loadAsync(url), 15000, url);
     const group = new THREE.Group();
     gltf.scene.updateMatrixWorld(true);
     gltf.scene.traverse((node) => {
-      const name = (node.name || "").toLowerCase();
       const extras = (node.userData ?? {}) as { type?: string };
-      const isBase =
-        extras.type === "SceneBase" || name.endsWith("scenebase") || name.endsWith("base");
+      const name = (node.name || "").toLowerCase();
+      const isBase = extras.type === "SceneBase" || name === "scenebase";
       if (!isBase) return;
       const mesh = node as THREE.Mesh;
       if (!mesh.isMesh || !mesh.geometry) return;

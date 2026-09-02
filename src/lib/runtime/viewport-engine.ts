@@ -37,6 +37,7 @@ export class ViewportEngine {
   private water: THREE.Mesh | null = null;
   private grid: THREE.GridHelper;
   private dragging = false;
+  private syncToken = 0;
   private boundResize: () => void;
   private boundPointer = (event: PointerEvent) => this.onPointer(event);
   private boundKey = (event: KeyboardEvent) => this.onKey(event);
@@ -54,7 +55,7 @@ export class ViewportEngine {
     });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
@@ -314,29 +315,45 @@ export class ViewportEngine {
     root.userData.asset = object.asset;
     root.userData.wantVisible = object.visible;
     applyGameTransform(root, object.transform);
+    this.setVisual(root, object);
+    return root;
+  }
+
+  private setVisual(root: THREE.Object3D, object: EditorObject) {
+    while (root.children.length > 0) root.remove(root.children[0]);
     if (object.kind === "prop" || (object.kind === "actor" && object.asset)) {
       root.add(this.library.instantiate(object.asset));
     } else {
       root.add(this.helperFor(object));
     }
-    return root;
+    root.userData.readyAsset = this.library.isReady(object.asset) ? object.asset : "";
   }
 
-  async syncScene(scene: SceneData) {
-    const assets = scene.objects.map((item) => item.asset).filter(Boolean);
-    await this.library.preload(assets);
+  applyLiveTransforms(scene: SceneData) {
+    if (this.sceneId !== scene.id) return;
+    for (const object of scene.objects) {
+      const existing = this.objects.get(object.id);
+      if (!existing) continue;
+      existing.userData.wantVisible = object.visible;
+      existing.visible = object.visible;
+      if (this.dragging && this.transform.object === existing) continue;
+      applyGameTransform(existing, object.transform);
+    }
+  }
+
+  async syncScene(
+    scene: SceneData,
+    onProgress?: (message: string) => void,
+  ) {
+    const token = ++this.syncToken;
+    const stillCurrent = () => !this.disposed && this.syncToken === token;
+    const yieldFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
     if (this.sceneId !== scene.id) {
       this.clearObjects();
       this.sceneId = scene.id;
       if (this.terrain) {
         this.island.remove(this.terrain);
-        this.terrain = null;
-      }
-      try {
-        this.terrain = await this.library.loadSceneBase(scene.glb);
-        this.island.add(this.terrain);
-      } catch {
         this.terrain = null;
       }
       if (!this.water) {
@@ -365,6 +382,7 @@ export class ViewportEngine {
         this.controls.target.copy(world);
         this.camera.position.set(world.x + 28, world.y - 36, world.z + 18);
       }
+      void this.loadTerrain(scene, token);
     }
 
     const incoming = new Set(scene.objects.map((item) => item.id));
@@ -375,12 +393,19 @@ export class ViewportEngine {
       }
     }
 
+    let added = 0;
     for (const object of scene.objects) {
       const existing = this.objects.get(object.id);
       if (!existing) {
         const node = this.makeNode(object);
         this.objects.set(object.id, node);
         this.island.add(node);
+        added += 1;
+        if (added % 40 === 0) {
+          onProgress?.(`Placing ${this.objects.size}/${scene.objects.length}`);
+          await yieldFrame();
+          if (!stillCurrent()) return;
+        }
         continue;
       }
       existing.userData.wantVisible = object.visible;
@@ -390,10 +415,8 @@ export class ViewportEngine {
         object.kind !== "point" &&
         object.kind !== "area"
       ) {
-        this.island.remove(existing);
-        const node = this.makeNode(object);
-        this.objects.set(object.id, node);
-        this.island.add(node);
+        existing.userData.asset = object.asset;
+        this.setVisual(existing, object);
         continue;
       }
       if (!this.dragging || this.transform.object !== existing) {
@@ -401,6 +424,47 @@ export class ViewportEngine {
       }
       existing.userData.asset = object.asset;
     }
+
+    onProgress?.("Loading models…");
+    void this.hydrateModels(scene, token, onProgress);
+  }
+
+  private async loadTerrain(scene: SceneData, token: number) {
+    try {
+      const terrain = await this.library.loadSceneBase(scene.glb);
+      if (this.disposed || this.syncToken !== token || this.sceneId !== scene.id) return;
+      if (this.terrain) this.island.remove(this.terrain);
+      this.terrain = terrain;
+      this.island.add(terrain);
+    } catch (error) {
+      console.warn("Terrain failed to load", error);
+    }
+  }
+
+  private async hydrateModels(
+    scene: SceneData,
+    token: number,
+    onProgress?: (message: string) => void,
+  ) {
+    const stillCurrent = () => !this.disposed && this.syncToken === token;
+    const yieldFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    const assets = [...new Set(scene.objects.map((item) => item.asset).filter(Boolean))];
+    await this.library.preload(assets, (loaded, total) => {
+      if (stillCurrent()) onProgress?.(`Loading models ${loaded}/${total}`);
+    });
+    if (!stillCurrent()) return;
+
+    let upgraded = 0;
+    for (const object of scene.objects) {
+      if (!stillCurrent()) return;
+      if (!object.asset || !this.library.isReady(object.asset)) continue;
+      const node = this.objects.get(object.id);
+      if (!node || node.userData.readyAsset === object.asset) continue;
+      this.setVisual(node, object);
+      upgraded += 1;
+      if (upgraded % 24 === 0) await yieldFrame();
+    }
+    if (stillCurrent()) onProgress?.("");
   }
 
   attach(id: string | null, tool: ToolMode) {

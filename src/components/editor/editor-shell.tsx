@@ -54,8 +54,11 @@ export function EditorShell() {
 
   if (status === "loading") {
     return (
-      <div className="grid h-dvh place-items-center bg-[#061821] text-teal-50">
-        Opening Cove Island…
+      <div className="grid h-dvh place-items-center bg-[#061821] px-6 text-center text-teal-50">
+        <div>
+          <p className="text-lg font-semibold">Loading the island pack…</p>
+          <p className="mt-2 text-sm text-teal-200/70">Reading scenes, quests, and dialogue from the game data.</p>
+        </div>
       </div>
     );
   }
@@ -66,6 +69,9 @@ export function EditorShell() {
         <div>
           <p className="text-lg font-semibold">Could not load the island pack.</p>
           <p className="mt-2 text-sm text-teal-200/70">{error}</p>
+          <Button className="mt-4" onClick={() => void load()}>
+            Retry
+          </Button>
         </div>
       </div>
     );

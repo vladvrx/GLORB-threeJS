@@ -114,8 +114,12 @@ export const useEditor = create<EditorState>((set, get) => {
     future: [],
     focusRequest: 0,
     async load() {
+      set({ status: "loading", error: null });
       try {
-        const response = await fetch("/game/data/bundle.json");
+        const response = await fetch("/game/data/bundle.json", {
+          cache: "no-store",
+          signal: AbortSignal.timeout(20000),
+        });
         if (!response.ok) throw new Error(`Could not load game bundle (${response.status})`);
         const bundle = (await response.json()) as StudioBundle;
         bundleCache = bundle;
