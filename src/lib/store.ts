@@ -442,7 +442,7 @@ export const useEditor = create<EditorState>((set, get) => {
       const text = await file.text();
       const parsed = JSON.parse(text) as StudioProject;
       if (parsed.format !== "datab-each-studio-v1") {
-        throw new Error("This file is not a Data B-each Studio project.");
+        throw new Error("This file is not a glorb Studio project.");
       }
       set({
         project: mergeShippedAnchors(parsed, bundleCache),

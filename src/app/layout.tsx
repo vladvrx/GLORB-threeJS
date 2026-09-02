@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Data B-each Studio",
-  description: "Z-up level and content editor for the Data B-each Three.js island.",
+  title: "glorb Studio",
+  description: "Z-up level and content editor for the glorb Three.js island.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

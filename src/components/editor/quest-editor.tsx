@@ -231,7 +231,7 @@ export function QuestEditor() {
                 className="mt-2 text-sm leading-relaxed text-teal-50/80"
                 dangerouslySetInnerHTML={{ __html: quest.description }}
               />
-              <p className="mt-3 text-xs text-amber-200">{quest.reward} Data B-each Points</p>
+              <p className="mt-3 text-xs text-amber-200">{quest.reward} glorb Points</p>
             </div>
             {quest.unlockText ? (
               <p className="mt-3 text-xs text-teal-200/60">Locked: {quest.unlockText}</p>

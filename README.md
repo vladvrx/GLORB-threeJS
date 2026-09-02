@@ -1,4 +1,4 @@
-# Data B-each Studio
+# glorb Studio
 
 A Z-up level and content editor for the [DATAB-EACH](https://github.com/vladvrx/DATAB-EACH) Three.js island. Place, swap, move, rotate, and scale the original Cove meshes, then edit quests, notifications, characters, and dialogue without another AI pass.
 

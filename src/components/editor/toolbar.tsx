@@ -58,9 +58,13 @@ export function EditorToolbar() {
 
   return (
     <header className="flex flex-wrap items-center gap-2 border-b border-white/10 bg-[#061821] px-3 py-2">
-      <div className="mr-2 min-w-0">
-        <p className="truncate text-sm font-semibold tracking-tight text-teal-50">Data B-each Studio</p>
-        <p className="text-[11px] text-teal-200/60">Z-up island editor · no AI required</p>
+      <div className="mr-2 flex min-w-0 items-center gap-2">
+        <img
+          src="/glorb-logo.png"
+          alt="glorb"
+          className="h-7 w-auto max-w-[140px] object-contain"
+        />
+        <p className="truncate text-sm font-semibold tracking-tight text-teal-50">Studio</p>
       </div>
       <select
         className="h-8 rounded-lg border border-white/10 bg-white/5 px-2 text-sm"
