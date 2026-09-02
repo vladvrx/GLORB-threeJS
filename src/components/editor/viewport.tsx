@@ -31,6 +31,7 @@ export function EditorViewport() {
   const objectSignature = scene
     ? `${scene.glb}|${scene.objects.map((object) => `${object.id}:${object.asset}`).join(",")}`
     : "";
+  const cropSignature = scene?.bounds ? scene.bounds.flat().join(",") : "";
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -91,6 +92,11 @@ export function EditorViewport() {
     if (loading || !scene || playing) return;
     engineRef.current?.applyLiveTransforms?.(scene);
   }, [scene, loading, playing]);
+
+  useEffect(() => {
+    if (!scene || engineGen === 0) return;
+    engineRef.current?.applyCrop?.(scene);
+  }, [cropSignature, engineGen, scene, loading]);
 
   useEffect(() => {
     const engine = engineRef.current;

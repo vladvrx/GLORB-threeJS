@@ -64,7 +64,10 @@ export type SceneData = {
   name: string;
   glb: string;
   terrain: string | null;
+  /** Current playable AABB in game Y-up space. */
   bounds: [Vec3, Vec3] | null;
+  /** Original shipped AABB, used to reset a crop. */
+  fullBounds?: [Vec3, Vec3] | null;
   useBaseAsCollider: boolean;
   objects: EditorObject[];
   curves: PathCurve[];

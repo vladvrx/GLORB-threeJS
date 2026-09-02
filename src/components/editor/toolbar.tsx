@@ -12,6 +12,7 @@ import {
   RotateCw,
   Save,
   Scaling,
+  Scissors,
   Square,
   Trash2,
   Undo2,
@@ -50,6 +51,7 @@ export function EditorToolbar() {
   const playing = useEditor((state) => state.playing);
   const startPlay = useEditor((state) => state.startPlay);
   const stopPlay = useEditor((state) => state.stopPlay);
+  const halveIsland = useEditor((state) => state.halveIsland);
   const [applying, setApplying] = useState(false);
 
   if (!project) return null;
@@ -109,6 +111,19 @@ export function EditorToolbar() {
         {playing ? <Square className="size-3.5" /> : <Play className="size-3.5" />}
         {playing ? "Stop" : "Start"}
       </Button>
+      {playing ? null : (
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => {
+            const result = halveIsland();
+            toast.success(`Island cut in half · ${result.removed} objects removed`);
+          }}
+        >
+          <Scissors className="size-3.5" />
+          <span className="hidden sm:inline">Halve island</span>
+        </Button>
+      )}
       <div className="ml-auto flex flex-wrap items-center gap-1">
         <Button
           size="sm"

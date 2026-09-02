@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { ACTOR_ASSETS, cloneObject, newProp, projectFromBundle } from "@/lib/project";
+import { applyCropToScene, halvedCrop, type GameAabb } from "@/lib/crop";
+import { ACTOR_ASSETS, cloneObject, newProp, projectFromBundle, withFullBounds } from "@/lib/project";
 import { identityTransform, worldPosToGame } from "@/lib/coords";
 import { exportGamePack } from "@/lib/export";
 import { assetFromStored, deleteStoredMesh, importMeshFiles, loadStoredMeshes } from "@/lib/custom-assets";
@@ -69,6 +70,10 @@ type EditorState = {
   redo: () => void;
   updateProject: (recipe: (project: StudioProject) => void) => void;
   persist: () => void;
+  setSceneBounds: (bounds: GameAabb, removeOutside?: boolean) => { removed: number; kept: number };
+  halveIsland: () => { removed: number; kept: number };
+  resetIslandSize: () => void;
+  deleteOutsideCrop: () => { removed: number; kept: number };
   exportStudio: () => void;
   exportGamePack: () => void;
   importStudio: (file: File) => Promise<void>;
@@ -162,7 +167,7 @@ export const useEditor = create<EditorState>((set, get) => {
           try {
             const parsed = JSON.parse(saved) as StudioProject;
             if (parsed.format === "datab-each-studio-v1" && parsed.scenes) {
-              project = parsed;
+              project = withFullBounds(parsed, bundle);
             }
           } catch {
             // keep shipped island
@@ -385,6 +390,44 @@ export const useEditor = create<EditorState>((set, get) => {
       localStorage.setItem(SAVE_KEY, snapshot(project));
       set({ dirty: false });
     },
+    setSceneBounds: (bounds, removeOutside = false) => {
+      const { project, selectedId } = get();
+      if (!project) return { removed: 0, kept: 0 };
+      pushHistory();
+      const next = structuredClone(project);
+      const scene = next.scenes[next.activeSceneId];
+      const result = applyCropToScene(scene, bounds, removeOutside);
+      const stillSelected = selectedId && scene.objects.some((item) => item.id === selectedId);
+      set({
+        project: next,
+        selectedId: stillSelected ? selectedId : null,
+        dirty: true,
+      });
+      return result;
+    },
+    halveIsland: () => {
+      const { project } = get();
+      if (!project) return { removed: 0, kept: 0 };
+      const scene = project.scenes[project.activeSceneId];
+      const crop = halvedCrop(scene);
+      if (!crop) return { removed: 0, kept: scene.objects.length };
+      return get().setSceneBounds(crop, true);
+    },
+    resetIslandSize: () => {
+      const { project } = get();
+      if (!project) return;
+      const scene = project.scenes[project.activeSceneId];
+      const full = scene.fullBounds ?? scene.bounds;
+      if (!full) return;
+      get().setSceneBounds(full, false);
+    },
+    deleteOutsideCrop: () => {
+      const { project } = get();
+      if (!project) return { removed: 0, kept: 0 };
+      const scene = project.scenes[project.activeSceneId];
+      if (!scene.bounds) return { removed: 0, kept: scene.objects.length };
+      return get().setSceneBounds(scene.bounds, true);
+    },
     exportStudio: () => {
       const { project } = get();
       if (!project) return;
@@ -401,7 +444,13 @@ export const useEditor = create<EditorState>((set, get) => {
       if (parsed.format !== "datab-each-studio-v1") {
         throw new Error("This file is not a Data B-each Studio project.");
       }
-      set({ project: parsed, selectedId: null, dirty: true, past: [], future: [] });
+      set({
+        project: withFullBounds(parsed, bundleCache),
+        selectedId: null,
+        dirty: true,
+        past: [],
+        future: [],
+      });
     },
     async resetToBundle() {
       if (!bundleCache) {

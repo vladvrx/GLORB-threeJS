@@ -211,10 +211,24 @@ export function sceneFromRaw(raw: RawScene): SceneData {
     glb: raw.glb,
     terrain: raw.terrain,
     bounds: raw.bounds,
+    fullBounds: raw.bounds,
     useBaseAsCollider: raw.useBaseAsCollider,
     objects,
     curves,
   };
+}
+
+export function withFullBounds(project: StudioProject, bundle?: StudioBundle | null): StudioProject {
+  const scenes: Record<string, SceneData> = {};
+  for (const [id, scene] of Object.entries(project.scenes)) {
+    const shipped = bundle?.scenes[id]?.bounds ?? scene.fullBounds ?? scene.bounds;
+    scenes[id] = {
+      ...scene,
+      fullBounds: scene.fullBounds ?? shipped ?? null,
+      bounds: scene.bounds ?? shipped ?? null,
+    };
+  }
+  return { ...project, scenes };
 }
 
 export function projectFromBundle(bundle: StudioBundle): StudioProject {

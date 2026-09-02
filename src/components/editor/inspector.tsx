@@ -1,5 +1,6 @@
 "use client";
 
+import { IslandSizePanel } from "@/components/editor/island-panel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -61,8 +62,11 @@ export function Inspector() {
 
   if (!object) {
     return (
-      <div className="p-4 text-sm text-teal-200/60">
-        Select a prop, actor, spawn, or area. Move, rotate, and scale with the gizmos — Z is up.
+      <div>
+        <IslandSizePanel />
+        <div className="p-4 text-sm text-teal-200/60">
+          Select a prop, actor, spawn, or area. Move, rotate, and scale with the gizmos — Z is up.
+        </div>
       </div>
     );
   }
@@ -95,7 +99,9 @@ export function Inspector() {
   };
 
   return (
-    <div className="space-y-4 p-3">
+    <div>
+      <IslandSizePanel />
+      <div className="space-y-4 p-3">
       <div>
         <p className="text-[10px] font-medium tracking-[0.16em] text-teal-200/70 uppercase">Inspector</p>
         <h2 className="mt-1 truncate text-sm font-semibold">{object.name}</h2>
@@ -179,6 +185,7 @@ export function Inspector() {
         <Button size="sm" variant="destructive" onClick={deleteSelected}>
           Delete
         </Button>
+      </div>
       </div>
     </div>
   );

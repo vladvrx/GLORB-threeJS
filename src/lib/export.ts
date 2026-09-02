@@ -1,8 +1,17 @@
+import { objectInsideCrop, sceneCrop, trimCurveToCrop } from "@/lib/crop";
 import { serializeDialogs } from "@/lib/project";
 import type { EditorObject, SceneData, StudioProject } from "@/lib/types";
 
 function gameSceneFromEditor(scene: SceneData) {
-  const props = scene.objects
+  const crop = sceneCrop(scene);
+  const objects = crop
+    ? scene.objects.filter((object) => objectInsideCrop(object, crop))
+    : scene.objects;
+  const curves = crop
+    ? scene.curves.map((curve) => trimCurveToCrop(curve, crop)).filter((curve) => Boolean(curve))
+    : scene.curves;
+
+  const props = objects
     .filter((object) => object.kind === "prop")
     .map((object) => ({
       asset: object.asset,
@@ -10,7 +19,7 @@ function gameSceneFromEditor(scene: SceneData) {
       transforms: object.transform,
     }));
 
-  const actors = scene.objects
+  const actors = objects
     .filter((object) => object.kind === "actor")
     .map((object) => ({
       uid: object.id,
@@ -20,36 +29,37 @@ function gameSceneFromEditor(scene: SceneData) {
     }));
 
   const points: Record<string, EditorObject["transform"]> = {};
-  for (const object of scene.objects.filter((item) => item.kind === "point")) {
+  for (const object of objects.filter((item) => item.kind === "point")) {
     points[object.name] = object.transform;
   }
 
   const areas: Record<string, { position: number[]; size: number }> = {};
-  for (const object of scene.objects.filter((item) => item.kind === "area")) {
+  for (const object of objects.filter((item) => item.kind === "area")) {
     areas[object.name] = {
       position: [object.transform[0], object.transform[1], object.transform[2]],
       size: object.transform[3],
     };
   }
 
-  const curves: Record<string, { type: string; closed: boolean; points: number[][] }> = {};
-  for (const curve of scene.curves) {
-    curves[curve.id] = {
+  const packedCurves: Record<string, { type: string; closed: boolean; points: number[][] }> = {};
+  for (const curve of curves) {
+    if (!curve) continue;
+    packedCurves[curve.id] = {
       type: curve.type,
       closed: curve.closed,
       points: curve.points,
     };
   }
 
-  const assets = [...new Set(scene.objects.filter((item) => item.asset).map((item) => item.asset))];
+  const assets = [...new Set(objects.filter((item) => item.asset).map((item) => item.asset))];
 
   return {
     name: scene.name,
-    bounds: scene.bounds,
+    bounds: crop ?? scene.bounds,
     useBaseAsCollider: scene.useBaseAsCollider,
     points,
     areas,
-    curves,
+    curves: packedCurves,
     assets,
     actors,
     props,

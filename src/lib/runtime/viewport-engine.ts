@@ -2,6 +2,15 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import { applyGameTransform, GAME_TO_WORLD, readGameTransform, roundTo } from "@/lib/coords";
+import {
+  aabbAlmostEqual,
+  sceneCrop,
+  sceneFullBounds,
+  worldClipPlanes,
+  clampWorldToCrop,
+  worldPointInsideCrop,
+  objectInsideCrop,
+} from "@/lib/crop";
 import { AssetLibrary } from "@/lib/runtime/assets";
 import { resolveActorDialog } from "@/lib/play";
 import { useEditor } from "@/lib/store";
@@ -36,6 +45,8 @@ export class ViewportEngine {
   private sceneId: string | null = null;
   private terrain: THREE.Object3D | null = null;
   private water: THREE.Mesh | null = null;
+  private cropHelper: THREE.Box3Helper | null = null;
+  private clipPlanes: THREE.Plane[] = [];
   private grid: THREE.GridHelper;
   private dragging = false;
   private syncToken = 0;
@@ -74,6 +85,7 @@ export class ViewportEngine {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
     this.renderer.setClearColor(0x0b1c28, 1);
+    this.renderer.localClippingEnabled = true;
 
     this.camera = new THREE.PerspectiveCamera(50, 1, 0.2, 2500);
     this.camera.up.set(0, 0, 1);
@@ -306,12 +318,14 @@ export class ViewportEngine {
     this.grid.visible = this.playing ? false : state.showGrid;
     if (this.terrain) this.terrain.visible = state.showTerrain;
     if (this.water) this.water.visible = state.showWater;
+    if (this.cropHelper) this.cropHelper.visible = this.playing ? false : state.layerHelpers && this.clipPlanes.length > 0;
     for (const [id, object] of this.objects) {
       const kind = object.userData.kind as EditorObject["kind"];
-      if (kind === "prop") object.visible = state.layerProps && object.userData.wantVisible !== false;
-      if (kind === "actor") object.visible = state.layerActors && object.userData.wantVisible !== false;
+      const cropped = object.userData.outsideCrop !== true;
+      if (kind === "prop") object.visible = state.layerProps && cropped && object.userData.wantVisible !== false;
+      if (kind === "actor") object.visible = state.layerActors && cropped && object.userData.wantVisible !== false;
       if (kind === "point" || kind === "area") {
-        object.visible = this.playing ? false : state.layerHelpers && object.userData.wantVisible !== false;
+        object.visible = this.playing ? false : state.layerHelpers && cropped && object.userData.wantVisible !== false;
       }
       void id;
     }
@@ -394,6 +408,7 @@ export class ViewportEngine {
     const player = this.player;
     if (!player) return;
     const editor = useEditor.getState();
+    const scene = editor.project?.scenes[editor.project.activeSceneId];
     const locked = Boolean(editor.playDialog);
     const sprint = this.keys.has("shift");
     const speed = (sprint ? 14 : 7.2) * dt;
@@ -423,6 +438,13 @@ export class ViewportEngine {
       player.position.y += (moveY / length) * speed;
     }
 
+    const crop = sceneCrop(scene);
+    if (crop) {
+      const clamped = clampWorldToCrop(player.position, crop);
+      player.position.x = clamped.x;
+      player.position.y = clamped.y;
+    }
+
     this.vz -= 28 * dt;
     if (!locked && this.keys.has("space") && this.grounded) {
       this.vz = 8.2;
@@ -437,7 +459,8 @@ export class ViewportEngine {
     if (this.terrain) ground.push(this.terrain);
     if (this.water) ground.push(this.water);
     const hits = ground.length ? this.raycaster.intersectObjects(ground, true) : [];
-    const floor = hits[0]?.point.z ?? 0.15;
+    const floorHit = hits.find((hit) => !crop || worldPointInsideCrop(hit.point, crop, 0.5));
+    const floor = floorHit?.point.z ?? 0.15;
     if (player.position.z <= floor + 0.02) {
       player.position.z = floor + 0.02;
       this.vz = 0;
@@ -547,6 +570,70 @@ export class ViewportEngine {
       root.add(this.helperFor(object));
     }
     root.userData.readyAsset = this.library.isReady(object.asset) ? object.asset : "";
+    this.applyClipping(root);
+  }
+
+  applyCrop(scene: SceneData) {
+    const crop = sceneCrop(scene);
+    const full = sceneFullBounds(scene);
+    const active = Boolean(crop && full && !aabbAlmostEqual(crop, full));
+    this.clipPlanes = active && crop ? worldClipPlanes(crop) : [];
+    this.renderer.localClippingEnabled = this.clipPlanes.length > 0;
+    this.applyClipping(this.island);
+    if (crop) this.fitWater(crop);
+    this.updateCropHelper(active ? crop : null);
+    for (const object of scene.objects) {
+      const node = this.objects.get(object.id);
+      if (!node) continue;
+      node.userData.outsideCrop = crop ? !objectInsideCrop(object, crop) : false;
+    }
+    const editor = useEditor.getState();
+    this.setLayers({
+      showGrid: this.playing ? false : editor.showGrid,
+      showTerrain: editor.showTerrain,
+      showWater: editor.showWater,
+      layerProps: this.playing ? true : editor.layerProps,
+      layerActors: this.playing ? true : editor.layerActors,
+      layerHelpers: this.playing ? false : editor.layerHelpers,
+    });
+  }
+
+  private fitWater(crop: NonNullable<ReturnType<typeof sceneCrop>>) {
+    if (!this.water || !crop) return;
+    const cx = (crop[0][0] + crop[1][0]) / 2;
+    const cz = (crop[0][2] + crop[1][2]) / 2;
+    const rx = Math.max(24, (crop[1][0] - crop[0][0]) / 2 + 18);
+    const rz = Math.max(24, (crop[1][2] - crop[0][2]) / 2 + 18);
+    const radius = Math.max(rx, rz);
+    this.water.position.set(cx, 0.15, cz);
+    this.water.scale.set(radius / 220, radius / 220, 1);
+  }
+
+  private updateCropHelper(crop: ReturnType<typeof sceneCrop>) {
+    if (!this.cropHelper) {
+      this.cropHelper = new THREE.Box3Helper(new THREE.Box3(), 0x5eead4);
+      this.island.add(this.cropHelper);
+    }
+    if (!crop) {
+      this.cropHelper.visible = false;
+      return;
+    }
+    this.cropHelper.box.min.set(crop[0][0], crop[0][1], crop[0][2]);
+    this.cropHelper.box.max.set(crop[1][0], crop[1][1], crop[1][2]);
+    this.cropHelper.visible = !this.playing;
+  }
+
+  private applyClipping(root: THREE.Object3D) {
+    const planes = this.clipPlanes;
+    root.traverse((node) => {
+      const mesh = node as THREE.Mesh;
+      if (!mesh.isMesh || !mesh.material) return;
+      const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      for (const material of materials) {
+        material.clippingPlanes = planes;
+        material.clipShadows = planes.length > 0;
+      }
+    });
   }
 
   applyLiveTransforms(scene: SceneData) {
@@ -555,6 +642,7 @@ export class ViewportEngine {
       const existing = this.objects.get(object.id);
       if (!existing) continue;
       existing.userData.wantVisible = object.visible;
+      existing.userData.outsideCrop = scene.bounds ? !objectInsideCrop(object, scene.bounds) : false;
       existing.visible = object.visible;
       if (this.dragging && this.transform.object === existing) continue;
       applyGameTransform(existing, object.transform);
@@ -645,6 +733,8 @@ export class ViewportEngine {
       existing.userData.asset = object.asset;
     }
 
+    this.applyCrop(scene);
+
     onProgress?.("Loading models…");
     void this.hydrateModels(scene, token, onProgress);
   }
@@ -656,6 +746,7 @@ export class ViewportEngine {
       if (this.terrain) this.island.remove(this.terrain);
       this.terrain = terrain;
       this.island.add(terrain);
+      this.applyCrop(scene);
     } catch (error) {
       console.warn("Terrain failed to load", error);
     }
@@ -684,7 +775,10 @@ export class ViewportEngine {
       upgraded += 1;
       if (upgraded % 24 === 0) await yieldFrame();
     }
-    if (stillCurrent()) onProgress?.("");
+    if (stillCurrent()) {
+      this.applyCrop(scene);
+      onProgress?.("");
+    }
   }
 
   attach(id: string | null, tool: ToolMode) {
