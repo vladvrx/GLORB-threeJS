@@ -79,7 +79,7 @@ export function EditorViewport() {
 
   useEffect(() => {
     if (loading || !scene) return;
-    engineRef.current?.applyLiveTransforms(scene);
+    engineRef.current?.applyLiveTransforms?.(scene);
   }, [scene, loading]);
 
   useEffect(() => {
