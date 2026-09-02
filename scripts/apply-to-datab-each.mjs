@@ -326,16 +326,83 @@ window.__STUDIO_APPLY__=function(id,manifest,runtime,phase){
   fs.writeFileSync(file, body);
 }
 
+const PRELOADER_WAVE_COLORS = [
+  ["rgb(158, 155, 190)", "rgb(186, 226, 245)"],
+  ["rgb(93, 89, 147)", "rgb(137, 206, 237)"],
+  ["rgb(59, 55, 119)", "rgb(112, 191, 228)"],
+];
+
+const PRELOADER_CSS = `#preloader .preloader-foreground {
+  background: #70bfe4 !important;
+}
+
+#preloader .preloader-counter,
+#preloader .preloader-baseline .default {
+  color: #0d4a6b;
+}
+
+#preloader .logo {
+  mix-blend-mode: screen;
+}
+`;
+
+function patchPreloaderWaves(file) {
+  if (!fs.existsSync(file)) return false;
+  let source = fs.readFileSync(file, "utf8");
+  if (!source.includes("rgb(59, 55, 119)") && !source.includes("rgb(112, 191, 228)")) {
+    return false;
+  }
+  if (source.includes("rgb(112, 191, 228)")) return true;
+  for (const [before, after] of PRELOADER_WAVE_COLORS) {
+    source = replaceOnce(source, before, after, `${path.basename(file)} preloader ${before}`);
+  }
+  fs.writeFileSync(file, source);
+  return true;
+}
+
+function patchPreloaderCss(file) {
+  if (!fs.existsSync(file)) return false;
+  const marker = "#preloader .preloader-foreground{position:absolute;top:0;left:0;z-index:0;width:100%;height:100%;background:#3b3777}";
+  const source = fs.readFileSync(file, "utf8");
+  if (source.includes("background:#70bfe4") && source.includes("#preloader .preloader-foreground{position:absolute")) {
+    return true;
+  }
+  if (!source.includes(marker)) return false;
+  fs.writeFileSync(file, source.replace(marker, marker.replace("background:#3b3777", "background:#70bfe4")));
+  return true;
+}
+
+function writePreloaderOverride(file) {
+  fs.writeFileSync(file, PRELOADER_CSS);
+}
+
 function patchIndex(file) {
   if (!fs.existsSync(file)) return false;
-  const source = fs.readFileSync(file, "utf8");
-  if (source.includes("studio-bridge.js")) return true;
-  const tag = '    <script src="./reference/assets/studio-bridge.js"></script>\n';
-  const next = source.includes("</head>")
-    ? source.replace("</head>", `${tag}  </head>`)
-    : source.replace('<div id="app"></div>', `<div id="app"></div>\n    ${tag}`);
-  if (next === source) throw new Error("Could not inject studio-bridge.js into index.html");
-  fs.writeFileSync(file, next);
+  let source = fs.readFileSync(file, "utf8");
+  let changed = false;
+  if (!source.includes("studio-bridge.js")) {
+    const tag = '    <script src="./reference/assets/studio-bridge.js"></script>\n';
+    const next = source.includes("</head>")
+      ? source.replace("</head>", `${tag}  </head>`)
+      : source.replace('<div id="app"></div>', `<div id="app"></div>\n    ${tag}`);
+    if (next === source) throw new Error("Could not inject studio-bridge.js into index.html");
+    source = next;
+    changed = true;
+  }
+  if (!source.includes("studio-preloader.css")) {
+    const tag = '    <link rel="stylesheet" href="./reference/assets/studio-preloader.css">\n';
+    const next = source.includes("</head>")
+      ? source.replace("</head>", `${tag}  </head>`)
+      : source.replace('<div id="app"></div>', `<div id="app"></div>\n    ${tag}`);
+    if (next === source) throw new Error("Could not inject studio-preloader.css into index.html");
+    source = next;
+    changed = true;
+  }
+  if (source.includes('content="#05051a"')) {
+    source = source.replace('content="#05051a"', 'content="#70bfe4"');
+    changed = true;
+  }
+  if (changed) fs.writeFileSync(file, source);
   return true;
 }
 
@@ -446,10 +513,11 @@ export function applyPack(root, pack) {
   writeJson(path.join(assets, "studio-game-pack.json"), pack);
   if (pack.notifications) writeJson(path.join(assets, "studio-notifications.json"), pack.notifications);
   writeBridge(path.join(assets, "studio-bridge.js"), pack.scenes ?? {});
+  writePreloaderOverride(path.join(assets, "studio-preloader.css"));
 
   const webglFiles = [...listHashed(path.join(root, "vendor"), "webgl."), ...listHashed(assets, "webgl.")];
   const vendorFiles = [...listHashed(path.join(root, "vendor"), "vendor."), ...listHashed(assets, "vendor.")];
-  const patched = { webgl: [], vendor: [] };
+  const patched = { webgl: [], vendor: [], preloader: [] };
   for (const file of webglFiles) {
     if (patchWebgl(file)) patched.webgl.push(path.relative(root, file));
   }
@@ -458,6 +526,14 @@ export function applyPack(root, pack) {
   }
   for (const file of vendorFiles) {
     if (patchVendor(file, pack.scenes ?? {})) patched.vendor.push(path.relative(root, file));
+    if (patchPreloaderWaves(file)) patched.preloader.push(path.relative(root, file));
+  }
+  const vendorCss = fs
+    .readdirSync(assets)
+    .filter((name) => name.startsWith("vendor.") && name.endsWith(".css"))
+    .map((name) => path.join(assets, name));
+  for (const file of vendorCss) {
+    if (patchPreloaderCss(file)) patched.preloader.push(path.relative(root, file));
   }
   patchIndex(path.join(root, "index.html"));
   patchNextConfig(path.join(root, "next.config.ts"));

@@ -42,6 +42,6 @@ Open [http://127.0.0.1:43180](http://127.0.0.1:43180).
 
 Edits autosave in `localStorage`. **Apply to game** clones [DATAB-EACH](https://github.com/vladvrx/DATAB-EACH) if needed (`DATAB_EACH_ROOT`, default `/tmp/datab-each`), writes quests, dialogue, characters, actors, and island props into that copy, starts the real game on [http://127.0.0.1:43173](http://127.0.0.1:43173), and opens it. From a terminal you can do the same with `npm run apply-game`. **Studio** downloads the full project; **Game pack** is the raw JSON if you want to copy files yourself.
 
-Custom imported GLB/FBX meshes stay in Studio playtest; the original game only knows its shipped Cove assets.
+Custom imported GLB/FBX meshes stay in Studio playtest; the original game only knows its shipped Cove assets. Apply also restyles the DATAB-EACH loading screen to light blue.
 
 Meshes and Draco decoders live under `public/game` and `public/draco`.
