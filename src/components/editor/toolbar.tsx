@@ -150,7 +150,7 @@ export function EditorToolbar() {
             setApplying(true);
             try {
               const result = await applyToGame();
-              toast.success("Applied to DATAB-EACH — opening the game");
+              toast.success("Applied map, quests, and dialogue — opening a fresh game tab");
               window.open(result.gameUrl, "_blank", "noopener,noreferrer");
             } catch (error) {
               toast.error(error instanceof Error ? error.message : "Apply failed");

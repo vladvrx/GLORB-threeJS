@@ -29,6 +29,22 @@ const WEBGL_HOOKS = [
     window.__STUDIO_APPLY__ && window.__STUDIO_APPLY__(a, h, u, "manifest");
     const v = c.ao[a];`,
   },
+  {
+    before: "const e = [...l.props, ...r.props];",
+    after: "const e = [...(l.props || []), ...(r.props || [])];",
+  },
+  {
+    before: "const e=[...l.props,...r.props];",
+    after: "const e=[...l.props||[],...r.props||[]];",
+  },
+  {
+    before: "let n = await t.supercache.get(o + kr);",
+    after: "let n = window.__STUDIO_OVERLAY__ ? null : await t.supercache.get(o + kr);",
+  },
+  {
+    before: "let n=await t.supercache.get(o+kr);",
+    after: "let n=window.__STUDIO_OVERLAY__?null:await t.supercache.get(o+kr);",
+  },
 ];
 
 function run(command, args, cwd) {
@@ -260,16 +276,18 @@ function listHashed(dir, prefix) {
 
 function patchWebgl(file) {
   if (!fs.existsSync(file)) return false;
-  let source = fs.readFileSync(file, "utf8");
-  if (source.includes("__STUDIO_APPLY__")) return true;
+  const original = fs.readFileSync(file, "utf8");
+  let source = original;
   for (const hook of WEBGL_HOOKS) {
-    if (source.includes(hook.before)) {
-      source = replaceOnce(source, hook.before, hook.after, path.basename(file));
-      fs.writeFileSync(file, source);
-      return true;
-    }
+    if (source.includes(hook.after)) continue;
+    if (!source.includes(hook.before)) continue;
+    source = replaceOnce(source, hook.before, hook.after, path.basename(file));
   }
-  throw new Error(`Could not patch ${path.basename(file)}: missing scene-load marker`);
+  if (!source.includes("__STUDIO_APPLY__")) {
+    throw new Error(`Could not patch ${path.basename(file)}: missing scene-load marker`);
+  }
+  if (source !== original) fs.writeFileSync(file, source);
+  return true;
 }
 
 function replaceSceneManifest(source, sceneName, overlay) {
@@ -287,6 +305,7 @@ function replaceSceneManifest(source, sceneName, overlay) {
   if (overlay.assets) current.assets = overlay.assets;
   if (overlay.bounds) current.bounds = overlay.bounds;
   if (overlay.dataBeachIslandOffset) current.dataBeachIslandOffset = overlay.dataBeachIslandOffset;
+  if (overlay.props) current.props = overlay.props;
   const encoded = JSON.stringify(current).replaceAll("'", "\\'");
   return source.slice(0, jsonStart) + encoded + source.slice(jsonEnd);
 }
@@ -308,19 +327,20 @@ function writeBridge(file, scenes) {
     overlay[id] = scene;
     overlay[key] = scene;
   }
-  const body = `window.__STUDIO_OVERLAY__=${JSON.stringify(overlay)};
+  const body = `window.noSupercache=true;
+window.__STUDIO_OVERLAY__=${JSON.stringify(overlay)};
 window.__STUDIO_APPLY__=function(id,manifest,runtime,phase){
   const scene=window.__STUDIO_OVERLAY__[id]||window.__STUDIO_OVERLAY__["Scene_"+id];
-  if(!scene)return;
+  if(!scene||!manifest)return;
   if(phase!=="props"){
     if(scene.actors)manifest.actors=scene.actors;
     if(scene.points)manifest.points=scene.points;
     if(scene.areas)manifest.areas=scene.areas;
     if(scene.curves)manifest.curves=scene.curves;
     if(scene.assets)manifest.assets=scene.assets;
-    if(runtime&&runtime.base&&scene.props)runtime.props=scene.props;
+    if(scene.props)manifest.props=scene.props;
   }
-  if(phase!=="manifest"&&scene.props)runtime.props=scene.props;
+  if(phase!=="manifest"&&runtime&&scene.props)runtime.props=[];
 };
 `;
   fs.writeFileSync(file, body);
@@ -379,15 +399,16 @@ function writePreloaderOverride(file) {
 function patchIndex(file) {
   if (!fs.existsSync(file)) return false;
   let source = fs.readFileSync(file, "utf8");
-  let changed = false;
+  const stamp = Date.now();
   if (!source.includes("studio-bridge.js")) {
-    const tag = '    <script src="./reference/assets/studio-bridge.js"></script>\n';
+    const tag = `    <script src="./reference/assets/studio-bridge.js?v=${stamp}"></script>\n`;
     const next = source.includes("</head>")
       ? source.replace("</head>", `${tag}  </head>`)
       : source.replace('<div id="app"></div>', `<div id="app"></div>\n    ${tag}`);
     if (next === source) throw new Error("Could not inject studio-bridge.js into index.html");
     source = next;
-    changed = true;
+  } else {
+    source = source.replace(/studio-bridge\.js(?:\?v=\d+)?/g, `studio-bridge.js?v=${stamp}`);
   }
   if (!source.includes("studio-preloader.css")) {
     const tag = '    <link rel="stylesheet" href="./reference/assets/studio-preloader.css">\n';
@@ -396,13 +417,11 @@ function patchIndex(file) {
       : source.replace('<div id="app"></div>', `<div id="app"></div>\n    ${tag}`);
     if (next === source) throw new Error("Could not inject studio-preloader.css into index.html");
     source = next;
-    changed = true;
   }
   if (source.includes('content="#05051a"')) {
     source = source.replace('content="#05051a"', 'content="#70bfe4"');
-    changed = true;
   }
-  if (changed) fs.writeFileSync(file, source);
+  fs.writeFileSync(file, source);
   return true;
 }
 
