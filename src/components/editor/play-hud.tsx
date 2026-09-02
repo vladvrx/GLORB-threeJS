@@ -56,7 +56,7 @@ export function PlayHud() {
       </div>
 
       {node && dialog ? (
-        <div className="pointer-events-auto absolute bottom-6 left-1/2 w-[min(34rem,calc(100%-1.5rem))] -translate-x-1/2 rounded-2xl border border-white/10 bg-[#102833]/95 p-4 shadow-2xl">
+        <div className="pointer-events-auto absolute top-1/2 left-1/2 w-[min(34rem,calc(100%-1.5rem))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#102833]/95 p-4 shadow-2xl">
           <p className="text-[10px] tracking-[0.16em] text-teal-200/70 uppercase">{dialog.speaker}</p>
           {node.isPrompt ? (
             <div className="mt-3 grid gap-2">
