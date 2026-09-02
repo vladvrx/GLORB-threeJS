@@ -47,7 +47,7 @@ export class ViewportEngine {
   private vz = 0;
   private lastNearby = "";
   private grounded = true;
-  private readonly clock = new THREE.Clock();
+  private lastTick = performance.now();
   private savedCam = new THREE.Vector3();
   private savedTarget = new THREE.Vector3();
   private boundResize: () => void;
@@ -163,7 +163,9 @@ export class ViewportEngine {
   private tick = () => {
     if (this.disposed) return;
     this.frame = requestAnimationFrame(this.tick);
-    const dt = Math.min(this.clock.getDelta(), 0.05);
+    const now = performance.now();
+    const dt = Math.min((now - this.lastTick) / 1000, 0.05);
+    this.lastTick = now;
     if (this.playing) this.updatePlay(dt);
     else this.controls.update();
     this.renderer.render(this.scene, this.camera);
