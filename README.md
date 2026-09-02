@@ -2,7 +2,7 @@
 
 A Z-up level and content editor for the [DATAB-EACH](https://github.com/vladvrx/DATAB-EACH) Three.js island. Place, swap, move, rotate, and scale the original Cove meshes, then edit quests, notifications, characters, and dialogue without another AI pass.
 
-The playable game’s **1:1 Three.js recreation** (start screen, phone, quests, dialogue, menus, original `loadWebGL` island) lives in that repo at `/three-js/` when you run `npm run dev` there, or after **Apply to game** at [http://127.0.0.1:43173/three-js/](http://127.0.0.1:43173/three-js/).
+The playable game’s **Three.js recreation** (start screen, dialogue, menus, original `loadWebGL` island — no phone or map) lives in that repo at `/three-js/` when you run `npm run dev` there, or after **Apply to game** at [http://127.0.0.1:43173/three-js/](http://127.0.0.1:43173/three-js/).
 
 The viewport treats **Z as up**. DATAB-EACH stores transforms in Three.js Y-up; the editor converts on the way in and out so exported JSON matches the game.
 
