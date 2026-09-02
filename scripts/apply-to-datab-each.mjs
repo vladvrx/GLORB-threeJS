@@ -279,8 +279,10 @@ const WATER_COLOR_SWAPS = [
   ["#6db6e4", "#00e83a"],
   ["#4189fd", "#39ff14"],
   ["#7992ff", "#00e83a"],
-  ["#0a2a52", "#0ad64a"],
-  ["#164a73", "#00b83a"],
+  ["#0a2a52", "#39ff14"],
+  ["#164a73", "#00e83a"],
+  ["#0ad64a", "#39ff14"],
+  ["#00b83a", "#00e83a"],
 ];
 
 function patchWaterColors(source) {
@@ -328,12 +330,20 @@ function replaceSceneManifest(source, sceneName, overlay) {
   return source.slice(0, jsonStart) + encoded + source.slice(jsonEnd);
 }
 
+function bustWebglImport(source) {
+  return source.replace(
+    /import\("(\.\/webgl\.[a-z0-9]+)\.js(?:\?[^"]*)?"\)/g,
+    'import("$1.js?v=neon-water")',
+  );
+}
+
 function patchVendor(file, scenes) {
   if (!fs.existsSync(file)) return false;
   let source = fs.readFileSync(file, "utf8");
   for (const [key, scene] of Object.entries(scenes)) {
     source = replaceSceneManifest(source, sceneIdFromPackKey(key), scene);
   }
+  source = bustWebglImport(source);
   fs.writeFileSync(file, source);
   return true;
 }
@@ -454,6 +464,7 @@ function patchIndex(file) {
   } else {
     source = source.replace(/studio-preloader\.css(?:\?v=[^"&\s]*)?/g, `studio-preloader.css?v=${stamp}`);
   }
+  source = source.replace(/webgl\.([a-z0-9]+)\.js(?:\?v=\d+)?/g, `webgl.$1.js?v=${stamp}`);
   if (source.includes('content="#05051a"')) {
     source = source.replace('content="#05051a"', 'content="#70bfe4"');
   }

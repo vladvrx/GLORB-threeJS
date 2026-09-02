@@ -24,7 +24,7 @@ const HELPER_COLORS = {
 };
 
 const NEON_WATER = 0x39ff14;
-const NEON_WATER_GLOW = 0x22ff00;
+const WATER_RADIUS = 2000;
 
 export let activeViewport: ViewportEngine | null = null;
 
@@ -88,7 +88,7 @@ export class ViewportEngine {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
-    this.renderer.setClearColor(0x0b1c28, 1);
+    this.renderer.setClearColor(NEON_WATER, 1);
     this.renderer.localClippingEnabled = true;
 
     this.camera = new THREE.PerspectiveCamera(50, 1, 0.2, 2500);
@@ -96,7 +96,7 @@ export class ViewportEngine {
     this.camera.position.set(48, -72, 38);
 
     this.scene.up.set(0, 0, 1);
-    this.scene.fog = new THREE.Fog(0x0b1c28, 160, 520);
+    this.scene.fog = new THREE.Fog(NEON_WATER, 420, 1400);
     this.island.quaternion.copy(GAME_TO_WORLD);
     this.scene.add(this.island);
     this.scene.add(this.helpers);
@@ -578,6 +578,7 @@ export class ViewportEngine {
   }
 
   applyCrop(scene: SceneData) {
+    this.ensureWater();
     const crop = sceneCrop(scene);
     const full = sceneFullBounds(scene);
     const active = Boolean(crop && full && !aabbAlmostEqual(crop, full));
@@ -606,13 +607,52 @@ export class ViewportEngine {
 
   private paintWater() {
     if (!this.water) return;
-    const material = this.water.material;
-    if (!("color" in material)) return;
-    const water = material as THREE.MeshStandardMaterial;
-    water.color.setHex(NEON_WATER);
-    water.emissive.setHex(NEON_WATER_GLOW);
-    water.emissiveIntensity = 0.55;
-    water.roughness = 0.12;
+    const previous = this.water.material;
+    const current = Array.isArray(previous) ? previous[0] : previous;
+    const alreadyNeon =
+      current instanceof THREE.MeshBasicMaterial &&
+      current.color.getHex() === NEON_WATER &&
+      current.fog === false &&
+      current.toneMapped === false;
+    if (alreadyNeon) return;
+    this.water.material = new THREE.MeshBasicMaterial({
+      color: NEON_WATER,
+      fog: false,
+      toneMapped: false,
+    });
+    if (Array.isArray(previous)) previous.forEach((item) => item.dispose());
+    else previous.dispose();
+  }
+
+  private ensureWater() {
+    this.renderer.setClearColor(NEON_WATER, 1);
+    if (this.scene.fog instanceof THREE.Fog) {
+      this.scene.fog.color.setHex(NEON_WATER);
+      this.scene.fog.near = 420;
+      this.scene.fog.far = 1400;
+    }
+    if (!this.water) {
+      const water = new THREE.Mesh(
+        new THREE.CircleGeometry(WATER_RADIUS, 96),
+        new THREE.MeshBasicMaterial({
+          color: NEON_WATER,
+          fog: false,
+          toneMapped: false,
+        }),
+      );
+      water.rotation.x = -Math.PI / 2;
+      water.position.y = 0.15;
+      water.renderOrder = -1;
+      this.water = water;
+      this.island.add(water);
+      return;
+    }
+    const geometry = this.water.geometry as THREE.CircleGeometry;
+    if (geometry.parameters?.radius !== WATER_RADIUS) {
+      geometry.dispose();
+      this.water.geometry = new THREE.CircleGeometry(WATER_RADIUS, 96);
+    }
+    this.paintWater();
   }
 
   private resetWater() {
@@ -626,11 +666,8 @@ export class ViewportEngine {
     if (!this.water || !crop) return;
     const cx = (crop[0][0] + crop[1][0]) / 2;
     const cz = (crop[0][2] + crop[1][2]) / 2;
-    const rx = Math.max(24, (crop[1][0] - crop[0][0]) / 2 + 18);
-    const rz = Math.max(24, (crop[1][2] - crop[0][2]) / 2 + 18);
-    const radius = Math.max(rx, rz);
     this.water.position.set(cx, 0.15, cz);
-    this.water.scale.set(radius / 220, radius / 220, 1);
+    this.water.scale.set(1, 1, 1);
     this.paintWater();
   }
 
@@ -691,24 +728,7 @@ export class ViewportEngine {
         this.island.remove(this.terrain);
         this.terrain = null;
       }
-      if (!this.water) {
-        const water = new THREE.Mesh(
-          new THREE.CircleGeometry(220, 64),
-          new THREE.MeshStandardMaterial({
-            color: NEON_WATER,
-            emissive: NEON_WATER_GLOW,
-            emissiveIntensity: 0.55,
-            roughness: 0.12,
-            metalness: 0.08,
-            transparent: true,
-            opacity: 0.9,
-          }),
-        );
-        water.rotation.x = -Math.PI / 2;
-        water.position.y = 0.15;
-        this.water = water;
-        this.island.add(water);
-      }
+      this.ensureWater();
       const spawn =
         scene.objects.find(
           (item) => item.kind === "actor" && /intro/i.test(`${item.name} ${item.params?.subtype ?? ""} ${item.id}`),
