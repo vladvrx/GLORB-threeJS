@@ -283,6 +283,9 @@ const WATER_COLOR_SWAPS = [
   ["#164a73", "#00e83a"],
   ["#0ad64a", "#39ff14"],
   ["#00b83a", "#00e83a"],
+  ["#07162f", "#39ff14"],
+  ["#193a61", "#00e83a"],
+  ["#183968", "#00e83a"],
 ];
 
 function patchWaterColors(source) {
