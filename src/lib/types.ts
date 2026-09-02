@@ -32,6 +32,8 @@ export type AssetInfo = {
   file: string;
   bytes: number;
   category: AssetCategory;
+  imported?: boolean;
+  format?: "glb" | "gltf" | "fbx";
 };
 
 export type EditorObjectKind = "prop" | "actor" | "point" | "area";

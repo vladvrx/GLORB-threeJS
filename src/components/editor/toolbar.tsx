@@ -6,11 +6,13 @@ import {
   Focus,
   FolderOpen,
   Move3d,
+  Play,
   Redo2,
   RotateCcw,
   RotateCw,
   Save,
   Scaling,
+  Square,
   Trash2,
   Undo2,
 } from "lucide-react";
@@ -44,6 +46,9 @@ export function EditorToolbar() {
   const exportGamePack = useEditor((state) => state.exportGamePack);
   const importStudio = useEditor((state) => state.importStudio);
   const resetToBundle = useEditor((state) => state.resetToBundle);
+  const playing = useEditor((state) => state.playing);
+  const startPlay = useEditor((state) => state.startPlay);
+  const stopPlay = useEditor((state) => state.stopPlay);
 
   if (!project) return null;
 
@@ -97,6 +102,14 @@ export function EditorToolbar() {
       <Button size="icon-sm" variant="ghost" onClick={deleteSelected} title="Delete">
         <Trash2 />
       </Button>
+      <Button
+        size="sm"
+        className="bg-teal-400 text-[#062029] hover:bg-teal-300"
+        onClick={() => (playing ? stopPlay() : startPlay())}
+      >
+        {playing ? <Square className="size-3.5" /> : <Play className="size-3.5" />}
+        {playing ? "Stop" : "Start"}
+      </Button>
       <div className="ml-auto flex flex-wrap items-center gap-1">
         <Button
           size="sm"
@@ -126,7 +139,7 @@ export function EditorToolbar() {
         </Button>
         <label className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-lg px-2 text-sm hover:bg-white/10">
           <FolderOpen className="size-3.5" />
-          Import
+          Project
           <input
             type="file"
             accept="application/json"

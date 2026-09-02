@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import { applyGameTransform, GAME_TO_WORLD, readGameTransform, roundTo } from "@/lib/coords";
 import { AssetLibrary } from "@/lib/runtime/assets";
+import { resolveActorDialog } from "@/lib/play";
 import { useEditor } from "@/lib/store";
 import type { AssetInfo, EditorObject, SceneData, ToolMode } from "@/lib/types";
 
@@ -38,9 +39,22 @@ export class ViewportEngine {
   private grid: THREE.GridHelper;
   private dragging = false;
   private syncToken = 0;
+  private playing = false;
+  private player: THREE.Group | null = null;
+  private readonly keys = new Set<string>();
+  private yaw = 0;
+  private pitch = 0.42;
+  private vz = 0;
+  private lastNearby = "";
+  private grounded = true;
+  private readonly clock = new THREE.Clock();
+  private savedCam = new THREE.Vector3();
+  private savedTarget = new THREE.Vector3();
   private boundResize: () => void;
   private boundPointer = (event: PointerEvent) => this.onPointer(event);
   private boundKey = (event: KeyboardEvent) => this.onKey(event);
+  private boundKeyUp = (event: KeyboardEvent) => this.onKeyUp(event);
+  private boundMouse = (event: MouseEvent) => this.onMouseMove(event);
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -118,6 +132,8 @@ export class ViewportEngine {
     window.addEventListener("resize", this.boundResize);
     this.canvas.addEventListener("pointerdown", this.boundPointer);
     window.addEventListener("keydown", this.boundKey);
+    window.addEventListener("keyup", this.boundKeyUp);
+    window.addEventListener("mousemove", this.boundMouse);
     this.resize();
     this.tick();
   }
@@ -136,14 +152,28 @@ export class ViewportEngine {
     this.renderer.setSize(width, height, false);
   }
 
+  registerAssets(catalog: AssetInfo[]) {
+    this.library.addAssets(catalog);
+  }
+
+  primeAsset(asset: AssetInfo, root: THREE.Object3D) {
+    this.library.prime(asset, root);
+  }
+
   private tick = () => {
     if (this.disposed) return;
     this.frame = requestAnimationFrame(this.tick);
-    this.controls.update();
+    const dt = Math.min(this.clock.getDelta(), 0.05);
+    if (this.playing) this.updatePlay(dt);
+    else this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
 
   private onPointer(event: PointerEvent) {
+    if (this.playing) {
+      if (event.button === 0) void this.canvas.requestPointerLock();
+      return;
+    }
     if (event.button !== 0 || this.dragging) return;
     if (this.transform.dragging || this.transform.axis) return;
     const rect = this.canvas.getBoundingClientRect();
@@ -174,10 +204,42 @@ export class ViewportEngine {
     }
   }
 
+  private onKeyUp(event: KeyboardEvent) {
+    this.keys.delete(event.key.toLowerCase());
+    if (event.code === "Space") this.keys.delete("space");
+    if (event.key === "Shift") this.keys.delete("shift");
+  }
+
+  private onMouseMove(event: MouseEvent) {
+    if (!this.playing || document.pointerLockElement !== this.canvas) return;
+    this.yaw -= event.movementX * 0.0024;
+    this.pitch = THREE.MathUtils.clamp(this.pitch - event.movementY * 0.002, 0.08, 1.15);
+  }
+
   private onKey(event: KeyboardEvent) {
     const target = event.target as HTMLElement | null;
     if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
     const editor = useEditor.getState();
+    this.keys.add(event.key.toLowerCase());
+    if (event.code === "Space") this.keys.add("space");
+    if (event.key === "Shift") this.keys.add("shift");
+
+    if (editor.playing) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        if (editor.playDialog) editor.closePlayDialog();
+        else editor.stopPlay();
+      }
+      if (event.key.toLowerCase() === "e") {
+        event.preventDefault();
+        editor.playInteract();
+      }
+      if (event.code === "Space") {
+        event.preventDefault();
+        if (editor.playDialog) editor.playAdvance();
+      }
+      return;
+    }
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
       event.preventDefault();
       if (event.shiftKey) editor.redo();
@@ -242,7 +304,7 @@ export class ViewportEngine {
     layerActors: boolean;
     layerHelpers: boolean;
   }) {
-    this.grid.visible = state.showGrid;
+    this.grid.visible = this.playing ? false : state.showGrid;
     if (this.terrain) this.terrain.visible = state.showTerrain;
     if (this.water) this.water.visible = state.showWater;
     for (const [id, object] of this.objects) {
@@ -250,10 +312,181 @@ export class ViewportEngine {
       if (kind === "prop") object.visible = state.layerProps && object.userData.wantVisible !== false;
       if (kind === "actor") object.visible = state.layerActors && object.userData.wantVisible !== false;
       if (kind === "point" || kind === "area") {
-        object.visible = state.layerHelpers && object.userData.wantVisible !== false;
+        object.visible = this.playing ? false : state.layerHelpers && object.userData.wantVisible !== false;
       }
       void id;
     }
+  }
+
+  enterPlay() {
+    const editor = useEditor.getState();
+    const scene = editor.project?.scenes[editor.project.activeSceneId];
+    if (!scene) return;
+    this.playing = true;
+    this.keys.clear();
+    this.vz = 0;
+    this.pitch = 0.42;
+    this.savedCam.copy(this.camera.position);
+    this.savedTarget.copy(this.controls.target);
+    this.controls.enabled = false;
+    this.transform.detach();
+    this.transform.getHelper().visible = false;
+    this.grid.visible = false;
+    if (this.player) this.scene.remove(this.player);
+
+    const player = new THREE.Group();
+    const body = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.42, 1.05, 4, 10),
+      new THREE.MeshStandardMaterial({ color: 0x7ae0b8, roughness: 0.45 }),
+    );
+    body.rotation.x = Math.PI / 2;
+    body.position.z = 0.95;
+    player.add(body);
+    const spawn =
+      scene.objects.find((item) => item.kind === "point" && /spawn/i.test(item.name)) ??
+      scene.objects.find((item) => item.kind === "point");
+    if (spawn) {
+      const world = new THREE.Vector3(spawn.transform[0], spawn.transform[1], spawn.transform[2]).applyQuaternion(
+        GAME_TO_WORLD,
+      );
+      player.position.copy(world);
+      player.position.z += 0.2;
+    } else {
+      player.position.copy(this.controls.target);
+      player.position.z += 1;
+    }
+    this.player = player;
+    this.scene.add(player);
+    this.setLayers({
+      showGrid: false,
+      showTerrain: editor.showTerrain,
+      showWater: editor.showWater,
+      layerProps: true,
+      layerActors: true,
+      layerHelpers: false,
+    });
+    this.updatePlay(0);
+  }
+
+  exitPlay() {
+    if (!this.playing && !this.player) return;
+    this.playing = false;
+    this.keys.clear();
+    if (this.player) {
+      this.scene.remove(this.player);
+      this.player = null;
+    }
+    if (document.pointerLockElement === this.canvas) document.exitPointerLock();
+    this.controls.enabled = true;
+    this.camera.position.copy(this.savedCam);
+    this.controls.target.copy(this.savedTarget);
+    const editor = useEditor.getState();
+    this.setLayers({
+      showGrid: editor.showGrid,
+      showTerrain: editor.showTerrain,
+      showWater: editor.showWater,
+      layerProps: editor.layerProps,
+      layerActors: editor.layerActors,
+      layerHelpers: editor.layerHelpers,
+    });
+  }
+
+  private updatePlay(dt: number) {
+    const player = this.player;
+    if (!player) return;
+    const editor = useEditor.getState();
+    const locked = Boolean(editor.playDialog);
+    const sprint = this.keys.has("shift");
+    const speed = (sprint ? 14 : 7.2) * dt;
+    let moveX = 0;
+    let moveY = 0;
+    if (!locked) {
+      if (this.keys.has("w")) {
+        moveX += Math.sin(this.yaw);
+        moveY += Math.cos(this.yaw);
+      }
+      if (this.keys.has("s")) {
+        moveX -= Math.sin(this.yaw);
+        moveY -= Math.cos(this.yaw);
+      }
+      if (this.keys.has("a")) {
+        moveX -= Math.cos(this.yaw);
+        moveY += Math.sin(this.yaw);
+      }
+      if (this.keys.has("d")) {
+        moveX += Math.cos(this.yaw);
+        moveY -= Math.sin(this.yaw);
+      }
+    }
+    const length = Math.hypot(moveX, moveY);
+    if (length > 0) {
+      player.position.x += (moveX / length) * speed;
+      player.position.y += (moveY / length) * speed;
+    }
+
+    this.vz -= 28 * dt;
+    if (!locked && this.keys.has("space") && this.grounded) {
+      this.vz = 8.2;
+      this.grounded = false;
+    }
+    player.position.z += this.vz * dt;
+
+    const origin = player.position.clone();
+    origin.z += 2.4;
+    this.raycaster.set(origin, new THREE.Vector3(0, 0, -1));
+    const ground: THREE.Object3D[] = [];
+    if (this.terrain) ground.push(this.terrain);
+    if (this.water) ground.push(this.water);
+    const hits = ground.length ? this.raycaster.intersectObjects(ground, true) : [];
+    const floor = hits[0]?.point.z ?? 0.15;
+    if (player.position.z <= floor + 0.02) {
+      player.position.z = floor + 0.02;
+      this.vz = 0;
+      this.grounded = true;
+    }
+
+    const dist = 7.4;
+    this.camera.position.set(
+      player.position.x + Math.sin(this.yaw) * Math.cos(this.pitch) * dist,
+      player.position.y - Math.cos(this.yaw) * Math.cos(this.pitch) * dist,
+      player.position.z + Math.sin(this.pitch) * dist + 1.4,
+    );
+    this.camera.up.set(0, 0, 1);
+    this.camera.lookAt(player.position.x, player.position.y, player.position.z + 1.15);
+    this.controls.target.copy(player.position);
+
+    const nearby = this.findNearbyActor();
+    const signature = nearby ? `${nearby.objectId}:${nearby.scriptId ?? ""}` : "";
+    if (signature !== this.lastNearby) {
+      this.lastNearby = signature;
+      editor.setPlayNearby(nearby);
+    }
+  }
+
+  private findNearbyActor() {
+    const player = this.player;
+    const project = useEditor.getState().project;
+    if (!player || !project) return null;
+    let best: { objectId: string; name: string; scriptId: string | null; dist: number } | null = null;
+    const here = new THREE.Vector3();
+    for (const object of this.objects.values()) {
+      if (object.userData.kind !== "actor") continue;
+      object.getWorldPosition(here);
+      const dist = here.distanceTo(player.position);
+      if (dist > 4.2) continue;
+      const sceneObject = project.scenes[project.activeSceneId]?.objects.find((item) => item.id === object.userData.editorId);
+      if (!sceneObject) continue;
+      const script = resolveActorDialog(project, sceneObject);
+      const candidate = {
+        objectId: sceneObject.id,
+        name: sceneObject.name,
+        scriptId: script?.id ?? null,
+        dist,
+      };
+      if (!best || candidate.dist < best.dist) best = candidate;
+    }
+    if (!best) return null;
+    return { objectId: best.objectId, name: best.name, scriptId: best.scriptId };
   }
 
   focus(id: string | null) {
@@ -468,6 +701,7 @@ export class ViewportEngine {
   }
 
   attach(id: string | null, tool: ToolMode) {
+    if (this.playing) return;
     if (!id) {
       this.transform.detach();
       this.transform.getHelper().visible = false;
@@ -498,6 +732,8 @@ export class ViewportEngine {
     window.removeEventListener("resize", this.boundResize);
     this.canvas.removeEventListener("pointerdown", this.boundPointer);
     window.removeEventListener("keydown", this.boundKey);
+    window.removeEventListener("keyup", this.boundKeyUp);
+    window.removeEventListener("mousemove", this.boundMouse);
     this.controls.dispose();
     this.transform.dispose();
     this.renderer.dispose();

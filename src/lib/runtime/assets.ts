@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { normalizeImported } from "@/lib/custom-assets";
 import type { AssetInfo } from "@/lib/types";
 
 const PLACEHOLDER_COLORS: Record<string, number> = {
@@ -83,6 +85,7 @@ async function mapPool<T>(items: T[], limit: number, worker: (item: T) => Promis
 
 export class AssetLibrary {
   private readonly loader: GLTFLoader;
+  private readonly fbx: FBXLoader;
   private readonly catalog = new Map<string, AssetInfo>();
   private readonly templates = new Map<string, Promise<THREE.Object3D>>();
   private readonly resolved = new Map<string, THREE.Object3D>();
@@ -92,51 +95,79 @@ export class AssetLibrary {
     draco.setDecoderPath("/draco/");
     this.loader = new GLTFLoader();
     this.loader.setDRACOLoader(draco);
-    for (const asset of catalog) this.catalog.set(asset.id, asset);
+    this.fbx = new FBXLoader();
+    this.addAssets(catalog);
+  }
+
+  addAssets(catalog: AssetInfo[]) {
+    for (const asset of catalog) {
+      const previous = this.catalog.get(asset.id);
+      this.catalog.set(asset.id, asset);
+      if (previous && previous.file !== asset.file) {
+        this.templates.delete(asset.id);
+        this.resolved.delete(asset.id);
+      }
+    }
+  }
+
+  prime(asset: AssetInfo, root: THREE.Object3D) {
+    this.catalog.set(asset.id, asset);
+    root.userData.placeholder = false;
+    this.resolved.set(asset.id, root);
+    this.templates.set(asset.id, Promise.resolve(root));
   }
 
   fileFor(asset: string) {
     return this.catalog.get(asset)?.file;
   }
 
+  private async loadRoot(asset: string) {
+    const info = this.catalog.get(asset);
+    const file = info?.file;
+    if (!file) {
+      const fallback = placeholderMesh(asset);
+      fallback.userData.placeholder = true;
+      this.resolved.set(asset, fallback);
+      return fallback;
+    }
+    try {
+      const format = info?.format ?? (file.toLowerCase().includes(".fbx") ? "fbx" : "glb");
+      let root: THREE.Object3D;
+      if (format === "fbx") {
+        root = await withTimeout(this.fbx.loadAsync(file), 20000, asset);
+        if (info?.imported) normalizeImported(root);
+      } else {
+        const gltf = await withTimeout(this.loader.loadAsync(file), 12000, asset);
+        root = gltf.scene;
+        if (info?.imported) normalizeImported(root);
+      }
+      root.userData.placeholder = false;
+      root.traverse((node) => {
+        const name = (node.name || node.userData?.name || "").toLowerCase();
+        if (name.includes("collider") || name.includes("bounds")) {
+          node.visible = false;
+          return;
+        }
+        const mesh = node as THREE.Mesh;
+        if (mesh.isMesh) {
+          mesh.castShadow = false;
+          mesh.receiveShadow = true;
+        }
+      });
+      this.resolved.set(asset, root);
+      return root;
+    } catch {
+      const fallback = placeholderMesh(asset);
+      fallback.userData.placeholder = true;
+      this.resolved.set(asset, fallback);
+      return fallback;
+    }
+  }
+
   private loadTemplate(asset: string) {
     const existing = this.templates.get(asset);
     if (existing) return existing;
-
-    const file = this.fileFor(asset);
-    const promise = (async () => {
-      if (!file) {
-        const fallback = placeholderMesh(asset);
-        fallback.userData.placeholder = true;
-        this.resolved.set(asset, fallback);
-        return fallback;
-      }
-      try {
-        const gltf = await withTimeout(this.loader.loadAsync(file), 12000, asset);
-        const root = gltf.scene;
-        root.userData.placeholder = false;
-        root.traverse((node) => {
-          const name = (node.name || node.userData?.name || "").toLowerCase();
-          if (name.includes("collider") || name.includes("bounds")) {
-            node.visible = false;
-            return;
-          }
-          const mesh = node as THREE.Mesh;
-          if (mesh.isMesh) {
-            mesh.castShadow = false;
-            mesh.receiveShadow = true;
-          }
-        });
-        this.resolved.set(asset, root);
-        return root;
-      } catch {
-        const fallback = placeholderMesh(asset);
-        fallback.userData.placeholder = true;
-        this.resolved.set(asset, fallback);
-        return fallback;
-      }
-    })();
-
+    const promise = this.loadRoot(asset);
     this.templates.set(asset, promise);
     return promise;
   }

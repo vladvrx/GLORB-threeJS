@@ -2,10 +2,21 @@ import { create } from "zustand";
 import { ACTOR_ASSETS, cloneObject, newProp, projectFromBundle } from "@/lib/project";
 import { identityTransform, worldPosToGame } from "@/lib/coords";
 import { exportGamePack } from "@/lib/export";
+import { assetFromStored, deleteStoredMesh, importMeshFiles, loadStoredMeshes } from "@/lib/custom-assets";
+import {
+  advanceDialog,
+  chooseDialog,
+  nodeById,
+  resolveActorDialog,
+  startDialog,
+  type PlayDialogState,
+  type PlayNearby,
+} from "@/lib/play";
 import type {
   AssetInfo,
   EditorObject,
   EditorTab,
+  NotificationItem,
   StudioBundle,
   StudioProject,
   ToolMode,
@@ -64,9 +75,29 @@ type EditorState = {
   exportGamePack: () => void;
   importStudio: (file: File) => Promise<void>;
   resetToBundle: () => Promise<void>;
+  importMeshes: (files: File[]) => Promise<AssetInfo[]>;
+  removeImportedAsset: (id: string) => Promise<void>;
+  playing: boolean;
+  playNearby: PlayNearby | null;
+  playDialog: PlayDialogState | null;
+  playHints: NotificationItem[];
+  startPlay: () => void;
+  stopPlay: () => void;
+  setPlayNearby: (nearby: PlayNearby | null) => void;
+  playInteract: () => void;
+  playAdvance: () => void;
+  playChoose: (choiceId: string) => void;
+  closePlayDialog: () => void;
+  dismissPlayHint: (id: string) => void;
 };
 
 let bundleCache: StudioBundle | null = null;
+let playTimers: number[] = [];
+
+function clearPlayTimers() {
+  for (const timer of playTimers) window.clearTimeout(timer);
+  playTimers = [];
+}
 
 function snapshot(project: StudioProject) {
   return JSON.stringify(project);
@@ -113,6 +144,10 @@ export const useEditor = create<EditorState>((set, get) => {
     past: [],
     future: [],
     focusRequest: 0,
+    playing: false,
+    playNearby: null,
+    playDialog: null,
+    playHints: [],
     async load() {
       set({ status: "loading", error: null });
       try {
@@ -135,9 +170,11 @@ export const useEditor = create<EditorState>((set, get) => {
             // keep shipped island
           }
         }
+        const savedMeshes = await loadStoredMeshes().catch(() => []);
+        const imported = savedMeshes.map(assetFromStored);
         set({
           status: "ready",
-          catalog: bundle.catalog,
+          catalog: [...bundle.catalog, ...imported],
           actorTypes: bundle.actorTypes,
           project,
           error: null,
@@ -211,6 +248,8 @@ export const useEditor = create<EditorState>((set, get) => {
       pushHistory();
       const scene = project.scenes[project.activeSceneId];
       const object = newProp(asset);
+      const info = get().catalog.find((item) => item.id === asset);
+      if (info?.name) object.name = info.name;
       if (worldHint) {
         const [x, y, z] = worldPosToGame(worldHint.x, worldHint.y, worldHint.z);
         object.transform[0] = x;
@@ -381,5 +420,83 @@ export const useEditor = create<EditorState>((set, get) => {
         future: [],
       });
     },
+    async importMeshes(files) {
+      const imported = await importMeshFiles(files);
+      const { activeViewport } = await import("@/lib/runtime/viewport-engine");
+      for (const item of imported) activeViewport?.primeAsset(item.asset, item.root);
+      set({ catalog: [...get().catalog, ...imported.map((item) => item.asset)] });
+      const hint = activeViewport?.worldPointInFront();
+      for (const [index, item] of imported.entries()) {
+        const placed = hint
+          ? { x: hint.x + index * 2.4, y: hint.y, z: hint.z }
+          : undefined;
+        get().addAsset(item.asset.id, placed);
+      }
+      return imported.map((item) => item.asset);
+    },
+    async removeImportedAsset(id) {
+      await deleteStoredMesh(id);
+      set({ catalog: get().catalog.filter((asset) => asset.id !== id) });
+    },
+    startPlay() {
+      const { project } = get();
+      if (!project) return;
+      get().persist();
+      clearPlayTimers();
+      set({
+        playing: true,
+        tab: "world",
+        selectedId: null,
+        playDialog: null,
+        playNearby: null,
+        playHints: [],
+      });
+      const starters = project.notifications.filter(
+        (item) => item.type === "hint" || item.type === "mainQuest" || item.type === "quest",
+      );
+      starters.slice(0, 5).forEach((item, index) => {
+        const timer = window.setTimeout(() => {
+          const { playing, playHints } = get();
+          if (!playing) return;
+          if (playHints.some((hint) => hint.id === item.id)) return;
+          set({ playHints: [...playHints, item] });
+        }, item.delayMs ?? 700 + index * 1600);
+        playTimers.push(timer);
+      });
+    },
+    stopPlay() {
+      clearPlayTimers();
+      set({ playing: false, playDialog: null, playNearby: null, playHints: [] });
+    },
+    setPlayNearby: (playNearby) => set({ playNearby }),
+    playInteract() {
+      const { playNearby, project, playDialog } = get();
+      if (playDialog || !playNearby || !project) return;
+      const object = project.scenes[project.activeSceneId]?.objects.find((item) => item.id === playNearby.objectId);
+      if (!object) return;
+      const script = resolveActorDialog(project, object);
+      if (!script) return;
+      set({ playDialog: startDialog(script, object.name) });
+    },
+    playAdvance() {
+      const { playDialog, project } = get();
+      if (!playDialog || !project) return;
+      const script = project.dialogs.find((item) => item.id === playDialog.scriptId);
+      const node = script ? nodeById(script, playDialog.nodeId) : null;
+      if (!script || !node || node.isPrompt) return;
+      const next = advanceDialog(script, node);
+      set({ playDialog: next ? { ...playDialog, nodeId: next } : null });
+    },
+    playChoose(choiceId) {
+      const { playDialog, project } = get();
+      if (!playDialog || !project) return;
+      const script = project.dialogs.find((item) => item.id === playDialog.scriptId);
+      const node = script ? nodeById(script, playDialog.nodeId) : null;
+      if (!script || !node) return;
+      const next = chooseDialog(script, node, choiceId);
+      set({ playDialog: next ? { ...playDialog, nodeId: next } : null });
+    },
+    closePlayDialog: () => set({ playDialog: null }),
+    dismissPlayHint: (id) => set({ playHints: get().playHints.filter((item) => item.id !== id) }),
   };
 });

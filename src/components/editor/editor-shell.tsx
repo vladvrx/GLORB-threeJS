@@ -41,6 +41,7 @@ export function EditorShell() {
   const layerActors = useEditor((state) => state.layerActors);
   const layerHelpers = useEditor((state) => state.layerHelpers);
   const setLayer = useEditor((state) => state.setLayer);
+  const playing = useEditor((state) => state.playing);
 
   useEffect(() => {
     void load();
@@ -80,7 +81,7 @@ export function EditorShell() {
   return (
     <div className="flex h-dvh flex-col bg-[#061821] text-teal-50">
       <EditorToolbar />
-      <div className="flex items-center gap-1 overflow-x-auto border-b border-white/10 px-2 py-1">
+      <div className={cn("flex items-center gap-1 overflow-x-auto border-b border-white/10 px-2 py-1", playing && "hidden")}>
         {TABS.map((item) => (
           <Button
             key={item.id}
@@ -133,8 +134,8 @@ export function EditorShell() {
           </div>
         ) : null}
       </div>
-      <div className={cn("min-h-0 flex-1", tab === "world" ? "flex flex-col lg:flex-row" : "hidden")}>
-          <aside className="flex max-h-[40vh] w-full min-h-0 flex-col border-b border-white/10 lg:max-h-none lg:w-72 lg:border-r lg:border-b-0">
+      <div className={cn("min-h-0 flex-1", tab === "world" || playing ? "flex flex-col lg:flex-row" : "hidden")}>
+          <aside className={cn("flex max-h-[40vh] w-full min-h-0 flex-col border-b border-white/10 lg:max-h-none lg:w-72 lg:border-r lg:border-b-0", playing && "hidden")}>
             <div className="min-h-0 flex-1">
               <Outliner />
             </div>
@@ -143,14 +144,14 @@ export function EditorShell() {
             </div>
           </aside>
           <EditorViewport />
-          <aside className="max-h-[46vh] w-full overflow-y-auto border-t border-white/10 lg:max-h-none lg:w-80 lg:border-t-0 lg:border-l">
+          <aside className={cn("max-h-[46vh] w-full overflow-y-auto border-t border-white/10 lg:max-h-none lg:w-80 lg:border-t-0 lg:border-l", playing && "hidden")}>
             <Inspector />
           </aside>
         </div>
-      {tab === "quests" ? <QuestEditor /> : null}
-      {tab === "dialogue" ? <DialogueEditor /> : null}
-      {tab === "characters" ? <CharacterEditor /> : null}
-      {tab === "notifications" ? <NotificationEditor /> : null}
+      {tab === "quests" && !playing ? <QuestEditor /> : null}
+      {tab === "dialogue" && !playing ? <DialogueEditor /> : null}
+      {tab === "characters" && !playing ? <CharacterEditor /> : null}
+      {tab === "notifications" && !playing ? <NotificationEditor /> : null}
     </div>
   );
 }
