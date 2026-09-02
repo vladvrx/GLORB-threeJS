@@ -296,6 +296,67 @@ function patchWaterColors(source) {
   return next;
 }
 
+const RUN_FX_SWAPS = [
+  [
+    "e.alphaFrom=1,e.alphaTo=1,e.colorFrom.copy(new V(16777215)).multiplyScalar(1),e.colorTo.copy(new V(7327214)).multiplyScalar(1)",
+    "e.alphaFrom=1,e.alphaTo=1,e.colorFrom.copy(new V(6211839)).multiplyScalar(1),e.colorTo.copy(new V(2854890)).multiplyScalar(1)",
+  ],
+  [
+    "e.alphaFrom = 1, e.alphaTo = 1, e.colorFrom.copy(new V(16777215)).multiplyScalar(1), e.colorTo.copy(new V(7327214)).multiplyScalar(1)",
+    "e.alphaFrom = 1, e.alphaTo = 1, e.colorFrom.copy(new V(6211839)).multiplyScalar(1), e.colorTo.copy(new V(2854890)).multiplyScalar(1)",
+  ],
+  [
+    "e.scaleFrom.copy(i),e.scaleTo.setScalar(0),e.alpha=1}",
+    "e.scaleFrom.copy(i),e.scaleTo.setScalar(0),e.alpha=1,e.colorFrom.copy(new V(6211839)).multiplyScalar(1),e.colorTo.copy(new V(2854890)).multiplyScalar(1)}",
+  ],
+  [
+    "e.scaleFrom.copy(i), e.scaleTo.setScalar(0), e.alpha = 1;",
+    "e.scaleFrom.copy(i), e.scaleTo.setScalar(0), e.alpha = 1, e.colorFrom.copy(new V(6211839)).multiplyScalar(1), e.colorTo.copy(new V(2854890)).multiplyScalar(1);",
+  ],
+];
+
+const INTRO_CAM_SWAPS = [
+  [
+    "introFrom:{position:[-7.900966,76.942503,124.816482],quaternion:[-.17203494,-.38932646,-.07426799,.90183876]},introTo:{position:[-39.199139,39.079015,-39.791217],quaternion:[-.06789136,-.70262188,-.06765479,.70507878]}",
+    "introFrom:{position:[-55.296578,76.942503,-308.65067],quaternion:[-.07426799,.90183876,.17203494,.38932646]},introTo:{position:[-23.998405,39.079015,-144.042971],quaternion:[-.06765479,.70507878,.06789136,.70262188]}",
+  ],
+  [
+    `introFrom: {
+    position: [-7.900966, 76.942503, 124.816482],
+    quaternion: [-.17203494, -.38932646, -.07426799, .90183876]
+  },
+  introTo: {
+    position: [-39.199139, 39.079015, -39.791217],
+    quaternion: [-.06789136, -.70262188, -.06765479, .70507878]
+  }`,
+    `introFrom: {
+    position: [-55.296578, 76.942503, -308.65067],
+    quaternion: [-.07426799, .90183876, .17203494, .38932646]
+  },
+  introTo: {
+    position: [-23.998405, 39.079015, -144.042971],
+    quaternion: [-.06765479, .70507878, .06789136, .70262188]
+  }`,
+  ],
+];
+
+function applySwaps(source, swaps) {
+  let next = source;
+  for (const [from, to] of swaps) {
+    if (next.includes(to) || !next.includes(from)) continue;
+    next = next.split(from).join(to);
+  }
+  return next;
+}
+
+function patchRunFx(source) {
+  return applySwaps(source, RUN_FX_SWAPS);
+}
+
+function patchIntroCam(source) {
+  return applySwaps(source, INTRO_CAM_SWAPS);
+}
+
 function patchWebgl(file) {
   if (!fs.existsSync(file)) return false;
   const original = fs.readFileSync(file, "utf8");
@@ -308,7 +369,7 @@ function patchWebgl(file) {
   if (!source.includes("__STUDIO_APPLY__")) {
     throw new Error(`Could not patch ${path.basename(file)}: missing scene-load marker`);
   }
-  source = patchWaterColors(source);
+  source = patchRunFx(patchWaterColors(source));
   if (source !== original) fs.writeFileSync(file, source);
   return true;
 }
@@ -336,7 +397,7 @@ function replaceSceneManifest(source, sceneName, overlay) {
 function bustWebglImport(source) {
   return source.replace(
     /import\("(\.\/webgl\.[a-z0-9]+)\.js(?:\?[^"]*)?"\)/g,
-    'import("$1.js?v=neon-water")',
+    'import("$1.js?v=neon-water-runfx")',
   );
 }
 
@@ -346,7 +407,7 @@ function patchVendor(file, scenes) {
   for (const [key, scene] of Object.entries(scenes)) {
     source = replaceSceneManifest(source, sceneIdFromPackKey(key), scene);
   }
-  source = bustWebglImport(source);
+  source = bustWebglImport(patchIntroCam(source));
   fs.writeFileSync(file, source);
   return true;
 }
