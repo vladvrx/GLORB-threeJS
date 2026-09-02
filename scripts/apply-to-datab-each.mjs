@@ -434,7 +434,7 @@ function patchIndex(file) {
     if (next === source) throw new Error("Could not inject studio-preloader.css into index.html");
     source = next;
   } else {
-    source = source.replace(/studio-preloader\.css(?:\?v=\d+)?/g, `studio-preloader.css?v=${stamp}`);
+    source = source.replace(/studio-preloader\.css(?:\?v=[^"&\s]*)?/g, `studio-preloader.css?v=${stamp}`);
   }
   if (source.includes('content="#05051a"')) {
     source = source.replace('content="#05051a"', 'content="#70bfe4"');
