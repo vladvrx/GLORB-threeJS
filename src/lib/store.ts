@@ -65,8 +65,6 @@ type EditorState = {
   addActor: (actorType: string, npcId?: string) => string;
   duplicateSelected: () => void;
   deleteSelected: () => void;
-  focusRequest: number;
-  requestFocus: () => void;
   undo: () => void;
   redo: () => void;
   updateProject: (recipe: (project: StudioProject) => void) => void;
@@ -144,7 +142,6 @@ export const useEditor = create<EditorState>((set, get) => {
     dirty: false,
     past: [],
     future: [],
-    focusRequest: 0,
     playing: false,
     playNearby: null,
     playDialog: null,
@@ -352,7 +349,6 @@ export const useEditor = create<EditorState>((set, get) => {
         dirty: true,
       });
     },
-    requestFocus: () => set({ focusRequest: get().focusRequest + 1 }),
     undo: () => {
       const { past, project, future } = get();
       if (!project || past.length === 0) return;

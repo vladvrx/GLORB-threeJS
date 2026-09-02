@@ -271,9 +271,6 @@ export class ViewportEngine {
       case "r":
         editor.setTool("scale");
         break;
-      case "f":
-        editor.requestFocus();
-        break;
       case "delete":
       case "backspace":
         editor.deleteSelected();
@@ -489,18 +486,6 @@ export class ViewportEngine {
     }
     if (!best) return null;
     return { objectId: best.objectId, name: best.name, scriptId: best.scriptId };
-  }
-
-  focus(id: string | null) {
-    const object = id ? this.objects.get(id) : null;
-    if (!object) return;
-    const world = new THREE.Vector3();
-    object.getWorldPosition(world);
-    this.controls.target.copy(world);
-    const offset = this.camera.position.clone().sub(this.controls.target);
-    if (offset.length() < 4) offset.set(12, -16, 10);
-    offset.setLength(Math.max(10, Math.min(offset.length(), 28)));
-    this.camera.position.copy(world).add(offset);
   }
 
   private commitSelected() {

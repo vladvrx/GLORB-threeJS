@@ -18,7 +18,6 @@ export function EditorViewport() {
   const project = useEditor((state) => state.project);
   const selectedId = useEditor((state) => state.selectedId);
   const tool = useEditor((state) => state.tool);
-  const focusRequest = useEditor((state) => state.focusRequest);
   const showGrid = useEditor((state) => state.showGrid);
   const showTerrain = useEditor((state) => state.showTerrain);
   const showWater = useEditor((state) => state.showWater);
@@ -115,10 +114,6 @@ export function EditorViewport() {
       layerHelpers: playing ? false : layerHelpers,
     });
   }, [showGrid, showTerrain, showWater, layerProps, layerActors, layerHelpers, loading, playing]);
-
-  useEffect(() => {
-    if (focusRequest > 0) engineRef.current?.focus(selectedId);
-  }, [focusRequest, selectedId]);
 
   async function handleDrop(files: FileList | null) {
     const meshes = [...(files ?? [])].filter((file) => /\.(glb|gltf|fbx)$/i.test(file.name));

@@ -31,7 +31,6 @@ Open [http://127.0.0.1:43180](http://127.0.0.1:43180).
 | WASD / mouse | Walk and look in play mode |
 | Space | Jump (play) |
 | E | Talk to a nearby character (play) |
-| F | Frame selected |
 | G | Toggle snap |
 | Delete | Remove selected |
 | Ctrl/Cmd+D | Duplicate |

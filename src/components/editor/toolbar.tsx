@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   BoxSelect,
   Download,
-  Focus,
   FolderOpen,
   Move3d,
   Play,
@@ -43,7 +42,6 @@ export function EditorToolbar() {
   const redo = useEditor((state) => state.redo);
   const switchScene = useEditor((state) => state.switchScene);
   const deleteSelected = useEditor((state) => state.deleteSelected);
-  const requestFocus = useEditor((state) => state.requestFocus);
   const exportStudio = useEditor((state) => state.exportStudio);
   const exportGamePack = useEditor((state) => state.exportGamePack);
   const applyToGame = useEditor((state) => state.applyToGame);
@@ -99,9 +97,6 @@ export function EditorToolbar() {
       </Button>
       <Button size="icon-sm" variant="ghost" onClick={redo} title="Redo">
         <Redo2 />
-      </Button>
-      <Button size="icon-sm" variant="ghost" onClick={requestFocus} title="Focus selected (F)">
-        <Focus />
       </Button>
       <Button size="icon-sm" variant="ghost" onClick={deleteSelected} title="Delete">
         <Trash2 />
