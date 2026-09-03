@@ -243,7 +243,7 @@
             0.47413898,
             0.47413903,
             0.004548,
-            0.000049,
+            4.9e-05,
             -0.01085,
             0.999931
           ]
@@ -1770,44 +1770,33 @@
         "BeachUmbrellaB",
         "Crossing",
         "Lampost",
-        "BuildingB",
-        "HouseCabinA",
         "HouseF",
         "Slope",
         "PalmTreeStreet",
         "PicnicTable",
-        "SolidGroundLong",
         "BeachChair",
         "BeachUmbrella",
         "BeachBall",
-        "LightTraffic",
         "Pavement",
         "BushC",
-        "Mailbox",
         "PottedPlantA",
         "PottedPlantB",
         "SolidGroundRound",
-        "Flag",
         "SeaStar",
-        "RoundCar",
-        "BoxCar",
         "Wall",
         "BigBushB",
         "BigBushA",
         "TreeTriangleA",
         "TreeTriangleB",
         "SolidGroundRoundB",
-        "StandA",
         "TreeTriangleC",
+        "Flag",
         "ConcretPillar",
         "BushA",
         "BeachTowel",
         "SportTowel",
         "PalmTreeBlue",
-        "TruckFood",
         "BeachBar",
-        "CoffeeShop",
-        "HouseA",
         "Mushrooms",
         "Cup",
         "Book",
@@ -1815,8 +1804,8 @@
         "FlowerA",
         "RockA",
         "PalmTree",
-        "TreeSquareB",
         "TreeSquareA",
+        "TreeSquareB",
         "Pillar",
         "ShipA",
         "ShipAVerB",
@@ -1827,34 +1816,13 @@
         "BushB",
         "Character",
         "Chest",
-        "GrowableTreeLarge",
-        "BridgeOff",
-        "TechCompany03HouseOff",
         "ChestBig",
-        "ShopForSaleBase",
-        "Telescope",
-        "StandFair"
+        "GrowableTreeLarge",
+        "LightTraffic",
+        "BridgeOff",
+        "Telescope"
       ],
       "actors": [
-        {
-          "uid": "NPC_Citizen_West_BeachSeatingA.001",
-          "type": "NPC",
-          "params": {
-            "subtype": "Citizen_West_BeachSeatingA"
-          },
-          "transforms": [
-            -148.930984,
-            1.147275,
-            -22.514055,
-            0.99999994,
-            0.99999994,
-            1,
-            -0.007013,
-            -0.993713,
-            0.097502,
-            0.054576
-          ]
-        },
         {
           "uid": "NPC_Citizen_West_SwimmingB.001",
           "type": "NPC",
@@ -1891,6 +1859,136 @@
             -0.546268,
             -0.029688,
             0.836192
+          ]
+        },
+        {
+          "uid": "NPC_Citizen_West_ChestHint.001",
+          "type": "NPC",
+          "params": {
+            "subtype": "Citizen_West_ChestHint",
+            "move": "curve=WalkChestHint"
+          },
+          "transforms": [
+            -105.610633,
+            2.792433,
+            30.046618000000002,
+            1,
+            0.99999994,
+            1.00000012,
+            0.012171,
+            -0.649523,
+            0.010399,
+            0.760174
+          ]
+        },
+        {
+          "uid": "NPC_Citizen_West_StandingA.001",
+          "type": "NPC",
+          "params": {
+            "subtype": "Citizen_West_StandingA",
+            "move": "curve=WalkRandomA"
+          },
+          "transforms": [
+            -125.46781100000001,
+            2.881356,
+            45.545005,
+            1,
+            1,
+            1,
+            0,
+            -0.537061,
+            0,
+            0.843543
+          ]
+        },
+        {
+          "uid": "NPC_Citizen_West_PylonIslandHint.001",
+          "type": "NPC",
+          "params": {
+            "subtype": "Citizen_West_PylonIslandHint",
+            "move": "radius=5"
+          },
+          "transforms": [
+            -195.329498,
+            2.534394,
+            34.565238,
+            1,
+            1,
+            1,
+            0,
+            0.609871,
+            0,
+            0.792501
+          ]
+        },
+        {
+          "uid": "Chest.006",
+          "type": "Chest",
+          "params": {},
+          "transforms": [
+            -116.62412200000001,
+            1.82128,
+            -17.468522999999998,
+            1,
+            1,
+            1,
+            0.014789,
+            0.937675,
+            -0.017495,
+            0.346758
+          ]
+        },
+        {
+          "uid": "Chest.014",
+          "type": "Chest",
+          "params": {},
+          "transforms": [
+            -94.965759,
+            2.770053,
+            16.138395000000003,
+            1,
+            1,
+            1,
+            0,
+            -0.979973,
+            0,
+            0.199133
+          ]
+        },
+        {
+          "uid": "ChestBig.001",
+          "type": "ChestBig",
+          "params": {},
+          "transforms": [
+            -210.42451400000002,
+            2.418314,
+            24.799518000000003,
+            1,
+            1,
+            1,
+            0,
+            -0.11711,
+            0,
+            0.993119
+          ]
+        },
+        {
+          "uid": "NPC_Citizen_West_BeachSeatingA.001",
+          "type": "NPC",
+          "params": {
+            "subtype": "Citizen_West_BeachSeatingA"
+          },
+          "transforms": [
+            -148.930984,
+            1.147275,
+            -22.514055,
+            0.99999994,
+            0.99999994,
+            1,
+            -0.007013,
+            -0.993713,
+            0.097502,
+            0.054576
           ]
         },
         {
@@ -1989,46 +2087,6 @@
           ]
         },
         {
-          "uid": "NPC_Citizen_West_ChestHint.001",
-          "type": "NPC",
-          "params": {
-            "subtype": "Citizen_West_ChestHint",
-            "move": "curve=WalkChestHint"
-          },
-          "transforms": [
-            -105.610633,
-            2.792433,
-            30.046618000000002,
-            1,
-            0.99999994,
-            1.00000012,
-            0.012171,
-            -0.649523,
-            0.010399,
-            0.760174
-          ]
-        },
-        {
-          "uid": "NPC_Citizen_West_StandingA.001",
-          "type": "NPC",
-          "params": {
-            "subtype": "Citizen_West_StandingA",
-            "move": "curve=WalkRandomA"
-          },
-          "transforms": [
-            -125.46781100000001,
-            2.881356,
-            45.545005,
-            1,
-            1,
-            1,
-            0,
-            -0.537061,
-            0,
-            0.843543
-          ]
-        },
-        {
           "uid": "NPC_Sailor_WestA.001",
           "type": "NPC",
           "params": {
@@ -2105,43 +2163,6 @@
           ]
         },
         {
-          "uid": "NPC_Citizen_West_PylonIslandHint.001",
-          "type": "NPC",
-          "params": {
-            "subtype": "Citizen_West_PylonIslandHint",
-            "move": "radius=5"
-          },
-          "transforms": [
-            -195.329498,
-            2.534394,
-            34.565238,
-            1,
-            1,
-            1,
-            0,
-            0.609871,
-            0,
-            0.792501
-          ]
-        },
-        {
-          "uid": "Chest.006",
-          "type": "Chest",
-          "params": {},
-          "transforms": [
-            -116.62412200000001,
-            1.82128,
-            -17.468522999999998,
-            1,
-            1,
-            1,
-            0.014789,
-            0.937675,
-            -0.017495,
-            0.346758
-          ]
-        },
-        {
           "uid": "GrowableTree.004",
           "type": "GrowableTree",
           "params": {},
@@ -2193,76 +2214,6 @@
           ]
         },
         {
-          "uid": "CobbleHouse.007",
-          "type": "CobbleHouse",
-          "params": {},
-          "transforms": [
-            -121.777961,
-            2.746909,
-            -1.8987599999999958,
-            0.99999988,
-            1,
-            0.99999988,
-            0,
-            -0.712451,
-            0,
-            0.701722
-          ]
-        },
-        {
-          "uid": "Chest.014",
-          "type": "Chest",
-          "params": {},
-          "transforms": [
-            -94.965759,
-            2.770053,
-            16.138395000000003,
-            1,
-            1,
-            1,
-            0,
-            -0.979973,
-            0,
-            0.199133
-          ]
-        },
-        {
-          "uid": "ChestBig.001",
-          "type": "ChestBig",
-          "params": {},
-          "transforms": [
-            -210.42451400000002,
-            2.418314,
-            24.799518000000003,
-            1,
-            1,
-            1,
-            0,
-            -0.11711,
-            0,
-            0.993119
-          ]
-        },
-        {
-          "uid": "ShopForSale.002",
-          "type": "ShopForSale",
-          "params": {
-            "ShopType": "clothes"
-          },
-          "transforms": [
-            -146.807129,
-            2.808297,
-            -2.0007990000000007,
-            1.00000012,
-            1,
-            1,
-            0.000381,
-            -0.706006,
-            -0.000382,
-            0.708206
-          ]
-        },
-        {
           "uid": "Telescope.003",
           "type": "Telescope",
           "params": {
@@ -2280,25 +2231,6 @@
             -0.90199,
             -0.013323,
             0.43138
-          ]
-        },
-        {
-          "uid": "FintechStandGround.007",
-          "type": "FintechStandGround",
-          "params": {
-            "fintech": "pylon"
-          },
-          "transforms": [
-            -153.156555,
-            2.817072,
-            34.687331,
-            1.45000005,
-            1.45000005,
-            1.45000005,
-            0,
-            0,
-            0,
-            1
           ]
         }
       ],
@@ -2384,44 +2316,12 @@
           ]
         },
         {
-          "asset": "BuildingB",
-          "traversable": false,
-          "transforms": [
-            -113.6714626591797,
-            2.53218674659729,
-            75.2437417709961,
-            0.3875543773174286,
-            0.6162860989570618,
-            0.38755443692207336,
-            0.014705464243888855,
-            0.8190780282020569,
-            0.014938149601221085,
-            0.5732991099357605
-          ]
-        },
-        {
-          "asset": "HouseCabinA",
-          "traversable": false,
-          "transforms": [
-            -203.40222132617188,
-            2.3875911235809326,
-            27.626077433837892,
-            1,
-            1,
-            1,
-            0,
-            -0.29888591170310974,
-            0,
-            0.9542888402938843
-          ]
-        },
-        {
           "asset": "HouseF",
           "traversable": false,
           "transforms": [
-            -134.81635249072266,
-            2.817051887512207,
-            -0.5095464980468734,
+            -137.7661385576876,
+            1.7743658927257295,
+            56.11713245840974,
             1,
             1,
             1,
@@ -2509,22 +2409,6 @@
             -0.2849575877189636,
             0.0683942511677742,
             0.9559999704360962
-          ]
-        },
-        {
-          "asset": "SolidGroundLong",
-          "traversable": false,
-          "transforms": [
-            -116.23588526660157,
-            2.549969434738159,
-            10.473424693359377,
-            1,
-            1,
-            1,
-            0,
-            0,
-            0,
-            1
           ]
         },
         {
@@ -2688,38 +2572,6 @@
           ]
         },
         {
-          "asset": "LightTraffic",
-          "traversable": false,
-          "transforms": [
-            -130.7025677006836,
-            2.808328628540039,
-            4.357240458740236,
-            1.4687602519989014,
-            1.4687601327896118,
-            1.4687602519989014,
-            0,
-            -0.7047255635261536,
-            0,
-            0.7094801068305969
-          ]
-        },
-        {
-          "asset": "PalmTreeStreet",
-          "traversable": false,
-          "transforms": [
-            -169.47764552050782,
-            2.5840370655059814,
-            31.169164439453127,
-            1.29945707321167,
-            1.3766485452651978,
-            1.29945707321167,
-            0,
-            0,
-            0,
-            1
-          ]
-        },
-        {
           "asset": "PalmTreeStreet",
           "traversable": false,
           "transforms": [
@@ -2876,7 +2728,7 @@
             0,
             -1,
             0,
-            3.1391647326017846e-7
+            3.1391647326017846e-07
           ]
         },
         {
@@ -2892,7 +2744,7 @@
             0,
             -1,
             0,
-            3.1391647326017846e-7
+            3.1391647326017846e-07
           ]
         },
         {
@@ -3056,22 +2908,6 @@
           ]
         },
         {
-          "asset": "LightTraffic",
-          "traversable": false,
-          "transforms": [
-            -123.54528773242188,
-            2.7939813137054443,
-            40.57447852732086,
-            1.4687601327896118,
-            1.4687601327896118,
-            1.4687601327896118,
-            0,
-            0.7071068286895752,
-            0,
-            0.7071067094802856
-          ]
-        },
-        {
           "asset": "BeachChair",
           "traversable": false,
           "transforms": [
@@ -3216,54 +3052,6 @@
           ]
         },
         {
-          "asset": "Mailbox",
-          "traversable": false,
-          "transforms": [
-            -106.97447169238282,
-            2.871086597442627,
-            0.876588603271486,
-            1,
-            1,
-            1,
-            0,
-            -0.7120775580406189,
-            0,
-            0.7021008133888245
-          ]
-        },
-        {
-          "asset": "Mailbox",
-          "traversable": false,
-          "transforms": [
-            -134.53589594775391,
-            2.8285696506500244,
-            2.4938333237304704,
-            1,
-            1,
-            1,
-            0,
-            -0.7120775580406189,
-            0,
-            0.7021008133888245
-          ]
-        },
-        {
-          "asset": "PottedPlantA",
-          "traversable": false,
-          "transforms": [
-            -108.82756007128907,
-            2.651137113571167,
-            71.43988778234863,
-            1.6738154888153076,
-            1.6738156080245972,
-            1.6738154888153076,
-            0,
-            -0.5685091018676758,
-            0,
-            0.8226770162582397
-          ]
-        },
-        {
           "asset": "PottedPlantA",
           "traversable": false,
           "transforms": [
@@ -3328,38 +3116,6 @@
           ]
         },
         {
-          "asset": "PottedPlantA",
-          "traversable": false,
-          "transforms": [
-            -138.82668269091798,
-            2.7775774002075195,
-            0.5091150009765641,
-            1.6738156080245972,
-            1.6738156080245972,
-            1.6738156080245972,
-            0,
-            0.7071068286895752,
-            0,
-            0.7071067094802856
-          ]
-        },
-        {
-          "asset": "PottedPlantA",
-          "traversable": false,
-          "transforms": [
-            -110.39453852587891,
-            2.8316516876220703,
-            1.6239831650390641,
-            1.6738156080245972,
-            1.6738156080245972,
-            1.6738156080245972,
-            0,
-            -1,
-            0,
-            7.549911629212147e-8
-          ]
-        },
-        {
           "asset": "PottedPlantB",
           "traversable": false,
           "transforms": [
@@ -3408,38 +3164,6 @@
           ]
         },
         {
-          "asset": "Flag",
-          "traversable": false,
-          "transforms": [
-            -200.83380091601563,
-            1.8283576965332031,
-            43.69491555334473,
-            2.4346096515655518,
-            2.43461012840271,
-            2.4346096515655518,
-            0,
-            0.4321899712085724,
-            0,
-            0.9017825722694397
-          ]
-        },
-        {
-          "asset": "Flag",
-          "traversable": false,
-          "transforms": [
-            -198.3281551640625,
-            1.8283576965332031,
-            43.03593196512604,
-            2.4346096515655518,
-            2.43461012840271,
-            2.4346096515655518,
-            0,
-            0.4321899712085724,
-            0,
-            0.9017825722694397
-          ]
-        },
-        {
           "asset": "SeaStar",
           "traversable": false,
           "transforms": [
@@ -3469,54 +3193,6 @@
             0.8869717717170715,
             -0.01063395757228136,
             0.46166881918907166
-          ]
-        },
-        {
-          "asset": "RoundCar",
-          "traversable": false,
-          "transforms": [
-            -141.5487819951172,
-            2.813297986984253,
-            0.43607499243164227,
-            1,
-            1,
-            1,
-            0,
-            0.0006177279283292592,
-            -0.0000022413305487134494,
-            1
-          ]
-        },
-        {
-          "asset": "BoxCar",
-          "traversable": false,
-          "transforms": [
-            -114.59601557666016,
-            2.8340847492218018,
-            -0.0908529555664046,
-            1,
-            1,
-            1,
-            0,
-            0.0006177279283292592,
-            -0.0000022413305487134494,
-            1
-          ]
-        },
-        {
-          "asset": "RoundCar",
-          "traversable": false,
-          "transforms": [
-            -106.88326991015626,
-            2.699740409851074,
-            70.04923607946778,
-            1,
-            1,
-            1,
-            0,
-            -0.9793441891670227,
-            0,
-            0.20220038294792175
           ]
         },
         {
@@ -3648,22 +3324,6 @@
           ]
         },
         {
-          "asset": "StandA",
-          "traversable": false,
-          "transforms": [
-            -153.0735164921875,
-            3.0038392543792725,
-            34.96588971258545,
-            1,
-            1,
-            1,
-            0,
-            -0.20488260686397552,
-            0,
-            0.9787865877151489
-          ]
-        },
-        {
           "asset": "PicnicTable",
           "traversable": false,
           "transforms": [
@@ -3693,86 +3353,6 @@
             -0.6207809448242188,
             0.003800957929342985,
             0.7839743494987488
-          ]
-        },
-        {
-          "asset": "Flag",
-          "traversable": false,
-          "transforms": [
-            -148.80870020800782,
-            2.8274765014648438,
-            73.66849686743164,
-            2.050853967666626,
-            2.050853729248047,
-            2.050853967666626,
-            0,
-            0.6303501725196838,
-            0,
-            0.776310920715332
-          ]
-        },
-        {
-          "asset": "Flag",
-          "traversable": false,
-          "transforms": [
-            -155.786285046875,
-            2.8274765014648438,
-            77.53650452734375,
-            2.050853967666626,
-            2.050853729248047,
-            2.050853967666626,
-            0,
-            0.4893871247768402,
-            0,
-            0.8720666766166687
-          ]
-        },
-        {
-          "asset": "Flag",
-          "traversable": false,
-          "transforms": [
-            -161.53416407519532,
-            2.8274765014648438,
-            78.30616929174805,
-            2.050853729248047,
-            2.050853729248047,
-            2.050853729248047,
-            0,
-            0.5157210826873779,
-            0,
-            0.8567565679550171
-          ]
-        },
-        {
-          "asset": "Flag",
-          "traversable": false,
-          "transforms": [
-            -156.93554652148438,
-            2.9251277446746826,
-            41.4601530039444,
-            1.5852454900741577,
-            1.5852452516555786,
-            1.5852452516555786,
-            -0.021002886816859245,
-            -0.921875536441803,
-            0.03630651906132698,
-            0.3852093517780304
-          ]
-        },
-        {
-          "asset": "Flag",
-          "traversable": false,
-          "transforms": [
-            -165.7156521123047,
-            2.744981527328491,
-            41.68000348450089,
-            1.5852454900741577,
-            1.5852452516555786,
-            1.5852452516555786,
-            -0.021002886816859245,
-            -0.921875536441803,
-            0.03630651906132698,
-            0.3852093517780304
           ]
         },
         {
@@ -3984,38 +3564,6 @@
           ]
         },
         {
-          "asset": "Flag",
-          "traversable": false,
-          "transforms": [
-            -173.59220850878907,
-            2.8655290603637695,
-            41.81712218166733,
-            1.5852454900741577,
-            1.5852452516555786,
-            1.5852452516555786,
-            -0.021002886816859245,
-            -0.921875536441803,
-            0.03630651906132698,
-            0.3852093517780304
-          ]
-        },
-        {
-          "asset": "TruckFood",
-          "traversable": false,
-          "transforms": [
-            -149.53062403613282,
-            2.827474594116211,
-            88.95728089453125,
-            1,
-            1,
-            1,
-            0,
-            0,
-            0,
-            1
-          ]
-        },
-        {
           "asset": "PicnicTable",
           "traversable": false,
           "transforms": [
@@ -4176,22 +3724,6 @@
           ]
         },
         {
-          "asset": "CoffeeShop",
-          "traversable": false,
-          "transforms": [
-            -127.55391657763673,
-            2.807586669921875,
-            79.71601655126953,
-            1.1334481239318848,
-            1.1334481239318848,
-            1.1334480047225952,
-            -0.0026908451691269875,
-            0.797808051109314,
-            -0.0032059806399047375,
-            0.602897047996521
-          ]
-        },
-        {
           "asset": "Lampost",
           "traversable": false,
           "transforms": [
@@ -4203,7 +3735,7 @@
             1,
             0.0008913773926906288,
             0,
-            -0.000056636370572960004,
+            -5.6636370572960004e-05,
             1
           ]
         },
@@ -4221,22 +3753,6 @@
             0.7036776542663574,
             0,
             0.7105193734169006
-          ]
-        },
-        {
-          "asset": "HouseA",
-          "traversable": true,
-          "transforms": [
-            -109.87967646533204,
-            2.789691209793091,
-            -1.134031513916014,
-            1,
-            1,
-            1,
-            0,
-            -0.7094286680221558,
-            0,
-            0.7047772407531738
           ]
         },
         {
@@ -4313,9 +3829,9 @@
             1,
             1,
             1,
-            0.00004106404958292842,
+            4.106404958292842e-05,
             -0.27293387055397034,
-            0.00003928691876353696,
+            3.928691876353696e-05,
             0.9620327949523926
           ]
         },
@@ -5075,22 +4591,6 @@
           "asset": "RockA",
           "traversable": true,
           "transforms": [
-            -147.7039333623047,
-            -4.390970706939697,
-            65.5946939194336,
-            5.286581516265869,
-            2.9205715656280518,
-            5.50416374206543,
-            -0.032829467207193375,
-            0.07635973393917084,
-            0.049523621797561646,
-            0.9953083992004395
-          ]
-        },
-        {
-          "asset": "RockA",
-          "traversable": true,
-          "transforms": [
             -154.09965479785157,
             -0.5077617168426514,
             72.16909958959961,
@@ -5555,60 +5055,12 @@
           "asset": "PalmTree",
           "traversable": true,
           "transforms": [
-            -197.07933009082032,
-            2.3842928409576416,
-            17.4344041550293,
-            1.960113763809204,
-            1.960113763809204,
-            1.960113763809204,
-            0,
-            0,
-            0,
-            1
-          ]
-        },
-        {
-          "asset": "PalmTree",
-          "traversable": true,
-          "transforms": [
-            -201.3896023076172,
-            2.384284496307373,
-            14.11580826879883,
-            1.6721413135528564,
-            1.6721413135528564,
-            1.6721413135528564,
-            0,
-            0,
-            0,
-            1
-          ]
-        },
-        {
-          "asset": "PalmTree",
-          "traversable": true,
-          "transforms": [
             -210.7060085576172,
             2.3692078590393066,
             18.097066661132814,
             2.275953769683838,
             2.275953769683838,
             2.275953769683838,
-            0,
-            0,
-            0,
-            1
-          ]
-        },
-        {
-          "asset": "PalmTree",
-          "traversable": true,
-          "transforms": [
-            -206.82858241015626,
-            2.384282112121582,
-            14.418657084716799,
-            1.969286561012268,
-            1.969286561012268,
-            1.969286561012268,
             0,
             0,
             0,
@@ -5643,54 +5095,6 @@
             1.8715574741363525,
             0,
             0.4445931017398834,
-            0,
-            0.8957327008247375
-          ]
-        },
-        {
-          "asset": "PalmTree",
-          "traversable": true,
-          "transforms": [
-            -210.36390650683595,
-            2.053828239440918,
-            37.800191661132814,
-            2.2585792541503906,
-            2.2585792541503906,
-            2.2585792541503906,
-            0,
-            0.4445931017398834,
-            0,
-            0.8957327008247375
-          ]
-        },
-        {
-          "asset": "PalmTree",
-          "traversable": true,
-          "transforms": [
-            -210.8797146123047,
-            2.386340379714966,
-            33.11744858862305,
-            1.8175288438796997,
-            1.8175286054611206,
-            1.8175288438796997,
-            0,
-            0.44459307193756104,
-            0,
-            0.8957326412200928
-          ]
-        },
-        {
-          "asset": "PalmTree",
-          "traversable": true,
-          "transforms": [
-            -208.20729029589845,
-            3.5550503730773926,
-            35.222188731445314,
-            1.3774219751358032,
-            1.3774217367172241,
-            1.3774219751358032,
-            0,
-            0.44459301233291626,
             0,
             0.8957327008247375
           ]
@@ -5744,38 +5148,6 @@
           ]
         },
         {
-          "asset": "TreeSquareB",
-          "traversable": true,
-          "transforms": [
-            -207.21368372851563,
-            2.384298801422119,
-            18.15138413549805,
-            1.8153526782989502,
-            1.8153526782989502,
-            1.8153526782989502,
-            0,
-            -0.9246215224266052,
-            0,
-            0.3808872699737549
-          ]
-        },
-        {
-          "asset": "TreeSquareB",
-          "traversable": true,
-          "transforms": [
-            -191.36737025195313,
-            2.4618773460388184,
-            21.014302989257814,
-            2.069993257522583,
-            2.069993019104004,
-            2.069993257522583,
-            0,
-            -0.8127754926681519,
-            0,
-            0.582577109336853
-          ]
-        },
-        {
           "asset": "PalmTree",
           "traversable": true,
           "transforms": [
@@ -5789,70 +5161,6 @@
             0,
             0,
             1
-          ]
-        },
-        {
-          "asset": "BigBushB",
-          "traversable": true,
-          "transforms": [
-            -199.49237025195313,
-            2.384294033050537,
-            16.050637980712892,
-            1.7844187021255493,
-            1.7844188213348389,
-            1.7844187021255493,
-            0,
-            0.9171980619430542,
-            0,
-            0.39843159914016724
-          ]
-        },
-        {
-          "asset": "BigBushB",
-          "traversable": true,
-          "transforms": [
-            -203.30686915332032,
-            2.3189005851745605,
-            15.351312419189455,
-            1.7844185829162598,
-            1.7844188213348389,
-            1.7844185829162598,
-            0,
-            -0.5125113725662231,
-            0,
-            0.8586804270744324
-          ]
-        },
-        {
-          "asset": "BushA",
-          "traversable": true,
-          "transforms": [
-            -205.4839168828125,
-            2.3842978477478027,
-            16.895414134277345,
-            2.9000461101531982,
-            2.9000461101531982,
-            2.9000461101531982,
-            0,
-            0,
-            0,
-            1
-          ]
-        },
-        {
-          "asset": "BigBushA",
-          "traversable": true,
-          "transforms": [
-            -209.64166224414063,
-            2.384295701980591,
-            19.405904551757814,
-            1.8282843828201294,
-            1.8282843828201294,
-            1.8282843828201294,
-            0,
-            0.18057432770729065,
-            0,
-            0.9835613369941711
           ]
         },
         {
@@ -5892,8 +5200,8 @@
           "traversable": true,
           "transforms": [
             -212.05224574023438,
-            2.3843016624450684,
-            31.38137223364258,
+            2.384301662445068,
+            35.194671871225324,
             3.3251378536224365,
             3.3251378536224365,
             3.3251378536224365,
@@ -5917,22 +5225,6 @@
             0,
             0,
             1
-          ]
-        },
-        {
-          "asset": "BigBushB",
-          "traversable": true,
-          "transforms": [
-            -208.74557459765626,
-            2.1440696716308594,
-            35.21463563085938,
-            1.9235634803771973,
-            1.9235634803771973,
-            1.9235634803771973,
-            0,
-            -0.6740095615386963,
-            0,
-            0.7387226819992065
           ]
         },
         {
@@ -6029,22 +5321,6 @@
             0,
             0,
             1
-          ]
-        },
-        {
-          "asset": "TreeSquareB",
-          "traversable": true,
-          "transforms": [
-            -213.91439783984376,
-            2.384298801422119,
-            31.671712657226564,
-            1.8153526782989502,
-            1.8153526782989502,
-            1.8153526782989502,
-            0,
-            -0.5412724614143372,
-            0,
-            0.8408473134040833
           ]
         },
         {
@@ -6771,7 +6047,7 @@
           "asset": "Pillar",
           "traversable": true,
           "transforms": [
-            -175.5561062138672,
+            -143.923462957008,
             -2.2701797485351562,
             43.17618729711914,
             2.43815541267395,
@@ -7113,22 +6389,6 @@
             1.2876800298690796,
             1.2876800298690796,
             2.6239868627268446,
-            0,
-            0.7071068286895752,
-            0,
-            0.7071067094802856
-          ]
-        },
-        {
-          "asset": "ShipB",
-          "traversable": true,
-          "transforms": [
-            -163.70809901171876,
-            13.290275738382235,
-            60.963606363502635,
-            1.079149603843689,
-            1.079149603843689,
-            2.661861325019099,
             0,
             0.7071068286895752,
             0,
@@ -8029,7 +7289,7 @@
       "item": null,
       "title": "Restore houses",
       "description": "Renovate all the houses",
-      "unlockText": "Complete TECH COMPANY #3&#39;s quest",
+      "unlockText": "Complete TECH COMPANY #3&#39;s\u00a0quest",
       "unlockCondition": "$$quests.CobbleMain && $hasHammer",
       "reward": 50,
       "rewardItem": null,
@@ -8044,7 +7304,7 @@
       "item": null,
       "title": "Bike Race",
       "description": "Complete the bike race in under {{gameGoals.CircuitBike}}s.",
-      "unlockText": "Complete TECH COMPANY #1&#39;s quest",
+      "unlockText": "Complete TECH COMPANY #1&#39;s\u00a0quest",
       "unlockCondition": "$$quests.TrailMain && $hasPlayedCircuitBike",
       "reward": 50,
       "rewardItem": null,
@@ -8059,7 +7319,7 @@
       "item": null,
       "title": "Help people in pain",
       "description": "Help all the people in pain",
-      "unlockText": "Complete TECH COMPANY #9&#39;s quest",
+      "unlockText": "Complete TECH COMPANY #9&#39;s\u00a0quest",
       "unlockCondition": "$$quests.SalveMain && $hasStethoscope",
       "reward": 50,
       "rewardItem": null,
@@ -9741,7 +9001,7 @@
         "id": "Yes3",
         "isSpeak": true,
         "bubbles": [
-          "We don’t just reduce stress — we promote sustainable digital wellbeing!"
+          "We don\u2019t just reduce stress \u2014 we promote sustainable digital wellbeing!"
         ],
         "before": [
           {
@@ -10205,7 +9465,7 @@
         "id": "Yes2",
         "isSpeak": true,
         "bubbles": [
-          "We’re not just changing how points moves, we’re changing the dynamic in a family relationship."
+          "We\u2019re not just changing how points moves, we\u2019re changing the dynamic in a family relationship."
         ],
         "before": [
           {
@@ -10619,7 +9879,7 @@
         "id": "AfterGiving",
         "isSpeak": true,
         "bubbles": [
-          "It&#39;s not just a <strong>screwdriver</strong>, it&#39;s a symbol – a link between families around the globe...",
+          "It&#39;s not just a <strong>screwdriver</strong>, it&#39;s a symbol \u2013 a link between families around the globe...",
           "...and digital security for loved ones that are separated.",
           "In a way, this tool is kind of like <strong>TECH COMPANY #8</strong>!"
         ],
@@ -10658,7 +9918,7 @@
         "isSpeak": true,
         "bubbles": [
           "Head <strong>straight to the sea</strong>! Do you see an islet over there?",
-          "Did you know: an &quot;islet&quot; is a small island? I didn&#39;t know that either!"
+          "Did you know: an\u00a0&quot;islet&quot;\u00a0is a small island? I didn&#39;t know that either!"
         ],
         "before": [
           {
@@ -11109,7 +10369,7 @@
         "id": "Dialogue3",
         "isSpeak": true,
         "bubbles": [
-          "Hope I’m not late. Did I miss something?!"
+          "Hope I\u2019m not late. Did I miss something?!"
         ],
         "before": [
           {
@@ -11244,8 +10504,8 @@
         "id": "Start",
         "isSpeak": true,
         "bubbles": [
-          "WIIIIIIIIILSOOOOON !",
-          "WIIIIIIIIILSOOOOON !"
+          "WIIIIIIIIILSOOOOON\u00a0!",
+          "WIIIIIIIIILSOOOOON\u00a0!"
         ],
         "before": [
           {
