@@ -87,9 +87,16 @@ export function installDialog(app, host) {
       "data-v-9946fd7c": "",
       "data-pointer": "",
     });
-    const section = el("section", { class: "bubble", "data-v-9946fd7c": "" });
+    const section = el("section", { class: "bubble cloud-bubble", "data-v-9946fd7c": "" });
+    const puffs = el("div", { class: "cloud-shape", "data-v-9946fd7c": "", "aria-hidden": "true" });
+    for (const name of ["puff-a", "puff-b", "puff-c", "puff-d", "puff-e", "puff-f"]) {
+      puffs.append(el("span", { class: `cloud-puff ${name}`, "data-v-9946fd7c": "" }));
+    }
+    for (const name of ["tail-a", "tail-b", "tail-c"]) {
+      puffs.append(el("span", { class: `cloud-tail ${name}`, "data-v-9946fd7c": "" }));
+    }
     const content = el("div", { class: "content", "data-v-9946fd7c": "", html });
-    section.append(content);
+    section.append(puffs, content);
     aside.append(section);
     root.append(aside);
     window.setTimeout(() => {
