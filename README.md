@@ -1,50 +1,41 @@
-# glorb Studio
+# glorb
 
-A Z-up level and content editor for the [DATAB-EACH](https://github.com/vladvrx/DATAB-EACH) Three.js island. Place, swap, move, rotate, and scale the original Cove meshes, then edit quests, notifications, characters, and dialogue without another AI pass.
+A single-player, portrait Three.js prototype. You are a glorb on a cove that is dissolving. Gather data shards, restore three pylons, and keep corruption from eating the island.
 
-The playable game’s **Three.js recreation** (start screen, dialogue, menus, original `loadWebGL` island — no phone or map) lives in DATAB-EACH at `/three-js` and in the standalone [datab-each-threejs](https://github.com/vladvrx/datab-each-threejs) repo. **Apply to game** opens [http://127.0.0.1:43173/three-js](http://127.0.0.1:43173/three-js).
+Genre: **Survival & Resource Management**.
 
-The viewport treats **Z as up**. DATAB-EACH stores transforms in Three.js Y-up; the editor converts on the way in and out so exported JSON matches the game.
+There is no Vue, no React, no phone, no map, and no notification toasts. The whole game is Three.js plus a small HTML layer for the start button, meters, and thumb controls.
 
-## Run locally
+## Play
 
 ```bash
-npm install
-npm run dev
+node server.mjs
 ```
 
-Open [http://127.0.0.1:43180](http://127.0.0.1:43180).
+Open [http://127.0.0.1:43217](http://127.0.0.1:43217). The playfield is locked to a 9:16 frame.
 
-## What you can edit
+- Drag the left pad to walk. WASD also works if you are on a desk.
+- Walk into cyan shards to pick them up. Purple shards are poisoned — they raise corruption.
+- Hold **RESTORE** near a dark pylon when you have 6 shards.
+- Talk to the other glorb for the short briefing.
+- Restore all three pylons to win. If the corruption bar fills, the island dissolves and you reset.
 
-- **World** — Cove, intro, bike circuit, easter egg, and test lab. Click to select. `W` move, `E` rotate, `R` scale. **Halve island** (or Island size in the inspector) crops the active map: terrain outside the box is clipped, objects on the discarded half are deleted, and Apply to game exports the smaller bounds. Drag the min/max X and Y fields to keep a custom rectangle. The asset tray places a mesh at the camera target. Inspector numbers are world-space with Z up. Drop a `.glb`, `.gltf`, or `.fbx` onto the viewport or use **Import GLB / FBX** — the mesh is sized, added to the tray, and placed in the scene (kept in this browser).
-- **Start** — Play the current island locally with your edits. WASD to walk, mouse to look, Space to jump, E to talk. Quests, hints, and dialogue come from the project. Esc or **Stop** returns to the editor.
-- **Quests** — titles, copy, unlock/reward conditions, items, and point values, with a phone preview.
-- **Dialogue** — speak/prompt graphs, bubbles, emotes, choices, and `GOTO` / `END` / `GIVE_QUEST_ITEM`.
-- **Characters** — NPC ids, gradient, face, script, args, and “place in scene”.
-- **Notifications** — hints and overlays, with a live toast/overlay preview.
+## Package for the competition
 
-## Shortcuts
+```bash
+node scripts/zip.mjs
+```
 
-| Key | Action |
-| --- | --- |
-| Q / W / E / R | Select / move / rotate / scale (editor) |
-| Start / Esc | Play / stop the local game |
-| WASD / mouse | Walk and look in play mode |
-| Space | Jump (play) |
-| E | Talk to a nearby character (play) |
-| G | Toggle snap |
-| Delete | Remove selected |
-| Ctrl/Cmd+D | Duplicate |
-| Ctrl/Cmd+Z | Undo |
-| Ctrl/Cmd+S | Save to this browser |
+That writes `glorb.zip` with `index.html` at the top level and Three.js in `vendor/`. Game code is concatenated into `index.html` and is not minified. The zip stays under 35MB.
+
+Unzip into a clean folder, serve it locally, open a private window, turn the network off, and play a full portrait session.
 
 ## Files
 
-Edits autosave in `localStorage`. **Start** playtests the island inside this editor. **Apply to game** writes quests, dialogue, characters, actors, and island props into the Three.js DATAB-EACH checkout (`DATAB_EACH_ROOT`, default `/tmp/datab-each`), patches the original `loadWebGL` bundles, starts the game on [http://127.0.0.1:43173](http://127.0.0.1:43173), and opens the Three.js build at `/three-js`. From a terminal you can do the same with `npm run apply-game`. **Studio** downloads the full project; **Game pack** is the raw JSON if you want to copy files yourself.
-
-The Three.js game uses the same GLBs, locale JSON, and WebGL runtime Studio already edits. Custom imported GLB/FBX meshes stay in Studio playtest; Apply only ships original Cove assets.
-
-Custom imported GLB/FBX meshes stay in Studio playtest; the original game only knows its shipped Cove assets. Apply also restyles the DATAB-EACH loading screen to light blue.
-
-Meshes and Draco decoders live under `public/game` and `public/draco`.
+| Path | Role |
+| --- | --- |
+| `src/glorb.js` | Readable game source |
+| `src/shell.html` | Portrait shell, HUD, import map |
+| `scripts/build.mjs` | Assembles `index.html` |
+| `vendor/three.module.min.js` | Three.js r185 |
+| `index.html` | Built game (all game code, not minified) |
