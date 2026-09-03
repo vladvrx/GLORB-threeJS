@@ -86,7 +86,7 @@ async function bundleGame() {
   const esbuild = await ensureEsbuild();
   const result = await esbuild.build({
     absWorkingDir: ROOT,
-    entryPoints: [path.join(ROOT, "scripts/jam-entry.js")],
+    entryPoints: [path.join(ROOT, "scripts/jam-engine.js")],
     bundle: true,
     format: "iife",
     platform: "browser",
@@ -95,6 +95,8 @@ async function bundleGame() {
     write: true,
     legalComments: "none",
     logLevel: "warning",
+    banner: { js: "window.__GLORB_START__=function(){" },
+    footer: { js: "};" },
     plugins: [stripQueryPlugin()],
   });
   if (result.errors?.length) {
@@ -109,7 +111,7 @@ function escapeScript(text) {
   return text.replace(/<\/script/gi, "<\\/script");
 }
 
-function writeIndex({ css, js, studio, dracoDecoder, dracoWrapper }) {
+function writeIndex({ css, js, boot, studio, dracoDecoder, dracoWrapper }) {
   const html = `<!doctype html>
 <html lang="en" class="no-js">
   <head>
@@ -174,6 +176,7 @@ function writeIndex({ css, js, studio, dracoDecoder, dracoWrapper }) {
       })();
     </script>
     <script>${escapeScript(js)}</script>
+    <script>${escapeScript(boot)}</script>
   </body>
 </html>
 `;
@@ -198,7 +201,8 @@ const dracoDecoder = fs.readFileSync(path.join(ROOT, "reference/vendors/draco/dr
 const dracoWrapper = fs.readFileSync(path.join(ROOT, "reference/vendors/draco/draco_wasm_wrapper.js"), "utf8");
 
 const js = await bundleGame();
-writeIndex({ css, js, studio, dracoDecoder, dracoWrapper });
+const boot = fs.readFileSync(path.join(ROOT, "scripts/jam-entry.js"), "utf8");
+writeIndex({ css, js, boot, studio, dracoDecoder, dracoWrapper });
 zipStage();
 fs.rmSync(STAGE, { recursive: true, force: true });
 

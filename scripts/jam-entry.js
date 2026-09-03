@@ -1,10 +1,3 @@
-import { initializePageBehavior } from "../direct-port/src/page-behavior.js";
-import { startEngine } from "../three-js/src/engine.js";
-
-function assetUrl(rel) {
-  return new URL(rel, document.baseURI);
-}
-
 function routerBasePath() {
   try {
     return new URL("./", document.baseURI).pathname;
@@ -31,23 +24,6 @@ function lockPortrait() {
   window.addEventListener("pointerdown", tryLock, { once: true });
 }
 
-function patchDracoFetch() {
-  const files = window.__GLORB_DRACO__ || {};
-  if (!Object.keys(files).length) return;
-  const original = window.fetch.bind(window);
-  window.fetch = (input, init) => {
-    const url = String(input && input.url ? input.url : input);
-    for (const [name, source] of Object.entries(files)) {
-      if (url.includes(name) && url.includes("draco")) {
-        return Promise.resolve(new Response(source, {
-          headers: { "content-type": "text/javascript" },
-        }));
-      }
-    }
-    return original(input, init);
-  };
-}
-
 async function loadSiteData() {
   const response = await fetch(new URL("./direct-port/data/site.json", document.baseURI));
   if (!response.ok) throw new Error(`Site data returned HTTP ${response.status}`);
@@ -61,14 +37,12 @@ async function loadSiteData() {
 
 async function boot() {
   lockPortrait();
-  patchDracoFetch();
   document.documentElement.classList.remove("no-js");
-  initializePageBehavior({
-    logoUrl: assetUrl("./reference/assets/databeach-logo.png"),
-    cursorUrl: assetUrl("./reference/assets/ui/game-cursor-4k.png"),
-  });
   window.__DATA = await loadSiteData();
-  return startEngine();
+  if (typeof window.__GLORB_START__ !== "function") {
+    throw new Error("glorb engine did not load");
+  }
+  window.__GLORB_START__();
 }
 
 boot().catch((error) => {
