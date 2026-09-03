@@ -313,7 +313,7 @@ html.journey-started .page-intro {
   right: -0.35em;
   top: -1.25em;
   height: 4em;
-  z-index: 2;
+  z-index: 0;
   pointer-events: none;
   background:
     radial-gradient(circle at 7% 78%, #fff 1.45em, transparent 1.46em),
@@ -334,7 +334,7 @@ html.journey-started .page-intro {
   right: -0.35em;
   bottom: -1.2em;
   height: 3.6em;
-  z-index: 2;
+  z-index: 0;
   pointer-events: none;
   background:
     radial-gradient(circle at 10% 28%, #fff 1.4em, transparent 1.41em),
@@ -453,7 +453,8 @@ html.journey-started .databeach-home-logo {
   filter: drop-shadow(0 8px 16px rgba(35, 33, 75, 0.22)) !important;
 }
 
-.notification[data-v-25064164] > * {
+.notification[data-v-25064164] .notification-content,
+.notification[data-v-25064164] .notification-button {
   position: relative;
   z-index: 1;
 }
