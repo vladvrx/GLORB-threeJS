@@ -16,7 +16,7 @@ Open [http://127.0.0.1:43217](http://127.0.0.1:43217). The playfield is locked t
 
 - Drag the left pad to walk. WASD also works if you are on a desk.
 - Walk into cyan shards to pick them up. Purple shards are poisoned — they raise corruption.
-- Hold **RESTORE** near a dark pylon when you have 6 shards.
+- Tap **RESTORE** near a dark pylon when you have 5 shards.
 - Talk to the other glorb for the short briefing.
 - Restore all three pylons to win. If the corruption bar fills, the island dissolves and you reset.
 

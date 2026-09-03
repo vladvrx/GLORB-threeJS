@@ -265,11 +265,11 @@ import * as THREE from "three";
 // glorb — portrait survival loop on a decaying data island.
 // Gather shards, restore pylons, outrun corruption, play again.
 
-const SHARD_COST = 6;
+const SHARD_COST = 5;
 const SHARD_CAP = 8;
 const PYLON_COUNT = 3;
-const STORM_START = 18;
-const MAX_SHARDS = 26;
+const STORM_START = 32;
+const MAX_SHARDS = 22;
 
 const COLORS = {
   sky: 0x70bfe4,
@@ -571,15 +571,24 @@ function makePylon(color) {
 }
 
 function makeShard(corrupted) {
+  const root = new THREE.Group();
   const mesh = new THREE.Mesh(
-    new THREE.OctahedronGeometry(0.48),
+    new THREE.OctahedronGeometry(0.52),
     mat(corrupted ? COLORS.bad : COLORS.shard, {
       emissive: corrupted ? COLORS.bad : COLORS.shard,
-      emissiveIntensity: 0.9,
+      emissiveIntensity: 1.1,
     }),
   );
   mesh.castShadow = true;
-  return mesh;
+  const pad = new THREE.Mesh(
+    new THREE.CircleGeometry(0.55, 12),
+    mat(corrupted ? COLORS.bad : COLORS.shard, { transparent: true, opacity: 0.45 }),
+  );
+  pad.rotation.x = -Math.PI / 2;
+  pad.position.y = -0.72;
+  root.add(mesh, pad);
+  root.userData.crystal = mesh;
+  return root;
 }
 
 function makeTree() {
@@ -735,7 +744,7 @@ function buildUi() {
   ui.bottom.append(ui.stick, ui.act);
 
   ui.title = el("h1", { id: "end-title" }, "glorb");
-  ui.copy = el("p", {}, "The island is dissolving. Gather shards, feed the pylons, and hold the cove together.");
+  ui.copy = el("p", {}, "The island is dissolving. Walk into the cyan crystals, feed the yellow pylon, then keep going.");
   ui.cta = el("button", { class: "cta hit", type: "button" }, "LETS GO");
   ui.cover.append(ui.title, ui.copy, ui.cta);
   ui.cover.style.pointerEvents = "auto";
@@ -804,7 +813,7 @@ const shards = [];
 const trees = [];
 
 const pylonSpots = [
-  { x: -3.2, z: 18.5, color: COLORS.yellow, name: "Sun pylon" },
+  { x: 0.2, z: 17.2, color: COLORS.yellow, name: "Sun pylon" },
   { x: 5.2, z: -2, color: COLORS.red, name: "Heart pylon" },
   { x: -2.4, z: -22, color: COLORS.teal, name: "Tide pylon" },
 ];
@@ -849,12 +858,11 @@ function spawnShards() {
     placed += 1;
   }
   const starters = [
-    [1.4, 24.6],
-    [-1.6, 24.2],
-    [2.2, 23.1],
-    [-0.4, 22.4],
-    [1.1, 21.2],
-    [-2.6, 21.8],
+    [0.7, 25.0],
+    [-0.5, 23.6],
+    [0.8, 22.2],
+    [-0.4, 20.8],
+    [0.6, 19.4],
   ];
   for (const [x, z] of starters) {
     if (!walkable(x, z)) continue;
@@ -889,7 +897,7 @@ function resetPylons() {
 const state = {
   mode: "start",
   shards: 0,
-  corruption: 10,
+  corruption: 6,
   restored: 0,
   time: 0,
   talked: false,
@@ -953,7 +961,7 @@ function setMode(mode) {
   ui.cover.classList.toggle("hidden", playing);
   if (mode === "start") {
     ui.title.textContent = "glorb";
-    ui.copy.textContent = "The island is dissolving. Gather shards, feed the pylons, and hold the cove together.";
+    ui.copy.textContent = "The island is dissolving. Walk into the cyan crystals, feed the yellow pylon, then keep going.";
     ui.cta.textContent = "LETS GO";
     ui.cta.classList.remove("again");
   } else if (mode === "win") {
@@ -973,7 +981,7 @@ function setMode(mode) {
 
 function startRun() {
   state.shards = 0;
-  state.corruption = 10;
+  state.corruption = 6;
   state.restored = 0;
   state.time = 0;
   state.talked = false;
@@ -1048,8 +1056,9 @@ function updateStorm(dt) {
     if (shard.taken || shard.corrupted) continue;
     if (Math.hypot(shard.mesh.position.x - storm.position.x, shard.mesh.position.z - storm.position.z) < 4.6) {
       shard.corrupted = true;
-      shard.mesh.material.color.setHex(COLORS.bad);
-      shard.mesh.material.emissive.setHex(COLORS.bad);
+      const crystal = shard.mesh.userData.crystal;
+      crystal.material.color.setHex(COLORS.bad);
+      crystal.material.emissive.setHex(COLORS.bad);
     }
   }
   if (Math.hypot(player.position.x - storm.position.x, player.position.z - storm.position.z) < 4.4 && state.stormHits === 0) {
@@ -1113,7 +1122,7 @@ function updatePlayer(dt) {
     setAction(state.talked ? "HI" : "TALK", true);
     if (input.action) {
       state.talked = true;
-      showSpeech("Six shards each. Skip the purple ones — storms poison them.", 4.5);
+      showSpeech("Five shards each. Skip the purple ones — storms poison them.", 4.5);
       sfx("talk");
     }
   } else {
@@ -1147,11 +1156,12 @@ function updateCamera(dt) {
 }
 
 function decayRate() {
-  let rate = 1.15;
-  if (state.time > 40) rate = 1.55;
-  if (state.time > 70) rate = 2.05;
-  rate -= state.restored * 0.22;
-  return Math.max(0.45, rate);
+  let rate = 0.52;
+  if (state.time > 28) rate = 0.85;
+  if (state.time > 55) rate = 1.25;
+  if (state.time > 80) rate = 1.7;
+  rate -= state.restored * 0.28;
+  return Math.max(0.22, rate);
 }
 
 function resize() {
@@ -1170,8 +1180,8 @@ function frame() {
 
   for (const shard of shards) {
     if (shard.taken) continue;
-    shard.mesh.rotation.y += dt * 2.2;
-    shard.mesh.position.y = heightAt(shard.x, shard.z) + 0.85 + Math.sin(clock.elapsedTime * 2 + shard.bob) * 0.16;
+    shard.mesh.userData.crystal.rotation.y += dt * 2.2;
+    shard.mesh.position.y = heightAt(shard.x, shard.z) + 0.9 + Math.sin(clock.elapsedTime * 2 + shard.bob) * 0.16;
   }
 
   if (state.mode === "play") {
