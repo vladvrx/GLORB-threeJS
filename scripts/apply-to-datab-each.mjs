@@ -223,14 +223,14 @@ function preserveQuestIcons(root, quests) {
   return quests;
 }
 
-const BLOCKED_HINTS = new Set(["customize", "map"]);
+const BLOCKED_HINTS = new Set(["customize", "map", "fintech", "partner"]);
 const KEEP_PLAYABLE_SCENES = new Set(["IslandIntro", "IslandWest"]);
 
 function stripMapMention(text) {
   if (typeof text !== "string") return text;
   return text
-    .replaceAll("Click here to open the map &amp; find out what you can visit", "Click here to find out what you can visit")
-    .replaceAll("Click here to open the map & find out what you can visit", "Click here to find out what you can visit")
+    .replaceAll("Click here to open the map &amp; find out what you can visit", "")
+    .replaceAll("Click here to open the map & find out what you can visit", "")
     .replaceAll("Open the map to quickly navigate and discover places to go", "");
 }
 
@@ -282,9 +282,6 @@ function mergeSiteCopy(root, pack) {
   }
   if (site.site.phone?.desc?.fintech && !site.site.phone.desc.partner) {
     site.site.phone.desc.partner = site.site.phone.desc.fintech;
-  }
-  if (site.site.hint?.fintech) {
-    site.site.hint.partner = site.site.hint.fintech;
   }
   for (const item of notifications) {
     if (item.type === "hint") {

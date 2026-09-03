@@ -10142,14 +10142,6 @@ const x_ = e => (Kt("data-v-17d5bb62"), e = e(), es(), e),
             delay: 8e3,
             onClick: g("Quests")
           },
-          partner: {
-            icon: "arrow",
-            iconColor: "blue",
-            loc: "hint.partner",
-            image: s_.get("phone-partner"),
-            delay: 8e3,
-            onClick: g("Map")
-          },
           accessories: {
             icon: "arrow",
             iconColor: "blue",
@@ -10161,7 +10153,7 @@ const x_ = e => (Kt("data-v-17d5bb62"), e = e(), es(), e),
         },
         h = dt(t.hintType);
       let u = c[h];
-      if (!u || "customize" === h || "map" === h) return a(), () => {};
+      if (!u || "customize" === h || "map" === h || "partner" === h || "fintech" === h) return a(), () => {};
       let d = cv.$l(u.loc + ".title"),
         p = cv.$l(u.loc + ".description"),
         m = u.image;
@@ -30946,9 +30938,7 @@ xF.isMainIsland = !0, xF.prepare = () => ({
     const e = this.webgl.app.$notifs,
       t = this.webgl.app.$quests,
       s = this.webgl.app.$savestate.game;
-    if (this.playingTimeReached(1500) ? this.setFirstHint() : this.isTutoNeeded && this.playingTimeReached(8e3) && this.webgl.app.$notifs.add("Hint", {
-      hintType: "partner"
-    }), this.playingTime > 3e4 && gF < vF.length) {
+    if (this.playingTimeReached(1500) ? this.setFirstHint() : 0, this.playingTime > 3e4 && gF < vF.length) {
       const s = this.webgl.time.elapsed,
         i = vF[gF],
         n = t[t.lastQuestID];

@@ -333,8 +333,8 @@ const applyPath = path.join(ROOT, "scripts/apply-to-datab-each.mjs");
 let apply = read(applyPath);
 if (!apply.includes("KEEP_PLAYABLE_SCENES")) {
   apply = apply.replace(
-    'const BLOCKED_HINTS = new Set(["customize", "map"]);',
-    `const BLOCKED_HINTS = new Set(["customize", "map"]);
+    'const BLOCKED_HINTS = new Set(["customize", "map", "fintech", "partner"]);',
+    `const BLOCKED_HINTS = new Set(["customize", "map", "fintech", "partner"]);
 const KEEP_PLAYABLE_SCENES = new Set(["IslandIntro", "IslandWest"]);`,
   );
   apply = apply.replace(

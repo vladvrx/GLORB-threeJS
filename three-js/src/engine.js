@@ -13,7 +13,7 @@ import { ThreeJsRoot } from "./root.js";
 import { installHud } from "./hud.js?v=no-pause-menu";
 
 function suppressRemovedHints(app) {
-  const blocked = new Set(["customize", "map"]);
+  const blocked = new Set(["customize", "map", "fintech", "partner"]);
   const notifs = app.$notifs || app.$notifications;
   if (!notifs || notifs.__blockedHints) return;
   notifs.__blockedHints = true;

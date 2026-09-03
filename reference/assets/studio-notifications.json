@@ -16,14 +16,6 @@
     "icon": "arrow"
   },
   {
-    "id": "fintech",
-    "type": "hint",
-    "title": "Head here first",
-    "description": "Click here to find out what you can visit",
-    "delayMs": 8000,
-    "icon": "arrow"
-  },
-  {
     "id": "enroll",
     "type": "hint",
     "title": "Save your progress",
