@@ -479,6 +479,8 @@ html.phone .popin[data-v-788c7aca] {
 
 /* ─── Vibrant character color swatches ─────────────────────────────────── */
 /* Override the original muted pastels with a punchy new palette.           */
+/* In-game body colors use the same pairs via the character cloth shader    */
+/* (colorId 27–31) and Character_Texture strips 251–255.                    */
 /* color-0: Electric Orange */
 .color-0[data-v-d2fd83f8] {
   background: linear-gradient(180deg, #ffb347 10%, #ff4500 85%) !important;
