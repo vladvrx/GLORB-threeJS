@@ -80,7 +80,8 @@ test("Three.js intro Yes choice boats the player to Cove Island", async ({ page 
 
   await expect.poll(async () => (await runtime(page)).scene, { timeout: 60_000 }).toBe("IslandWest");
   await expect.poll(async () => (await runtime(page)).route, { timeout: 30_000 }).toBe("Home");
-  await expect.poll(async () => (await runtime(page)).canMove, { timeout: 30_000 }).toBe(true);
+
+  await page.keyboard.press("Escape");
 
   const afterBoat = await runtime(page);
   if (afterBoat.sceneState < afterBoat.playingState) {
@@ -92,6 +93,8 @@ test("Three.js intro Yes choice boats the player to Cove Island", async ({ page 
     }, { timeout: 60_000 }).toBe(true);
     await page.keyboard.up("KeyW");
   }
+
+  await expect.poll(async () => (await runtime(page)).canMove, { timeout: 30_000 }).toBe(true);
 
   await expect.poll(async () => (await runtime(page)).headerVisible, { timeout: 30_000 }).toBe(true);
   await expect(page.locator("#threejs-hud .app-header [data-sound-toggle]")).toBeVisible();
