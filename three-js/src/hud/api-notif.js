@@ -13,7 +13,7 @@ const API_ERRORS = {
 };
 
 export function installApiNotif(app, host) {
-  const aside = el("aside", { class: "api-notif", "data-v-9527461f": "", hidden: true });
+  const aside = el("aside", { class: "api-notif", "data-v-9527461f": "" });
   const popin = el("div", { class: "popin", "data-v-9527461f": "" });
   const mask = el("div", { class: "background-mask", "data-v-9527461f": "" }, [
     el("div", { class: "background", "data-v-9527461f": "" }),
@@ -43,8 +43,8 @@ export function installApiNotif(app, host) {
 
   const paint = () => {
     const visible = flag(app.$store.isApiErrorVisible);
-    aside.hidden = !visible;
     aside.classList.toggle("is-visible", visible);
+    aside.setAttribute("aria-hidden", visible ? "false" : "true");
     title.innerHTML = copy.title || "";
     description.innerHTML = copy.description || "";
     buttons.replaceChildren();

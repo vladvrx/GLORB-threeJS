@@ -148,8 +148,15 @@ html.journey-started .page-intro {
   pointer-events: auto;
 }
 
-#threejs-hud .api-notif:not([hidden]),
-#threejs-hud .api-notif:not([hidden]) * {
+#threejs-hud .api-notif[data-v-9527461f]:not(.is-visible),
+#threejs-hud .api-notif[data-v-9527461f]:not(.is-visible):after,
+#threejs-hud .api-notif[data-v-9527461f]:not(.is-visible) * {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+#threejs-hud .api-notif.is-visible,
+#threejs-hud .api-notif.is-visible * {
   pointer-events: auto;
 }
 
