@@ -22,6 +22,6 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) or `/`.
 4. Vanilla HUD in `src/hud/` that talks to `$webgl.store`, `$dialogs`, and `$router`:
    - Start overlay if the intro route is late
    - Dialogue bubbles, typewriter, Yes / No thanks choices
-   - Header, mute, joystick, interaction button, jump (Space or bottom-right button; **1** for jump1)
+   - Header, mute, joystick, interaction button, jump (Space or bottom-right button)
 
 The competition zip inlines this tree into a single `index.html` via `npm run zip`. Dev still loads these modules separately.

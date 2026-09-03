@@ -1,6 +1,6 @@
 import { w as watch } from "../../../vendor/vendor.75f6e6ae65453426.js";
 import { circleButton, el, playUiSound, svgIcon, unwrap } from "../dom.js";
-import { installJumpButton } from "../jump.js?v=jump-3";
+import { installJumpButton } from "../jump.js?v=jump-4";
 import { installInteraction } from "./interaction.js";
 
 function flag(value) {
