@@ -537,3 +537,26 @@ html.phone .popin[data-v-72a9796e],
 html.phone .popin[data-v-788c7aca] {
   transform: translateY(25em) rotate(-4deg) !important;
 }
+
+/* ─── Vibrant character color swatches ─────────────────────────────────── */
+/* Override the original muted pastels with a punchy new palette.           */
+/* color-0: Electric Orange */
+.color-0[data-v-d2fd83f8] {
+  background: linear-gradient(180deg, #ffb347 10%, #ff4500 85%) !important;
+}
+/* color-1: Hot Magenta → Electric Purple */
+.color-1[data-v-d2fd83f8] {
+  background: linear-gradient(180deg, #ff6ef7 10%, #a000ff 85%) !important;
+}
+/* color-2: Neon Blue → Cyan */
+.color-2[data-v-d2fd83f8] {
+  background: linear-gradient(180deg, #30cfff 10%, #0055ff 85%) !important;
+}
+/* color-3: Lime Green → Emerald */
+.color-3[data-v-d2fd83f8] {
+  background: linear-gradient(180deg, #aaff00 10%, #00cc66 85%) !important;
+}
+/* color-4: Hot Pink → Coral Red */
+.color-4[data-v-d2fd83f8] {
+  background: linear-gradient(180deg, #ff3399 10%, #ff6600 85%) !important;
+}
