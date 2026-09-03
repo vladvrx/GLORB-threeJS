@@ -8103,7 +8103,7 @@ function pb(e = {}, t = {}) {
   const o = n.player = hb(n.player, ub);
   o.head = o.body = o.bottom = null, o.face = 0;
   const l = new Array(5).fill().map((e, t) => "character" + t);
-  o.color = l.includes(o.color) ? o.color : l[0];
+  o.color = l.includes(o.color) ? o.color : l[4];
   let c = 0;
   const h = Array.isArray(n.interests) ? n.interests : [];
   n.interests = new Set();

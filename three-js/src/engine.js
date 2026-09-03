@@ -129,6 +129,9 @@ export async function startEngine() {
     requestedChatAssistant: false,
   });
   if (!app.$savestate.saveToken) app.$store.isGuest = true;
+  if (!app.$savestate.game.player.color || app.$savestate.game.player.color === "character0") {
+    app.$savestate.game.player.color = "character4";
+  }
   await app.$quests.init();
   await app.$partners.linkQuests();
 
