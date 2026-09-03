@@ -3863,7 +3863,7 @@ An.setDRACOLoader(Pn), In.loader = {
 const Rn = "./reference/assets/sprites.d8373bb465453426.json",
   kn = wt.list(Object.assign({
     "./reference/assets/canvas/sprites/sprites.json": Rn,
-    "./reference/assets/canvas/sprites/sprites.png": "./reference/assets/sprites.ca9a51e965453426.png"
+    "./reference/assets/canvas/sprites/sprites.png": "./reference/assets/sprites.ca9a51e965453426.png?v=new-sprites-sheet"
   })),
   Dn = (e, t, s, i) => Ln[e] = {
     default: t,
