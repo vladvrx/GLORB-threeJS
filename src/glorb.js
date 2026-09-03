@@ -64,9 +64,14 @@ function fbm(x, z) {
   );
 }
 
+function smooth(min, max, x) {
+  const t = clamp((x - min) / (max - min), 0, 1);
+  return t * t * (3 - 2 * t);
+}
+
 function heightAt(x, z) {
   const ridge = Math.exp(-(x * x) / (21 * 21) - (z * z) / (36 * 36));
-  const shore = THREE.MathUtils.smoothstep(0.16, 0.58, ridge);
+  const shore = smooth(0.16, 0.58, ridge);
   const n = fbm(x * 0.09, z * 0.08);
   return shore * (0.28 + n * 2.55);
 }
@@ -212,21 +217,30 @@ function bindInput(stick, knob) {
 
   window.addEventListener("keydown", (event) => {
     input.keys[event.code] = true;
-    if (event.code === "KeyE" || event.code === "Space") input.action = true;
+    input.keys[event.key.toLowerCase()] = true;
+    if (event.code === "KeyE" || event.code === "Space" || event.key === "e" || event.key === " ") input.action = true;
   });
   window.addEventListener("keyup", (event) => {
     input.keys[event.code] = false;
-    if (event.code === "KeyE" || event.code === "Space") input.actionHeld = false;
+    input.keys[event.key.toLowerCase()] = false;
+    if (event.code === "KeyE" || event.code === "Space" || event.key === "e" || event.key === " ") input.actionHeld = false;
   });
 }
 
 function pollKeys() {
-  const ix = (input.keys.KeyD || input.keys.ArrowRight ? 1 : 0) - (input.keys.KeyA || input.keys.ArrowLeft ? 1 : 0);
-  const iz = (input.keys.KeyS || input.keys.ArrowDown ? 1 : 0) - (input.keys.KeyW || input.keys.ArrowUp ? 1 : 0);
+  const right = input.keys.KeyD || input.keys.ArrowRight || input.keys.d;
+  const left = input.keys.KeyA || input.keys.ArrowLeft || input.keys.a;
+  const down = input.keys.KeyS || input.keys.ArrowDown || input.keys.s;
+  const up = input.keys.KeyW || input.keys.ArrowUp || input.keys.w;
+  const ix = (right ? 1 : 0) - (left ? 1 : 0);
+  const iz = (down ? 1 : 0) - (up ? 1 : 0);
   if (ix || iz) {
     const len = Math.hypot(ix, iz) || 1;
     input.x = ix / len;
     input.z = iz / len;
+  } else if (input.pointerId == null) {
+    input.x = 0;
+    input.z = 0;
   }
 }
 
@@ -296,10 +310,10 @@ function makePylon(color) {
 
 function makeShard(corrupted) {
   const mesh = new THREE.Mesh(
-    new THREE.OctahedronGeometry(0.28),
+    new THREE.OctahedronGeometry(0.48),
     mat(corrupted ? COLORS.bad : COLORS.shard, {
       emissive: corrupted ? COLORS.bad : COLORS.shard,
-      emissiveIntensity: 0.45,
+      emissiveIntensity: 0.9,
     }),
   );
   mesh.castShadow = true;
@@ -528,7 +542,7 @@ const shards = [];
 const trees = [];
 
 const pylonSpots = [
-  { x: -4.5, z: 14, color: COLORS.yellow, name: "Sun pylon" },
+  { x: -3.2, z: 18.5, color: COLORS.yellow, name: "Sun pylon" },
   { x: 5.2, z: -2, color: COLORS.red, name: "Heart pylon" },
   { x: -2.4, z: -22, color: COLORS.teal, name: "Tide pylon" },
 ];
@@ -567,23 +581,23 @@ function spawnShards() {
     if (!walkable(x, z)) continue;
     if (Math.hypot(x - 0, z - 26) < 3) continue;
     const mesh = makeShard(false);
-    placeOnGround(mesh, x, z, 0.55);
+    placeOnGround(mesh, x, z, 0.85);
     scene.add(mesh);
     shards.push({ mesh, x, z, corrupted: false, taken: false, bob: hash(guard, 8) * Math.PI * 2 });
     placed += 1;
   }
   const starters = [
-    [1.6, 22.4],
-    [-2.2, 21.6],
-    [2.8, 19.8],
-    [-1.1, 18.7],
-    [0.4, 16.9],
-    [-3.4, 17.8],
+    [1.4, 24.6],
+    [-1.6, 24.2],
+    [2.2, 23.1],
+    [-0.4, 22.4],
+    [1.1, 21.2],
+    [-2.6, 21.8],
   ];
   for (const [x, z] of starters) {
     if (!walkable(x, z)) continue;
     const mesh = makeShard(false);
-    placeOnGround(mesh, x, z, 0.55);
+    placeOnGround(mesh, x, z, 0.85);
     scene.add(mesh);
     shards.push({ mesh, x, z, corrupted: false, taken: false, bob: x + z });
   }
@@ -622,7 +636,7 @@ const state = {
   stormT: 0,
   stormHits: 0,
   yaw: 0,
-  camA: 0.6,
+  snapCam: true,
 };
 
 function showSpeech(text, seconds) {
@@ -715,17 +729,16 @@ function startRun() {
   placeOnGround(boat, 6.5, 29.5, 0.1);
   boat.position.y = 0.18;
   storm.visible = false;
+  state.snapCam = true;
   setMode("play");
   paintHud();
-  showSpeech("Shards feed pylons. Restore all three before the island dissolves.", 5.5);
-  sfx("talk");
 }
 
 function collectShards() {
   for (const shard of shards) {
     if (shard.taken) continue;
     const d = Math.hypot(player.position.x - shard.mesh.position.x, player.position.z - shard.mesh.position.z);
-    if (d > 1.15) continue;
+    if (d > 1.45) continue;
     shard.taken = true;
     shard.mesh.visible = false;
     if (shard.corrupted) {
@@ -797,8 +810,11 @@ function updatePlayer(dt) {
   if (moving > 0.08) {
     camera.getWorldDirection(_forward);
     _forward.y = 0;
-    if (_forward.lengthSq() < 0.0001) _forward.set(0, 0, -1);
-    _forward.normalize();
+    if (_forward.lengthSq() < 0.05) {
+      _forward.set(Math.sin(state.yaw), 0, Math.cos(state.yaw));
+    } else {
+      _forward.normalize();
+    }
     const rightX = _forward.z;
     const rightZ = -_forward.x;
     _wish.set(
@@ -829,12 +845,8 @@ function updatePlayer(dt) {
   if (pylon && !pylon.restored) {
     const enough = state.shards >= SHARD_COST;
     setAction(enough ? "RESTORE" : `NEED ${SHARD_COST}`, enough);
-    if (enough && (input.actionHeld || input.action)) {
-      state.restoreHold += dt;
-      if (state.restoreHold > 0.55) restorePylon(pylon);
-    } else {
-      state.restoreHold = 0;
-    }
+    if (enough && input.action) restorePylon(pylon);
+    state.restoreHold = 0;
   } else if (nearNpc()) {
     setAction(state.talked ? "HI" : "TALK", true);
     if (input.action) {
@@ -852,18 +864,24 @@ function updatePlayer(dt) {
 function updateCamera(dt) {
   if (state.mode !== "play") {
     state.camA += dt * 0.18;
-    camera.position.set(Math.sin(state.camA) * 30, 16, Math.cos(state.camA) * 30);
-    camera.lookAt(0, 1.2, 4);
+    camera.position.set(Math.sin(state.camA) * 16, 13, Math.cos(state.camA) * 24);
+    camera.lookAt(0, 0.4, 6);
     return;
   }
-  const back = 8.4;
-  const height = 6.2;
+  const back = 6.6;
+  const height = 3.8;
   const tx = player.position.x - Math.sin(state.yaw) * back;
   const tz = player.position.z - Math.cos(state.yaw) * back;
-  camera.position.x = damp(camera.position.x, tx, 3.2, dt);
-  camera.position.z = damp(camera.position.z, tz, 3.2, dt);
-  camera.position.y = damp(camera.position.y, player.position.y + height, 3.2, dt);
-  camera.lookAt(player.position.x, player.position.y + 1.35, player.position.z);
+  const ty = player.position.y + height;
+  if (state.snapCam) {
+    camera.position.set(tx, ty, tz);
+    state.snapCam = false;
+  } else {
+    camera.position.x = damp(camera.position.x, tx, 4.4, dt);
+    camera.position.z = damp(camera.position.z, tz, 4.4, dt);
+    camera.position.y = damp(camera.position.y, ty, 4.4, dt);
+  }
+  camera.lookAt(player.position.x, player.position.y + 1.15, player.position.z);
 }
 
 function decayRate() {
@@ -891,7 +909,7 @@ function frame() {
   for (const shard of shards) {
     if (shard.taken) continue;
     shard.mesh.rotation.y += dt * 2.2;
-    shard.mesh.position.y = heightAt(shard.x, shard.z) + 0.55 + Math.sin(clock.elapsedTime * 2 + shard.bob) * 0.12;
+    shard.mesh.position.y = heightAt(shard.x, shard.z) + 0.85 + Math.sin(clock.elapsedTime * 2 + shard.bob) * 0.16;
   }
 
   if (state.mode === "play") {
@@ -937,4 +955,5 @@ boat.position.y = 0.18;
 setMode("start");
 resize();
 window.addEventListener("resize", resize);
+window.__glorb = { input, state, player, shards, pylons };
 requestAnimationFrame(frame);

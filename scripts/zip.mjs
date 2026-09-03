@@ -11,6 +11,7 @@ fs.rmSync(staging, { recursive: true, force: true });
 fs.mkdirSync(path.join(staging, "vendor"), { recursive: true });
 fs.copyFileSync(path.join(root, "index.html"), path.join(staging, "index.html"));
 fs.copyFileSync(path.join(root, "vendor/three.module.min.js"), path.join(staging, "vendor/three.module.min.js"));
+fs.copyFileSync(path.join(root, "vendor/three.core.min.js"), path.join(staging, "vendor/three.core.min.js"));
 fs.copyFileSync(path.join(root, "vendor/LICENSE-three.txt"), path.join(staging, "vendor/LICENSE-three.txt"));
 
 const zipPath = path.join(root, "glorb.zip");

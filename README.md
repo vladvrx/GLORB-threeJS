@@ -37,5 +37,6 @@ Unzip into a clean folder, serve it locally, open a private window, turn the net
 | `src/glorb.js` | Readable game source |
 | `src/shell.html` | Portrait shell, HUD, import map |
 | `scripts/build.mjs` | Assembles `index.html` |
-| `vendor/three.module.min.js` | Three.js r185 |
+| `vendor/three.module.min.js` | Three.js r185 WebGL build |
+| `vendor/three.core.min.js` | Three.js r185 core (required sibling of the module build) |
 | `index.html` | Built game (all game code, not minified) |

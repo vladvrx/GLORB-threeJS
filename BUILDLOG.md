@@ -21,4 +21,4 @@ Talk bubbles are in-world briefing, not a notification system. Meters and the re
 
 ## Pass 4 — verify
 
-Play in the 9:16 frame: start → gather → restore at least one pylon → storm corrupts shards → win or lose → play again. Confirm the zip is under 35MB and the built `index.html` still contains readable function names.
+Play in the 9:16 frame: start → gather → restore at least one pylon → storm corrupts shards → win or lose → play again. Confirm the zip is under 35MB and contains `index.html` plus `vendor/three.module.min.js` and `vendor/three.core.min.js`. Game function names stay readable.
