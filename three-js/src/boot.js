@@ -31,7 +31,7 @@ async function boot() {
   document.documentElement.classList.remove("no-js");
   initializePageBehavior({ logoUrl, cursorUrl });
   window.__DATA = await loadSiteData();
-  const { startEngine } = await import("./engine.js?v=paint-1");
+  const { startEngine } = await import("./engine.js?v=paint-2");
   return startEngine();
 }
 

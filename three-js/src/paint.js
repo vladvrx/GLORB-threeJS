@@ -34,10 +34,12 @@ function sceneId(app) {
   return unwrap(scenes?.currentSceneID) || scenes?.current?.id || null;
 }
 
-function playing(app) {
+function westPlayable(app) {
   const store = app.$store;
   if (!store) return false;
-  return Number(unwrap(store.sceneState)) >= Number(unwrap(store.sceneStates?.Playing));
+  const sceneState = Number(unwrap(store.sceneState));
+  const tutorial = Number(unwrap(store.sceneStates?.Tutorial) ?? 0);
+  return sceneState >= tutorial;
 }
 
 function cellCount() {
@@ -362,7 +364,7 @@ function tickPaint(app, state) {
   if (!scene) return;
   attachVisual(state, scene);
   tickScan(state, app);
-  if (!playing(app) || flag(app.$store?.isTransitionActive) || flag(app.$store?.isDialogVisible)) {
+  if (!westPlayable(app) || flag(app.$store?.isTransitionActive) || flag(app.$store?.isDialogVisible)) {
     publish(state);
     return;
   }
@@ -507,11 +509,11 @@ export function installPaintHud(app, host) {
   const meterVisible = () => {
     const store = app.$store;
     return sceneId(app) === "IslandWest"
-      && playing(app)
+      && westPlayable(app)
       && !flag(store?.isTransitionActive)
       && !flag(store?.isCustomizeOpen)
       && !flag(store?.isCinematicActive)
-      && unwrap(app.$route?.name) === "Home";
+      && !flag(store?.isDialogVisible);
   };
 
   const paintHud = () => {

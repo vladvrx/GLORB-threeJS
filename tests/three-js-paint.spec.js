@@ -34,7 +34,10 @@ async function enterWestPlaying(page) {
     }
     store.isTransitionActive = false;
     store.isTransitionActiveDelayed = false;
-    store.sceneState = store.sceneStates.Playing;
+    const scene = scenes?.current;
+    if (scene?.setState) scene.setState("Playing");
+    else store.sceneState = store.sceneStates.Playing;
+    if (scene) scene.isEntered = true;
     if (app.$route?.name !== "Home") await app.$router.replace({ name: "Home" });
   });
   await page.waitForFunction(() => {
@@ -52,7 +55,25 @@ test("walking paints the ground and fills the paint bar", async ({ page }) => {
   await enterWestPlaying(page);
 
   const meter = page.locator("#threejs-hud .paint-meter");
-  await expect.poll(async () => meter.evaluate((node) => node.classList.contains("is-visible")), { timeout: 20_000 }).toBe(true);
+  await expect.poll(async () => page.evaluate(() => {
+    const app = window.__THREE_JS_GAME__?.app;
+    const meter = document.querySelector("#threejs-hud .paint-meter");
+    const scenes = app?.$webgl?.scenes;
+    return {
+      visible: meter?.classList.contains("is-visible") || false,
+      hidden: meter?.hidden ?? null,
+      scene: scenes?.currentSceneID?.value || scenes?.current?.id || null,
+      sceneState: app?.$store?.sceneState ?? null,
+      playing: app?.$store?.sceneStates?.Playing ?? null,
+      tutorial: app?.$store?.sceneStates?.Tutorial ?? null,
+      route: app?.$route?.name ?? null,
+      transition: !!app?.$store?.isTransitionActive,
+      dialog: !!app?.$store?.isDialogVisible,
+      painted: app?.__paintState?.painted ?? null,
+      ready: !!app?.__paintState?.ready,
+      mesh: !!app?.__paintState?.mesh,
+    };
+  }), { timeout: 20_000 }).toMatchObject({ visible: true });
 
   const before = await page.evaluate(() => window.__THREE_JS_GAME__.app.__paintState?.painted || 0);
 
