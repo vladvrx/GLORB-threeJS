@@ -367,13 +367,17 @@ html.journey-started .databeach-home-logo {
 }
 
 
-/* Toast banners rise from the bottom edge instead of dropping from the top. */
+/* ─── Toast notifications as cloud popups ───────────────────────────────── */
+
+/* Container: anchor to bottom, align right so cloud tail points down-right */
 .notif[data-v-25064164] {
   top: auto !important;
   bottom: 0 !important;
   padding-top: 0 !important;
   padding-bottom: var(--app-padding) !important;
   align-items: flex-end !important;
+  justify-content: flex-end !important;
+  padding-right: var(--app-padding) !important;
 }
 
 @media (min-width: 640px) {
@@ -382,10 +386,66 @@ html.journey-started .databeach-home-logo {
   }
 }
 
+/* The card itself becomes a white cloud shape */
+.notification[data-v-25064164] {
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 55%, #eaf4ff 100%) !important;
+  border-radius: 2.8em !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 8px 18px rgba(35, 33, 75, 0.25)) !important;
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* Top puffs: a wide strip of overlapping circles rendered with a multi-stop
+   radial-gradient so it reads as bumpy cloud skyline. */
+.notification[data-v-25064164]::before {
+  content: "";
+  position: absolute;
+  top: -2.2em;
+  left: -0.5em;
+  right: -0.5em;
+  height: 3.4em;
+  background:
+    radial-gradient(ellipse 3em 3em at 8%   100%, #eaf4ff 98%, transparent 100%),
+    radial-gradient(ellipse 4em 3.6em at 22% 100%, #f7fbff 98%, transparent 100%),
+    radial-gradient(ellipse 4.6em 4em at 38% 100%, #ffffff  98%, transparent 100%),
+    radial-gradient(ellipse 3.4em 3em at 54% 100%, #f7fbff 98%, transparent 100%),
+    radial-gradient(ellipse 4em 3.6em at 70% 100%, #ffffff  98%, transparent 100%),
+    radial-gradient(ellipse 3em 2.8em at 84% 100%, #f7fbff 98%, transparent 100%),
+    radial-gradient(ellipse 2.4em 2.4em at 96% 100%, #eaf4ff 98%, transparent 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Bottom-right cloud tail — three descending bubbles */
+.notification[data-v-25064164]::after {
+  content: "";
+  position: absolute;
+  bottom: -1.35em;
+  right: 12%;
+  width: 1.4em;
+  height: 1.4em;
+  border-radius: 50%;
+  background: #f7fbff;
+  box-shadow:
+    0.8em  0.9em 0 -0.1em #eaf4ff,
+    1.5em  1.8em 0 -0.3em #e0efff;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Children sit above the puff layers */
+.notification[data-v-25064164] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Entry slide: from further down so the cloud floats up */
 .notif:not(.visible) .notification[data-v-25064164] {
   transform: translateY(200px) rotate(-4deg) !important;
 }
 
+/* Phone (html.phone) notifications */
 html.phone .notif[data-v-72a9796e],
 html.phone .notif[data-v-788c7aca] {
   top: auto !important;
