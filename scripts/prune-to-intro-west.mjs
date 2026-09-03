@@ -207,15 +207,8 @@ function patchWebgl(file) {
   return changed;
 }
 
-function keepDialogKey(key, usedActors) {
-  if (key === "Intro") return true;
-  if (key.startsWith("dev")) return false;
-  if (key.includes("Easter_Egg") || key.includes("Test_ChatGpt")) return false;
-  if (key === "Salve_Healed" && [...usedActors].some((id) => id.startsWith("Salve_"))) return true;
-  for (const id of usedActors) {
-    if (key === id || key.startsWith(`${id}_`)) return true;
-  }
-  return false;
+function keepDialogKey(key) {
+  return key === "Intro" || key === "dev";
 }
 
 const vendorPath = path.join(ROOT, "vendor/vendor.75f6e6ae65453426.js");
@@ -268,7 +261,7 @@ if (fs.existsSync(packPath)) {
   }
   if (pack.dialogs_en) {
     pack.dialogs_en = Object.fromEntries(
-      Object.entries(pack.dialogs_en).filter(([key]) => keepDialogKey(key, usedActors)),
+      Object.entries(pack.dialogs_en).filter(([key]) => keepDialogKey(key)),
     );
   }
   if (pack.characters_en?.npcs) {
@@ -295,7 +288,7 @@ function filterJsonFile(file, keep) {
 }
 
 filterJsonFile(path.join(ROOT, "reference/assets/dialogs_en.json"), (data) =>
-  Object.fromEntries(Object.entries(data).filter(([key]) => keepDialogKey(key, usedActors))),
+  Object.fromEntries(Object.entries(data).filter(([key]) => keepDialogKey(key))),
 );
 
 filterJsonFile(path.join(ROOT, "reference/assets/characters_en.json"), (data) => {

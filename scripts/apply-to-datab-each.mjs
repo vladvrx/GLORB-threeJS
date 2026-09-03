@@ -225,6 +225,67 @@ function preserveQuestIcons(root, quests) {
 
 const BLOCKED_HINTS = new Set(["customize", "map", "fintech", "partner"]);
 const KEEP_PLAYABLE_SCENES = new Set(["IslandIntro", "IslandWest"]);
+const DROPPED_DIALOG_SCRIPTS = new Set([
+  "Aven_Ambassador_ComeBack",
+  "Aven_Ambassador_FirstTime",
+  "Aven_Quest_Before",
+  "Aven_Quest_Completed",
+  "Aven_Quest_SideCompleted",
+  "Aven_Quest_Started",
+  "Brigit_Ambassador_ComeBack",
+  "Brigit_Ambassador_FirstTime",
+  "Brigit_Quest_BeforeSide",
+  "Brigit_Quest_ComeBack",
+  "Brigit_Quest_FirstTime",
+  "Brigit_Quest_SideCompleted",
+  "Citizen_Easter_EggD",
+  "Citizen_Easter_EggE",
+  "Citizen_Easter_EggF",
+  "Citizen_West_Beach",
+  "Citizen_West_ChestHint",
+  "Citizen_West_Forest",
+  "Citizen_West_PomeloIslandHint",
+  "Citizen_West_PylonIslandHint",
+  "Citizen_West_StandingC",
+  "Cobble_Ambassador_ComeBack",
+  "Cobble_Ambassador_FirstTime",
+  "Cobble_Quest_Before",
+  "Cobble_Quest_Completed",
+  "Cobble_Quest_SideCompleted",
+  "Cobble_Quest_Started",
+  "Pomelo_Ambassador_ComeBack",
+  "Pomelo_Ambassador_FirstTime",
+  "Pomelo_Quest_Before",
+  "Pomelo_Quest_Completed",
+  "Pomelo_Quest_Started",
+  "Pylon_Ambassador_ComeBack",
+  "Pylon_Ambassador_FirstTime",
+  "Pylon_Quest_Before",
+  "Pylon_Quest_Completed",
+  "Pylon_Quest_Started",
+  "Salve_Ambassador_ComeBack",
+  "Salve_Ambassador_FirstTime",
+  "Salve_Healed",
+  "Salve_Quest_Before",
+  "Salve_Quest_Completed",
+  "Salve_Quest_SideCompleted",
+  "Salve_Quest_Started",
+  "Test_ChatGpt",
+  "Trail_Ambassador_ComeBack",
+  "Trail_Ambassador_FirstTime",
+  "Trail_Quest_BeforeSide",
+  "Trail_Quest_ComeBack",
+  "Trail_Quest_FirstTime",
+  "Trail_Quest_SideCompleted",
+  "Zenda_Ambassador_ComeBack",
+  "Zenda_Ambassador_FirstTime",
+  "Zenda_Healed",
+  "Zenda_Quest_Before",
+  "Zenda_Quest_Completed",
+  "Zenda_Quest_SideCompleted",
+  "Zenda_Quest_Started",
+  "dev_missing",
+]);
 
 function stripMapMention(text) {
   if (typeof text !== "string") return text;
@@ -232,6 +293,13 @@ function stripMapMention(text) {
     .replaceAll("Click here to open the map &amp; find out what you can visit", "")
     .replaceAll("Click here to open the map & find out what you can visit", "")
     .replaceAll("Open the map to quickly navigate and discover places to go", "");
+}
+
+function stripDialogScripts(pack) {
+  if (!pack?.dialogs_en || typeof pack.dialogs_en !== "object" || Array.isArray(pack.dialogs_en)) return;
+  pack.dialogs_en = Object.fromEntries(
+    Object.entries(pack.dialogs_en).filter(([id]) => !DROPPED_DIALOG_SCRIPTS.has(id)),
+  );
 }
 
 function stripBlockedHints(pack, site) {
@@ -946,6 +1014,7 @@ export function applyPack(root, pack) {
 
   pack = remap(pack);
   stripBlockedHints(pack);
+  stripDialogScripts(pack);
   if (pack.scenes) {
     for (const [key, scene] of Object.entries(pack.scenes)) {
       if (!KEEP_PLAYABLE_SCENES.has(sceneIdFromPackKey(key))) {
@@ -1004,6 +1073,7 @@ export function applyPack(root, pack) {
     locales: ["quests_en.json", "characters_en.json", "dialogs_en.json", "studio-notifications.json"],
     scenes: Object.keys(pack.scenes ?? {}),
     intro: pack.dialogs_en?.Intro?.Hello?.bubbles?.[0] ?? null,
+    dialogs: Object.keys(pack.dialogs_en ?? {}),
     startCta: site?.startCta ?? null,
     cacheToken: token,
     patched: { ...patched, ...caches },
@@ -1075,6 +1145,19 @@ if (isMain) {
     }
     if (branded.dialogs_en.Intro.Hello.bubbles[0] !== "Welcome aboard, newcomer...") {
       throw new Error("self-test: intro dialogue missing");
+    }
+    const extraDialogs = {
+      dialogs_en: {
+        Intro: branded.dialogs_en.Intro,
+        dev: { __first__: "Test", Test: { id: "Test", isSpeak: true, bubbles: ["Hello world"], next: [{ action: "END" }] } },
+        Pylon_Quest_Before: { __first__: "Start" },
+        Citizen_West_Beach: { __first__: "Start" },
+        CustomNew: { __first__: "Start" },
+      },
+    };
+    stripDialogScripts(extraDialogs);
+    if (Object.keys(extraDialogs.dialogs_en).sort().join(",") !== "CustomNew,Intro,dev") {
+      throw new Error("self-test: extra dialogue scripts were not stripped");
     }
     if (branded.locale?.cta?.start !== "Start the journey") {
       throw new Error("self-test: locale start CTA missing");
