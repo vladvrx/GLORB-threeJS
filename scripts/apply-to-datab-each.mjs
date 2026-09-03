@@ -221,6 +221,52 @@ function preserveQuestIcons(root, quests) {
   return quests;
 }
 
+const BLOCKED_HINTS = new Set(["customize", "map"]);
+
+function stripMapMention(text) {
+  if (typeof text !== "string") return text;
+  return text
+    .replaceAll("Click here to open the map &amp; find out what you can visit", "Click here to find out what you can visit")
+    .replaceAll("Click here to open the map & find out what you can visit", "Click here to find out what you can visit")
+    .replaceAll("Open the map to quickly navigate and discover places to go", "");
+}
+
+function stripBlockedHints(pack, site) {
+  if (Array.isArray(pack?.notifications)) {
+    pack.notifications = pack.notifications
+      .filter((item) => !BLOCKED_HINTS.has(item.id))
+      .map((item) => ({
+        ...item,
+        title: stripMapMention(item.title),
+        description: stripMapMention(item.description),
+      }));
+  }
+  if (pack?.site_hints) {
+    for (const id of BLOCKED_HINTS) delete pack.site_hints[id];
+    for (const hint of Object.values(pack.site_hints)) {
+      if (!hint || typeof hint !== "object") continue;
+      hint.title = stripMapMention(hint.title);
+      hint.description = stripMapMention(hint.description);
+    }
+  }
+  if (pack?.locale?.hint) {
+    for (const id of BLOCKED_HINTS) delete pack.locale.hint[id];
+    for (const hint of Object.values(pack.locale.hint)) {
+      if (!hint || typeof hint !== "object") continue;
+      hint.title = stripMapMention(hint.title);
+      hint.description = stripMapMention(hint.description);
+    }
+  }
+  if (site?.site?.hint) {
+    for (const id of BLOCKED_HINTS) delete site.site.hint[id];
+    for (const hint of Object.values(site.site.hint)) {
+      if (!hint || typeof hint !== "object") continue;
+      hint.title = stripMapMention(hint.title);
+      hint.description = stripMapMention(hint.description);
+    }
+  }
+}
+
 function mergeSiteCopy(root, pack) {
   const sitePath = path.join(root, "direct-port", "data", "site.json");
   if (!fs.existsSync(sitePath)) return null;
@@ -239,8 +285,10 @@ function mergeSiteCopy(root, pack) {
   }
   for (const item of notifications) {
     if (item.type === "hint") {
+      if (BLOCKED_HINTS.has(item.id)) continue;
       site.site.hint ??= {};
       const key = item.id === "fintech" ? "partner" : item.id;
+      if (BLOCKED_HINTS.has(key)) continue;
       site.site.hint[key] = { title: item.title ?? "", description: item.description ?? "" };
     }
     if (item.id === "MainQuestCompleted" && site.site.quest?.end) {
@@ -253,6 +301,7 @@ function mergeSiteCopy(root, pack) {
       site.site.quest.progress = item.description || item.title;
     }
   }
+  stripBlockedHints(pack, site);
   writeJson(sitePath, site);
   return {
     startCta: site.site.cta?.start ?? null,
@@ -896,6 +945,7 @@ export function applyPack(root, pack) {
   }
 
   pack = remap(pack);
+  stripBlockedHints(pack);
   if (pack.scenes) {
     for (const [key, scene] of Object.entries(pack.scenes)) {
       pack.scenes[key] = shippedScene(scene);

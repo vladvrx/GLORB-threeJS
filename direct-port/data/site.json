@@ -51,10 +51,6 @@
       }
     },
     "hint": {
-      "customize": {
-        "title": "Change your style!",
-        "description": "Click here to change your alien color."
-      },
       "quest": {
         "title": "New quest available",
         "description": "Click here to check your&nbsp;quests."
@@ -63,17 +59,13 @@
         "title": "New accessories available",
         "description": "Click here to buy your&nbsp;new&nbsp;accessories."
       },
-      "map": {
-        "title": "",
-        "description": "Open the map to quickly navigate and discover places to go"
-      },
       "partner": {
         "title": "Head here first",
-        "description": "Click here to open the map &amp; find out what you can visit"
+        "description": "Click here to find out what you can visit"
       },
       "fintech": {
         "title": "Head here first",
-        "description": "Click here to open the map &amp; find out what you can visit"
+        "description": "Click here to find out what you can visit"
       },
       "enroll": {
         "title": "Save your progress",

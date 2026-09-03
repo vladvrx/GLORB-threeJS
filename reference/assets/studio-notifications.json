@@ -1,13 +1,5 @@
 [
   {
-    "id": "customize",
-    "type": "hint",
-    "title": "Change your style!",
-    "description": "Click here to change your alien color.",
-    "delayMs": 8000,
-    "icon": "arrow"
-  },
-  {
     "id": "quest",
     "type": "hint",
     "title": "New quest available",
@@ -24,18 +16,10 @@
     "icon": "arrow"
   },
   {
-    "id": "map",
-    "type": "hint",
-    "title": "",
-    "description": "Open the map to quickly navigate and discover places to go",
-    "delayMs": 8000,
-    "icon": "arrow"
-  },
-  {
     "id": "fintech",
     "type": "hint",
     "title": "Head here first",
-    "description": "Click here to open the map &amp; find out what you can visit",
+    "description": "Click here to find out what you can visit",
     "delayMs": 8000,
     "icon": "arrow"
   },

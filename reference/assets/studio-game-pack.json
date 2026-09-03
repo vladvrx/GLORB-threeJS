@@ -243,7 +243,7 @@
             0.47413898,
             0.47413903,
             0.004548,
-            4.9e-05,
+            0.000049,
             -0.01085,
             0.999931
           ]
@@ -2728,7 +2728,7 @@
             0,
             -1,
             0,
-            3.1391647326017846e-07
+            3.1391647326017846e-7
           ]
         },
         {
@@ -2744,7 +2744,7 @@
             0,
             -1,
             0,
-            3.1391647326017846e-07
+            3.1391647326017846e-7
           ]
         },
         {
@@ -3735,7 +3735,7 @@
             1,
             0.0008913773926906288,
             0,
-            -5.6636370572960004e-05,
+            -0.000056636370572960004,
             1
           ]
         },
@@ -3829,9 +3829,9 @@
             1,
             1,
             1,
-            4.106404958292842e-05,
+            0.00004106404958292842,
             -0.27293387055397034,
-            3.928691876353696e-05,
+            0.00003928691876353696,
             0.9620327949523926
           ]
         },
@@ -7289,7 +7289,7 @@
       "item": null,
       "title": "Restore houses",
       "description": "Renovate all the houses",
-      "unlockText": "Complete TECH COMPANY #3&#39;s\u00a0quest",
+      "unlockText": "Complete TECH COMPANY #3&#39;s quest",
       "unlockCondition": "$$quests.CobbleMain && $hasHammer",
       "reward": 50,
       "rewardItem": null,
@@ -7304,7 +7304,7 @@
       "item": null,
       "title": "Bike Race",
       "description": "Complete the bike race in under {{gameGoals.CircuitBike}}s.",
-      "unlockText": "Complete TECH COMPANY #1&#39;s\u00a0quest",
+      "unlockText": "Complete TECH COMPANY #1&#39;s quest",
       "unlockCondition": "$$quests.TrailMain && $hasPlayedCircuitBike",
       "reward": 50,
       "rewardItem": null,
@@ -7319,7 +7319,7 @@
       "item": null,
       "title": "Help people in pain",
       "description": "Help all the people in pain",
-      "unlockText": "Complete TECH COMPANY #9&#39;s\u00a0quest",
+      "unlockText": "Complete TECH COMPANY #9&#39;s quest",
       "unlockCondition": "$$quests.SalveMain && $hasStethoscope",
       "reward": 50,
       "rewardItem": null,
@@ -9017,7 +9017,7 @@
         "id": "Yes3",
         "isSpeak": true,
         "bubbles": [
-          "We don\u2019t just reduce stress \u2014 we promote sustainable digital wellbeing!"
+          "We don’t just reduce stress — we promote sustainable digital wellbeing!"
         ],
         "before": [
           {
@@ -9489,7 +9489,7 @@
         "id": "Yes2",
         "isSpeak": true,
         "bubbles": [
-          "We\u2019re not just changing how points moves, we\u2019re changing the dynamic in a family relationship."
+          "We’re not just changing how points moves, we’re changing the dynamic in a family relationship."
         ],
         "before": [
           {
@@ -9919,7 +9919,7 @@
         "id": "AfterGiving",
         "isSpeak": true,
         "bubbles": [
-          "It&#39;s not just a <strong>screwdriver</strong>, it&#39;s a symbol \u2013 a link between families around the globe...",
+          "It&#39;s not just a <strong>screwdriver</strong>, it&#39;s a symbol – a link between families around the globe...",
           "...and digital security for loved ones that are separated.",
           "In a way, this tool is kind of like <strong>TECH COMPANY #8</strong>!"
         ],
@@ -9966,7 +9966,7 @@
         "isSpeak": true,
         "bubbles": [
           "Head <strong>straight to the sea</strong>! Do you see an islet over there?",
-          "Did you know: an\u00a0&quot;islet&quot;\u00a0is a small island? I didn&#39;t know that either!"
+          "Did you know: an &quot;islet&quot; is a small island? I didn&#39;t know that either!"
         ],
         "before": [
           {
@@ -10425,7 +10425,7 @@
         "id": "Dialogue3",
         "isSpeak": true,
         "bubbles": [
-          "Hope I\u2019m not late. Did I miss something?!"
+          "Hope I’m not late. Did I miss something?!"
         ],
         "before": [
           {
@@ -10560,8 +10560,8 @@
         "id": "Start",
         "isSpeak": true,
         "bubbles": [
-          "WIIIIIIIIILSOOOOON\u00a0!",
-          "WIIIIIIIIILSOOOOON\u00a0!"
+          "WIIIIIIIIILSOOOOON !",
+          "WIIIIIIIIILSOOOOON !"
         ],
         "before": [
           {
@@ -10602,14 +10602,6 @@
   },
   "notifications": [
     {
-      "id": "customize",
-      "type": "hint",
-      "title": "Change your style!",
-      "description": "Click here to change your alien color.",
-      "delayMs": 8000,
-      "icon": "arrow"
-    },
-    {
       "id": "quest",
       "type": "hint",
       "title": "New quest available",
@@ -10626,18 +10618,10 @@
       "icon": "arrow"
     },
     {
-      "id": "map",
-      "type": "hint",
-      "title": "",
-      "description": "Open the map to quickly navigate and discover places to go",
-      "delayMs": 8000,
-      "icon": "arrow"
-    },
-    {
       "id": "fintech",
       "type": "hint",
       "title": "Head here first",
-      "description": "Click here to open the map &amp; find out what you can visit",
+      "description": "Click here to find out what you can visit",
       "delayMs": 8000,
       "icon": "arrow"
     },
@@ -10675,10 +10659,6 @@
     }
   ],
   "site_hints": {
-    "customize": {
-      "title": "Change your style!",
-      "description": "Click here to change your alien color."
-    },
     "quest": {
       "title": "New quest available",
       "description": "Click here to check your&nbsp;quests."
@@ -10687,13 +10667,9 @@
       "title": "New accessories available",
       "description": "Click here to buy your&nbsp;new&nbsp;accessories."
     },
-    "map": {
-      "title": "",
-      "description": "Open the map to quickly navigate and discover places to go"
-    },
     "fintech": {
       "title": "Head here first",
-      "description": "Click here to open the map &amp; find out what you can visit"
+      "description": "Click here to find out what you can visit"
     },
     "enroll": {
       "title": "Save your progress",
@@ -10753,10 +10729,6 @@
       }
     },
     "hint": {
-      "customize": {
-        "title": "Change your style!",
-        "description": "Click here to change your alien color."
-      },
       "quest": {
         "title": "New quest available",
         "description": "Click here to check your&nbsp;quests."
@@ -10765,13 +10737,9 @@
         "title": "New accessories available",
         "description": "Click here to buy your&nbsp;new&nbsp;accessories."
       },
-      "map": {
-        "title": "",
-        "description": "Open the map to quickly navigate and discover places to go"
-      },
       "fintech": {
         "title": "Head here first",
-        "description": "Click here to open the map &amp; find out what you can visit"
+        "description": "Click here to find out what you can visit"
       }
     },
     "tutorial": {

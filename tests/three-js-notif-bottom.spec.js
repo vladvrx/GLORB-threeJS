@@ -31,7 +31,7 @@ async function showHint(page) {
   });
   await page.waitForTimeout(1400);
   await page.evaluate(() => {
-    window.__THREE_JS_GAME__.app.$notifs.add("Hint", { hintType: "customize" });
+    window.__THREE_JS_GAME__.app.$notifs.add("Hint", { hintType: "quest" });
   });
 }
 

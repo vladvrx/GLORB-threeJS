@@ -12,6 +12,27 @@ import {
 import { ThreeJsRoot } from "./root.js";
 import { installHud } from "./hud.js?v=no-pause-menu";
 
+function suppressRemovedHints(app) {
+  const blocked = new Set(["customize", "map"]);
+  const notifs = app.$notifs || app.$notifications;
+  if (!notifs || notifs.__blockedHints) return;
+  notifs.__blockedHints = true;
+  const add = notifs.add?.bind(notifs);
+  if (add) {
+    notifs.add = (type, opts = {}) => {
+      if (type === "Hint" && blocked.has(opts.hintType)) return;
+      return add(type, opts);
+    };
+  }
+  const displayHint = notifs.displayHint?.bind(notifs);
+  if (displayHint) {
+    notifs.displayHint = (type, opts = {}) => {
+      if (blocked.has(type)) return;
+      return displayHint(type, opts);
+    };
+  }
+}
+
 function disablePhoneAndMap(app) {
   const blocked = new Set(["Phone", "QuestsDebug"]);
   for (const method of ["push", "replace"]) {
@@ -65,6 +86,7 @@ export async function startEngine() {
 
   const app = await vueApp.pluginManager.install();
   disablePhoneAndMap(app);
+  suppressRemovedHints(app);
   keepOnlyWestIslandMusic(app);
   watch(() => app.$store.isMovingWithMouse, (moving) => {
     document.body.classList.toggle("moving-with-mouse", !!moving);

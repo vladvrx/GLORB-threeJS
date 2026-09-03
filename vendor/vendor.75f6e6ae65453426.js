@@ -10133,14 +10133,6 @@ const x_ = e => (Kt("data-v-17d5bb62"), e = e(), es(), e),
               cv.$store.isGuest || (cv.$store.isFormOpen = !0, a());
             }
           },
-          customize: {
-            icon: "arrow",
-            iconColor: "blue",
-            loc: "hint.customize",
-            image: s,
-            delay: 8e3,
-            onClick: g("Customization")
-          },
           quest: {
             icon: "arrow",
             iconColor: "blue",
@@ -10157,14 +10149,6 @@ const x_ = e => (Kt("data-v-17d5bb62"), e = e(), es(), e),
             delay: 8e3,
             onClick: g("Map")
           },
-          map: {
-            icon: "arrow",
-            iconColor: "blue",
-            loc: "hint.map",
-            image: s_.get("phone-map"),
-            delay: 8e3,
-            onClick: g("Map")
-          },
           accessories: {
             icon: "arrow",
             iconColor: "blue",
@@ -10175,8 +10159,9 @@ const x_ = e => (Kt("data-v-17d5bb62"), e = e(), es(), e),
           }
         },
         h = dt(t.hintType);
-      let u = c[h],
-        d = cv.$l(u.loc + ".title"),
+      let u = c[h];
+      if (!u || "customize" === h || "map" === h) return a(), () => {};
+      let d = cv.$l(u.loc + ".title"),
         p = cv.$l(u.loc + ".description"),
         m = u.image;
       if ("quest" === h && cv.$quests.list[t.questID]) {
@@ -30955,11 +30940,7 @@ xF.isMainIsland = !0, xF.prepare = () => ({
     const s = e.vars.questsCompletedCount,
       i = e.vars.visitedIslandCount,
       n = this.webgl.app.$store.isGuest;
-    this.isTutoNeeded ? t.add("Hint", {
-      hintType: "customize"
-    }) : this.isFirstIsland && (s <= 6 || i < 2) ? t.add("Hint", {
-      hintType: "map"
-    }) : this.isFirstIsland && !n && s > 6 && t.displayHint("enroll");
+    this.isTutoNeeded || this.isFirstIsland && !n && s > 6 && t.displayHint("enroll");
   }, t.updatePlaying = function () {
     const e = this.webgl.app.$notifs,
       t = this.webgl.app.$quests,
@@ -30970,9 +30951,7 @@ xF.isMainIsland = !0, xF.prepare = () => ({
       const s = this.webgl.time.elapsed,
         i = vF[gF],
         n = t[t.lastQuestID];
-      (!n || !n.completed && s - this.lastIdleHintAt > i && s - e.lastNotificationAt > i) && (gF++, this.lastIdleHintAt = s, this.webgl.app.$notifs.add("Hint", {
-        hintType: "map"
-      }));
+      (!n || !n.completed && s - this.lastIdleHintAt > i && s - e.lastNotificationAt > i) && (gF++, this.lastIdleHintAt = s);
     }
   }, t.updateState = function () {
     const e = this.player,
