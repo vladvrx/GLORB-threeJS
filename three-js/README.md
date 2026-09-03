@@ -23,3 +23,5 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) or `/`.
    - Start overlay if the intro route is late
    - Dialogue bubbles, typewriter, Yes / No thanks choices
    - Header, mute, joystick, interaction button
+
+The competition zip inlines this tree into a single `index.html` via `npm run zip`. Dev still loads these modules separately.

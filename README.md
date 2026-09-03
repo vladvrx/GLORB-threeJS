@@ -21,9 +21,15 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) (or `/`)
 
 ## Jam packaging
 
-`npm run zip` writes `glorb.zip` (under 35MB). The zip is the recovered game: `index.html` boots it, `vendor/` holds the original engine libraries, `reference/` holds the hashed GLBs / audio / UI, `three-js/` is the HUD and boot, `direct-port/` is locale and recovered CSS.
+`npm run zip` writes `glorb.zip` (under 35MB). The zip is this same recovered island, not a second game:
 
-The island is **portrait-first** on phones (the original rotate overlay only appears in landscape). Single-player, offline, no CDN.
+- Root `index.html` holds **all** JS and CSS (engine, HUD, shaders, Draco decoder text).
+- `reference/` holds the hashed GLBs, audio, fonts, UI images, and `draco_decoder.wasm`.
+- `direct-port/` holds `site.json` (LETS GO) and other JSON locale/data.
+
+On phones the zip adds `html.phone` and tries `screen.orientation.lock('portrait')`. Landscape phones still get the original rotate overlay. Desktop HUD is unchanged.
+
+The zip is gitignored. Rebuild with `npm run zip` (needs `zip` and will install `esbuild` if missing).
 
 ## Layout
 
