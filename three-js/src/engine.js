@@ -128,6 +128,7 @@ export async function startEngine() {
     requestedPartner: null,
     requestedChatAssistant: false,
   });
+  if (!app.$savestate.saveToken) app.$store.isGuest = true;
   await app.$quests.init();
   await app.$partners.linkQuests();
 

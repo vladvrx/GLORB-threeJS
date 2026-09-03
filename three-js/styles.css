@@ -148,6 +148,15 @@ html.journey-started .page-intro {
   pointer-events: auto;
 }
 
+#threejs-hud .api-notif:not([hidden]),
+#threejs-hud .api-notif:not([hidden]) * {
+  pointer-events: auto;
+}
+
+#threejs-hud .interaction-button button {
+  pointer-events: auto;
+}
+
 #threejs-hud .menu-background[data-v-2fd699fb] {
   overflow: visible;
 }

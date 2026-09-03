@@ -39,6 +39,10 @@ export const ThreeJsRoot = {
         },
         "data-v-55742171": "",
       }),
+      createVNode("div", { class: "vignetting", "data-v-1637091b": "" }),
+      store.isTelescopeActive
+        ? createVNode("div", { class: "vignetting-lenses", "data-v-1637091b": "" })
+        : null,
       createVNode(WebGL),
     ]);
   },

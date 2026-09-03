@@ -1,6 +1,6 @@
 import { s as createSpring, w as watch } from "../../../vendor/vendor.75f6e6ae65453426.js";
-import { circleButton, ctaButton, el, lazyImg, playUiSound, svgIcon, unwrap } from "../dom.js";
-import { iconUrl } from "../icons.js";
+import { circleButton, ctaButton, el, playUiSound, svgIcon, unwrap } from "../dom.js";
+import { installInteraction } from "./interaction.js";
 
 function flag(value) {
   return !!unwrap(value);
@@ -251,15 +251,18 @@ function installMenu(app, host) {
       color: flag(app.$store.isGuest) ? "blue" : "gray",
       extraClass: "menu-cta pointer",
       onClick: () => {
-        if (flag(app.$store.isGuest)) app.$savestate.clear();
-        else {
-          app.$store.isFormOpen = true;
-          close();
-        }
+        app.$store.isFormOpen = false;
+        app.$savestate.clear();
       },
     }),
   );
   for (const node of infos.querySelectorAll(".cta, .menu-cta")) node.setAttribute("data-v-2fd699fb", "");
+  const startCta = infos.querySelector(".menu-cta:last-of-type");
+  watch(() => flag(app.$store.isGuest), (guest) => {
+    if (!startCta) return;
+    startCta.classList.toggle("blue", guest);
+    startCta.classList.toggle("gray", !guest);
+  }, { immediate: true });
   container.append(buttons, infos);
   const overlay = el("div", {
     class: "menu-overlay",
@@ -310,13 +313,13 @@ function installJoystick(app, host) {
     const store = app.$store;
     const joy = unwrap(app.$webgl?.store?.joystickVisible);
     return joy
+      || unwrap(app.$route?.name) !== "Home"
       || store.isDialogVisibleDelayed
       || store.isInteractionButtonVisibleDelayed
       || store.isMenuOpen
       || store.isFormOpen
       || store.isTransitionActiveDelayed
-      || store.sceneState < store.sceneStates.Playing
-      || unwrap(app.$route?.name) === "Phone";
+      || store.sceneState < store.sceneStates.Playing;
   };
   watch(hidden, (isHidden) => indicator.classList.toggle("hidden", isHidden), { immediate: true });
 
@@ -340,73 +343,40 @@ function installJoystick(app, host) {
   requestAnimationFrame(loop);
 }
 
-function installInteraction(app, host) {
-  const aside = el("aside", { class: "interaction-button", "data-v-b03f534f": "", style: { visibility: "hidden" } });
-  const wrapper = el("div", { class: "wrapper hidden", "data-v-b03f534f": "" });
-  const bounce = el("div", { class: "bounce", "data-v-b03f534f": "" });
-  const button = el("button", { class: "pointer", "data-v-b03f534f": "", type: "button" });
-  const icon = lazyImg(iconUrl("interactions-yes"), "icon", "");
-  const hint = el("p", { "data-v-b03f534f": "", text: app.$l("cta.interaction.tap") });
-  button.append(icon, el("figure", { class: "round", "data-v-b03f534f": "" }));
-  bounce.append(button, hint);
-  wrapper.append(bounce);
-  aside.append(wrapper);
-  host.append(aside);
+function installRotateDevice(app) {
+  const layer = el("div", { class: "rotate-device", "data-v-442a7017": "" });
+  const picture = el("img", {
+    src: "./reference/assets/rotate-background.70bb5a6b65453426.webp",
+    alt: "",
+    "data-v-442a7017": "",
+  });
+  const wrap = el("div", { class: "rotate-wrapper", "data-v-442a7017": "" });
+  const icons = el("div", { class: "icon-wrapper", "data-v-442a7017": "" });
+  const rotate = el("div", { class: "icon-rotate", "data-v-442a7017": "" });
+  const left = svgIcon("arrow-rotate");
+  left.setAttribute("class", "arrow-left");
+  left.setAttribute("data-v-442a7017", "");
+  const phone = svgIcon("mobile");
+  phone.setAttribute("class", "rotate-mobile");
+  phone.setAttribute("data-v-442a7017", "");
+  const right = svgIcon("arrow-rotate");
+  right.setAttribute("class", "arrow-right");
+  right.setAttribute("data-v-442a7017", "");
+  rotate.append(left, phone, right);
+  icons.append(rotate);
+  wrap.append(icons);
+  layer.append(picture, wrap);
+  document.body.append(layer);
 
-  let action = { active: false, mode: "tap", onTap() {}, onStart() {}, onStop() {}, onDone() {}, locked: false };
-
-  const show = (next) => {
-    action = { active: false, mode: "tap", onTap() {}, onStart() {}, onStop() {}, onDone() {}, locked: false, ...next };
-    if (!next || next.locked) {
-      wrapper.classList.add("hidden");
-      app.$store.isInteractionButtonVisible = false;
-      aside.style.visibility = "hidden";
-      return;
-    }
-    action.active = true;
-    icon.src = iconUrl(next.icon || "interactions-yes") || icon.src;
-    wrapper.className = `wrapper mode-${action.mode}`;
-    hint.textContent = action.mode === "hold" || action.mode === "hold-infinite"
-      ? (app.$device.type.mobile ? app.$l("cta.interaction.touch") : app.$l("cta.interaction.click"))
-      : app.$l("cta.interaction.tap");
-    aside.style.visibility = "visible";
-    app.$store.isInteractionButtonVisible = true;
+  const media = window.matchMedia("only screen and (max-width: 1024px) and (orientation: landscape)");
+  const sync = () => {
+    const phone = !!app.$device?.type?.phone;
+    const ready = flag(app.$preloader?.finished);
+    layer.toggleAttribute("hidden", !(phone && ready && media.matches));
   };
-
-  const fire = () => {
-    if (!action.active) return;
-    if (action.mode === "tap" || action.mode === "click") action.onTap?.();
-    else action.onStart?.();
-  };
-  const release = () => {
-    if (action.mode === "hold" || action.mode === "hold-infinite") action.onStop?.();
-  };
-  button.addEventListener("mousedown", fire);
-  button.addEventListener("touchstart", (event) => { event.preventDefault(); fire(); }, { passive: false });
-  window.addEventListener("mouseup", release);
-  window.addEventListener("touchend", release);
-
-  const hideChrome = () => {
-    const store = app.$store;
-    return store.isDialogVisible
-      || store.isMenuOpen
-      || store.isFormOpen
-      || store.isTransitionActive
-      || store.isInteractionDone
-      || store.sceneState < store.sceneStates.Playing
-      || store.currentFullscreenVideo;
-  };
-  watch(hideChrome, (hidden) => wrapper.classList.toggle("hidden", hidden || !action.active));
-
-  const ready = () => {
-    const signal = app.$webgl?.store?.interactionButton;
-    if (!signal?.watchImmediate) return false;
-    signal.watchImmediate(show);
-    return true;
-  };
-  if (!ready()) {
-    const timer = window.setInterval(() => { if (ready()) window.clearInterval(timer); }, 200);
-  }
+  media.addEventListener("change", sync);
+  watch(() => [!!app.$device?.type?.phone, flag(app.$preloader?.finished), unwrap(app.$viewport?.width)], sync, { immediate: true });
+  window.addEventListener("orientationchange", sync);
 }
 
 export function installChrome(app, host) {
@@ -414,4 +384,5 @@ export function installChrome(app, host) {
   installMenu(app, host);
   installJoystick(app, host);
   installInteraction(app, host);
+  try { installRotateDevice(app); } catch (error) { console.error("Three.js rotate overlay failed", error); }
 }

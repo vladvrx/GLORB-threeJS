@@ -43,6 +43,8 @@ async function runtime(page) {
       introCamProgress: scene?.introCamProgress ?? null,
       isEntered: !!scene?.isEntered,
       pauseLetsGo: [...document.querySelectorAll("#threejs-hud .menu .menu-cta")].map((node) => node.textContent.trim()),
+      isFormOpen: !!app?.$store?.isFormOpen,
+      isGuest: !!app?.$store?.isGuest,
     };
   });
 }
@@ -118,6 +120,9 @@ test("Three.js intro Yes choice boats the player to Cove Island", async ({ page 
   const paused = await runtime(page);
   expect(paused.pauseLetsGo).toContain("LETS GO");
   await expect(page.locator("#threejs-hud .menu.is-open .menu-cta").filter({ hasText: "LETS GO" })).toBeVisible();
+  await expect(page.locator("#threejs-hud .menu.is-open .menu-cta").filter({ hasText: "LETS GO" })).toHaveClass(/blue/);
+  expect(paused.isGuest).toBe(true);
+  expect(paused.isFormOpen ?? false).toBe(false);
   await page.locator("#threejs-hud .menu.is-open [aria-label]").first().click();
   await expect.poll(async () => (await runtime(page)).menuOpen, { timeout: 10_000 }).toBe(false);
 

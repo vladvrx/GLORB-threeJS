@@ -1,4 +1,5 @@
 import { w as watch } from "../../vendor/vendor.75f6e6ae65453426.js";
+import { installApiNotif } from "./hud/api-notif.js";
 import { installChrome } from "./hud/chrome.js";
 import { installDialog } from "./hud/dialog.js";
 import { installItemNotification, installSpinner } from "./hud/pickups.js";
@@ -30,6 +31,7 @@ export function installHud(app) {
       try { installDialog(app, host); } catch (error) { console.error("Three.js HUD dialog failed", error); }
       try { installItemNotification(app, host); } catch (error) { console.error("Three.js item notification failed", error); }
       try { installSpinner(app, host); } catch (error) { console.error("Three.js spinner failed", error); }
+      try { installApiNotif(app, host); } catch (error) { console.error("Three.js API notif failed", error); }
       document.documentElement.classList.add("threejs-hud-ready");
       return true;
     };

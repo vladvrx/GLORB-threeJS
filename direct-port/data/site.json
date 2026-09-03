@@ -149,6 +149,10 @@
         "title": "Oops!",
         "desc": "You played glorb from another tab. Please reload the page to keep your save up-to-date."
       },
+      "expiredSaveState": {
+        "title": "Oops!",
+        "desc": "Your save expired. Please reload the page to keep playing."
+      },
       "existingUser": {
         "title": "Email sent!",
         "desc": "",

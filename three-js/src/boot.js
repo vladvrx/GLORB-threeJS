@@ -16,7 +16,7 @@ function routerBasePath() {
 
 async function loadSiteData() {
   const url = new URL(siteDataUrl);
-  url.searchParams.set("v", "lets-go");
+  url.searchParams.set("v", "expired-save");
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Site data returned HTTP ${response.status}`);
   const data = await response.json();
@@ -31,7 +31,7 @@ async function boot() {
   document.documentElement.classList.remove("no-js");
   initializePageBehavior({ logoUrl, cursorUrl });
   window.__DATA = await loadSiteData();
-  const { startEngine } = await import("./engine.js?v=west-music-2");
+  const { startEngine } = await import("./engine.js?v=hold-ring-api");
   return startEngine();
 }
 
