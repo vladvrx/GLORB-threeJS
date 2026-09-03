@@ -5,7 +5,7 @@
       "id": "Hello",
       "isSpeak": true,
       "bubbles": [
-        "HELLO WELCOME..."
+        "Welcome aboard, newcomer..."
       ],
       "before": [
         {
@@ -26,7 +26,15 @@
       "id": "Hello2",
       "isSpeak": true,
       "bubbles": [
-        "HAVE YOU SEEN WHAT THE Glorbs found!"
+        "Come check out what us and the Glorbs found!"
+      ],
+      "before": [
+        {
+          "action": "EMOTE",
+          "opts": [
+            "Neutral"
+          ]
+        }
       ],
       "next": [
         {
@@ -39,13 +47,13 @@
       "id": "Hello3",
       "isSpeak": true,
       "bubbles": [
-        "WE NEED your help restoring the power back on the island, CAN YOU HELP US!!"
+        "We need your help restoring the power back on the island, can you help us?"
       ],
       "before": [
         {
           "action": "EMOTE",
           "opts": [
-            "Happy"
+            "Thinking"
           ]
         }
       ],
@@ -610,6 +618,14 @@
       "isSpeak": true,
       "bubbles": [
         "As a show of thanks, I&#39;ll tell you a secret... There&#39;s <strong>treasure</strong> on this island..."
+      ],
+      "before": [
+        {
+          "action": "EMOTE",
+          "opts": [
+            "Neutral"
+          ]
+        }
       ],
       "next": [
         {
@@ -1302,6 +1318,14 @@
       "bubbles": [
         "Come back if you need some advice!"
       ],
+      "before": [
+        {
+          "action": "EMOTE",
+          "opts": [
+            "Neutral"
+          ]
+        }
+      ],
       "next": [
         {
           "action": "END"
@@ -1901,6 +1925,14 @@
       "bubbles": [
         "Got it. If you change your mind, you know where to find me."
       ],
+      "before": [
+        {
+          "action": "EMOTE",
+          "opts": [
+            "Neutral"
+          ]
+        }
+      ],
       "next": [
         {
           "action": "END"
@@ -1974,6 +2006,14 @@
       "isSpeak": true,
       "bubbles": [
         "<strong>TECH COMPANY #9</strong> is here to make sure that doesn&#39;t happen to you!"
+      ],
+      "before": [
+        {
+          "action": "EMOTE",
+          "opts": [
+            "Neutral"
+          ]
+        }
       ],
       "next": [
         {
@@ -2182,6 +2222,14 @@
       "bubbles": [
         "But for now, we&#39;ve got a <strong>bridge to build</strong>... Better get to work!"
       ],
+      "before": [
+        {
+          "action": "EMOTE",
+          "opts": [
+            "Neutral"
+          ]
+        }
+      ],
       "next": [
         {
           "action": "END"
@@ -2223,7 +2271,7 @@
         {
           "action": "EMOTE",
           "opts": [
-            "Idle"
+            "Idle2"
           ]
         }
       ],
@@ -2519,6 +2567,14 @@
         "Really hope you&#39;d love it!",
         "Wanna go back there to explore?"
       ],
+      "before": [
+        {
+          "action": "EMOTE",
+          "opts": [
+            "Neutral"
+          ]
+        }
+      ],
       "next": [
         {
           "action": "GOTO",
@@ -2805,6 +2861,14 @@
       "isSpeak": true,
       "bubbles": [
         "I lost my friend, hope he&#39;s fine..."
+      ],
+      "before": [
+        {
+          "action": "EMOTE",
+          "opts": [
+            "Neutral"
+          ]
+        }
       ],
       "next": [
         {

@@ -33371,7 +33371,7 @@ const GU = [["router", function (e = {}) {
   async function n() {
     if (i) return i;
     let s;
-    i = io(), s || (s = await fetch(Fb + "?v=65453426").then(e => e.json()));
+    i = io(), s || (s = await fetch(Fb + "?v=studio-locales").then(e => e.json()));
     const n = cv.$manifest.content;
     Object.assign(e, s.partners);
     for (let t in e) {
@@ -33418,7 +33418,7 @@ const GU = [["router", function (e = {}) {
   async function n() {
     if (s) return s;
     let i;
-    s = io(), i || (i = await fetch(Ub + "?v=no-idle2").then(e => e.json())), Object.assign(e, i.colors), Object.assign(t, i.npcs), s.resolve();
+    s = io(), i || (i = await fetch(Ub + "?v=studio-locales").then(e => e.json())), Object.assign(e, i.colors), Object.assign(t, i.npcs), s.resolve();
   }
   return function (e) {
     const t = e.config.globalProperties;
@@ -33477,7 +33477,7 @@ const GU = [["router", function (e = {}) {
   async function l() {
     if (a) return a;
     let t;
-    a = io(), t || (t = await fetch(Gb + "?v=no-idle2").then(e => e.json()));
+    a = io(), t || (t = await fetch(Gb + "?v=studio-locales").then(e => e.json()));
     for (let e in t) {
       const s = t[e],
         i = s.__first__;
@@ -33597,7 +33597,7 @@ const GU = [["router", function (e = {}) {
   async function r() {
     if (e) return e;
     let s;
-    e = io(), s || (s = await fetch(Vb + "?v=65453426").then(e => e.json())), Object.assign(t, s);
+    e = io(), s || (s = await fetch(Vb + "?v=studio-locales").then(e => e.json())), Object.assign(t, s);
     for (let e in t) {
       const s = t[e],
         i = s.type.toLowerCase();
@@ -33653,7 +33653,7 @@ const GU = [["router", function (e = {}) {
   async function n() {
     if (i) return i;
     let e;
-    i = io(), e || (e = await fetch(Oy + "?v=65453426").then(e => e.json()));
+    i = io(), e || (e = await fetch(Oy + "?v=studio-locales").then(e => e.json()));
     for (let t in e) {
       const i = e[t],
         n = s.rawList[i.id] = {

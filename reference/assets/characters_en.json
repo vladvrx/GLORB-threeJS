@@ -23,7 +23,7 @@
       "script": "Ambassador",
       "scriptArgs": {
         "fintech": "cobble",
-        "animation": "Idle"
+        "animation": "Idle2"
       }
     },
     "Trail_Quest": {
@@ -42,7 +42,7 @@
       "script": "Ambassador",
       "scriptArgs": {
         "fintech": "trail",
-        "animation": "Idle"
+        "animation": "Idle2"
       }
     },
     "Pylon_Quest": {
@@ -60,7 +60,7 @@
       "script": "Ambassador",
       "scriptArgs": {
         "fintech": "pylon",
-        "animation": "Idle"
+        "animation": "Idle2"
       }
     },
     "Salve_Quest": {
@@ -78,7 +78,7 @@
       "script": "Ambassador",
       "scriptArgs": {
         "fintech": "salve",
-        "animation": "Idle"
+        "animation": "Idle2"
       }
     },
     "Salve_Sick_WestA": {
@@ -294,7 +294,7 @@
       "face": 1,
       "script": "TalkingCitizen",
       "scriptArgs": {
-        "animation": "Idle"
+        "animation": "Idle2"
       }
     },
     "Test_ChatGpt": {

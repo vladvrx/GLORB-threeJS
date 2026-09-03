@@ -70,6 +70,14 @@
       "partner": {
         "title": "Head here first",
         "description": "Click here to open the map &amp; find out what you can visit"
+      },
+      "fintech": {
+        "title": "Head here first",
+        "description": "Click here to open the map &amp; find out what you can visit"
+      },
+      "enroll": {
+        "title": "Save your progress",
+        "description": "Tap here to keep your island progress."
       }
     },
     "cta": {
@@ -85,7 +93,7 @@
       "validate": "Confirm",
       "claim": "Claim",
       "buy": "Buy",
-      "start": "LETS GO",
+      "start": "Start the journey",
       "drive": "Drive me there",
       "boat": "Boat me there",
       "discover": "Learn more",
@@ -102,22 +110,24 @@
       "end": {
         "title": "Congratulations"
       },
-      "completed": "Completed quests",
+      "completed": "Quest complete",
       "locked": "Quests to unlock",
       "progress": "Keep going on!"
     },
     "phone": {
       "title": {
         "partner": "The Partners",
-        "cp": "Databloons",
+        "cp": "Data B-each Points",
         "customize": "Customize Avatar",
-        "quest": "The Quests"
+        "quest": "The Quests",
+        "fintech": "The Fintechs"
       },
       "desc": {
         "partner": "<strong>Learn about each brand and the products and services they offer.</strong>",
-        "cp": "<strong>Unlock new accessories with your Databloons. Those with a fire icon will give you a magic skill!</strong>",
+        "cp": "<strong>Unlock new accessories with your Data B-each Points. Those with a fire icon will give you a magic skill!</strong>",
         "customize": "<strong>Choose your alien color.</strong>",
-        "quest": "<strong>Complete quests to earn Databloons.</strong>"
+        "quest": "<strong>Complete quests to earn Data B-each Points.</strong>",
+        "fintech": "<strong>Learn about each brand and the products and services they offer.</strong>"
       },
       "new": {
         "item": "new"
@@ -147,7 +157,7 @@
     "errors": {
       "outdatedWindow": {
         "title": "Oops!",
-        "desc": "You played glorb from another tab. Please reload the page to keep your save up-to-date."
+        "desc": "You played Data B-each from another tab. Please reload the page to keep your save up-to-date."
       },
       "expiredSaveState": {
         "title": "Oops!",
