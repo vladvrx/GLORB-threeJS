@@ -4740,7 +4740,7 @@ function Er(e, t) {
       for (let s = 0, i = e.length; s < i; s++) {
         const i = e[s],
           o = t.assets[i.asset];
-        if (!o || !o.isMesh) continue;
+        if (i.asset === "Crossing" || !o || !o.isMesh) continue;
         const a = w(i.transforms[0], i.transforms[2]);
         o.geometry && !i.colliderOnly && a.add(o.geometry, i), !o.collider || i.traversable || i.traverse || u.add(o.collider, i), await tr();
       }
@@ -4873,8 +4873,8 @@ Fr.default = {
     TERRAIN_BASE_COLOR: zt(new V("#ffffff")),
     TERRAIN_BASE_NUANCE_COLOR: zt(new V("#ffffff")),
     TERRAIN_HIGHGRASS_COLOR: zt(new V("#ffffff")),
-    TERRAIN_PAVE_COLOR: zt(new V("#9da8ad")),
-    TERRAIN_ROAD_COLOR: zt(new V("#b8c4c1")),
+    TERRAIN_PAVE_COLOR: zt(new V("#000000")),
+    TERRAIN_ROAD_COLOR: zt(new V("#000000")),
     TERRAIN_SAND_LIGHT_COLOR: zt(new V("#fbf2b1")),
     TERRAIN_SAND_DARK_COLOR: zt(new V("#ffcb53")),
     FAKE_AO_MULT: Bt(2.2, 2, 1.1),
@@ -4947,8 +4947,8 @@ Fr.default = {
     TERRAIN_BASE_COLOR: zt(new V("#ffffff")),
     TERRAIN_BASE_NUANCE_COLOR: zt(new V("#ffffff")),
     TERRAIN_HIGHGRASS_COLOR: zt(new V("#ffffff")),
-    TERRAIN_PAVE_COLOR: zt(new V("#fcd37c")),
-    TERRAIN_ROAD_COLOR: zt(new V("#fcd37c")),
+    TERRAIN_PAVE_COLOR: zt(new V("#000000")),
+    TERRAIN_ROAD_COLOR: zt(new V("#000000")),
     TERRAIN_SAND_LIGHT_COLOR: zt(new V("#ffef9f")),
     TERRAIN_SAND_DARK_COLOR: zt(new V("#ffcb5a")),
     FAKE_AO_MULT: Bt(1.12, 1.6, 1.3),
@@ -4999,8 +4999,8 @@ const nightModeDefines = {
   TERRAIN_BASE_COLOR: zt(new V("#ffffff")),
   TERRAIN_BASE_NUANCE_COLOR: zt(new V("#ffffff")),
   TERRAIN_HIGHGRASS_COLOR: zt(new V("#ffffff")),
-  TERRAIN_PAVE_COLOR: zt(new V("#56647a")),
-  TERRAIN_ROAD_COLOR: zt(new V("#536477")),
+  TERRAIN_PAVE_COLOR: zt(new V("#000000")),
+  TERRAIN_ROAD_COLOR: zt(new V("#000000")),
   TERRAIN_SAND_LIGHT_COLOR: zt(new V("#a6a58a")),
   TERRAIN_SAND_DARK_COLOR: zt(new V("#777653")),
   FAKE_AO_MULT: Bt(.8, .9, 1.2),
