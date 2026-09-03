@@ -32440,8 +32440,8 @@ const RU = {
       ...RU,
       bgm: "music_island_west",
       pageview: {
-        title: "glorb - Island West",
-        path: "/island-west"
+        title: "GLORB",
+        path: "/glorb"
       }
     },
     EasterEgg: {

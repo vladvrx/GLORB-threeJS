@@ -55,7 +55,7 @@ async function finishBubble(page, text) {
   await page.keyboard.press("Space");
 }
 
-test("Three.js intro Yes choice boats the player to Cove Island", async ({ page }) => {
+test("Three.js intro Yes choice boats the player to GLORB", async ({ page }) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.stack || error.message));
 
@@ -81,7 +81,7 @@ test("Three.js intro Yes choice boats the player to Cove Island", async ({ page 
   await expect(yes).toHaveClass(/green/);
   await yes.click();
 
-  await finishBubble(page, "Cove Island");
+  await finishBubble(page, "GLORB");
 
   await expect.poll(async () => (await runtime(page)).scene, { timeout: 90_000 }).toBe("IslandWest");
   await expect.poll(async () => (await runtime(page)).route, { timeout: 30_000 }).toBe("Home");

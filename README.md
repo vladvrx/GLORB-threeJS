@@ -1,6 +1,6 @@
 # glorb
 
-The playable game is the recovered **Three.js r150** island (`loadWebGL`): intro boat, LETS GO, dialogue, Cove, neon water, original GLBs and HUD. There is no phone and no map.
+The playable game is the recovered **Three.js r150** island (`loadWebGL`): intro boat, LETS GO, dialogue, GLORB, neon water, original GLBs and HUD. There is no phone and no map.
 
 This is the same glorb build we have been iterating — not a replacement loop and not a from-scratch island.
 
@@ -16,10 +16,10 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) (or `/`)
 
 1. Preloader with the glorb mark, then **LETS GO**.
 2. Intro camera down to the red/yellow boat and the Hello / Yes / No thanks graph.
-3. Boat to Cove (`IslandWest`). Walk, talk, restore systems, complete quests.
+3. Boat to **GLORB** (`IslandWest`). Walk, talk, restore systems, complete quests.
 4. Header, mute, centered talk bubbles, bottom hints.
 
-The playable world is only those two islands. The bike race, secret island, and test lab are gone, along with the GLBs and music they uniquely loaded.
+The playable world is the intro boat plus **GLORB**. The bike race, secret island, and test lab are gone, along with the GLBs and music they uniquely loaded.
 
 ## Jam packaging
 

@@ -79,7 +79,7 @@ async function main() {
   const yes = page.getByRole("button", { name: "Yes", exact: true });
   await yes.waitFor({ state: "visible", timeout: 20_000 });
   await yes.click();
-  await finishBubble(page, "Cove Island");
+  await finishBubble(page, "GLORB");
 
   await page.waitForFunction(() => window.__THREE_JS_GAME__.app.$webgl.scenes.currentSceneID.value === "IslandWest", null, { timeout: 90_000 });
   await page.waitForFunction(() => window.__THREE_JS_GAME__.app.$route?.name === "Home", null, { timeout: 30_000 });

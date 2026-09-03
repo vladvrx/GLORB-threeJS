@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Keep only the playable slice: IslandIntro (boat) and IslandWest (Cove).
+ * Keep only the playable slice: IslandIntro (boat) and IslandWest (GLORB).
  * Stub unused scene manifests, stop registering those scenes, drop their
  * JSON/overlay data, and delete GLBs / music those islands never load.
  */

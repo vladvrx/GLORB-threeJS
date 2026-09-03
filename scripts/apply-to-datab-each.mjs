@@ -11,6 +11,8 @@ const DEFAULT_ROOT = process.env.DATAB_EACH_ROOT || "/tmp/datab-each";
 const TMUX_CONF = "/exec-daemon/tmux.portal.conf";
 
 const BRAND = [
+  ["Cove Island", "GLORB"],
+  ["Island West", "GLORB"],
   ["Citizen_West_PomeloIslandHint", "Citizen_West_PylonIslandHint"],
   ["NPC_Citizen_West_PomeloIslandHint", "NPC_Citizen_West_PylonIslandHint"],
   ["AvenHouse", "CobbleHouse"],
@@ -1036,7 +1038,7 @@ if (isMain) {
       format: "datab-each-studio-v1",
       scenes: {
         IslandWest: {
-          name: "Cove",
+          name: "GLORB",
           objects: [
             {
               kind: "prop",
@@ -1084,7 +1086,7 @@ if (isMain) {
       format: "datab-each-studio-v1",
       scenes: {
         IslandWest: {
-          name: "Cove",
+          name: "GLORB",
           objects: [
             { kind: "prop", asset: "Barrel", traversable: false, transform: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
             { kind: "prop", asset: "StandAven", traversable: false, transform: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
@@ -1136,7 +1138,7 @@ if (isMain) {
       quests_en: {},
       scenes: {
         Scene_IslandWest: {
-          name: "Cove",
+          name: "GLORB",
           props: [
             { asset: "Barrel", traversable: false, transforms: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
             { asset: "StandFair", traversable: false, transforms: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
