@@ -6715,7 +6715,7 @@ const VueWebGLComponent = {
         a.addEventListener("load", t), a.addEventListener("error", () => s(new Error(`Unable to preload CSS for ${e}`)));
       }) : void 0;
     })).then(() => e());
-  }(() => import("./webgl.3250e36a65453426.js?v=tpose-idle"), []);
+  }(() => import("./webgl.3250e36a65453426.js?v=tpose-nostands"), []);
 const Uc = "./reference/assets/Asset_Algae.e4fb453265453426.glb",
   Hc = "./reference/assets/Asset_AlgaeGroup.df25307b65453426.glb",
   Gc = "./reference/assets/Asset_ArrowSign.6f0ccda865453426.glb",
@@ -26484,16 +26484,11 @@ const MO = Object.freeze(Object.defineProperty({
 }));
 class CO extends yO {
   init() {
-    if (this.static = !0, !this.scene || !this.scene.partnerHalos) return;
-    const e = this.props.partner,
-      t = this.webgl.app.$partners.list[e];
-    t && t.isInterest && this.scene.partnerHalos.addHalo(t, this.props.transformMatrix);
+    this.static = !0;
   }
 }
 CO.prepare = () => ({
-  staticProps: [{
-    asset: "underStand"
-  }]
+  staticProps: []
 });
 const PO = Object.freeze(Object.defineProperty({
   __proto__: null,
@@ -29582,6 +29577,7 @@ class Hz extends BL {
         uid: s.uid,
         sceneID: this.id
       });
+      if (s.type === "PartnerStandGround" || s.type === "FintechStandGround" || s.className === "PartnerStandGround" || s.className === "FintechStandGround") continue;
       i.isNPC ? n.npcConfig = s.npcConfig : (n.states = s.states, n.dynamicProps = s.dynamicProps), this.actors[s.uid] = this.add(i, n);
     }
     for (let t in this.actors) this.actors[t].afterActorsInit();

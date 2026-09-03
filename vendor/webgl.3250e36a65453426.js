@@ -4028,6 +4028,7 @@ function Hn(e, t, s, i) {
             n = o.asset,
             r = !!o.traversable,
             l = e.transforms;
+          if (n === "underStand" || n === "StandFair" || n === "StandA" || n && n.indexOf("StandTechCompany") === 0) continue;
           a.add(n);
           const c = {
             asset: n,
@@ -4742,7 +4743,7 @@ function Er(e, t) {
       for (let s = 0, i = e.length; s < i; s++) {
         const i = e[s],
           o = t.assets[i.asset];
-        if (i.asset === "Crossing" || !o || !o.isMesh) continue;
+        if (i.asset === "Crossing" || i.asset === "StandA" || i.asset === "StandFair" || i.asset === "underStand" || i.asset === "StandCheese" || i.asset === "StandNeutral05" || i.asset && i.asset.indexOf("StandTechCompany") === 0 || !o || !o.isMesh) continue;
         const a = w(i.transforms[0], i.transforms[2]);
         o.geometry && !i.colliderOnly && a.add(o.geometry, i), !o.collider || i.traversable || i.traverse || u.add(o.collider, i), await tr();
       }
@@ -7897,7 +7898,7 @@ const runtimePlugins = [function timePlugin(e) {
     log: s
   }) {
     const i = "__cache__";
-    let o = "65453426_blackroad",
+    let o = "65453426_nostands",
       a = null;
     Object.assign(t, {
       supercache: {

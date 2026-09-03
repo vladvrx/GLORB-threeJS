@@ -896,10 +896,7 @@
     "StairsA",
     "StairsB",
     "HouseCabinC",
-    "StandA",
     "SolidGroundRoundB",
-    "StandA",
-    "StandA",
     "TreeRoundB",
     "Hospital",
     "HouseBlackA",
@@ -915,7 +912,6 @@
     "TruckFood",
     "SurfShop",
     "BeachBar",
-    "StandA",
     "TreeSquareA",
     "StairsC",
     "CoffeeShop",
@@ -1437,7 +1433,7 @@
         0.99999994,
         1,
         1,
-        0.000019,
+        1.9e-05,
         -0.999303,
         -0.000653,
         0.037332
@@ -1932,7 +1928,7 @@
         2.5,
         2.5,
         -0.001621,
-        -0.000003,
+        -3e-06,
         -0.001544,
         0.999997
       ]
@@ -2011,82 +2007,6 @@
         0.780561,
         0,
         0.62508
-      ]
-    },
-    {
-      "uid": "PartnerStandGround.004",
-      "type": "PartnerStandGround",
-      "params": {
-        "partner": "salve"
-      },
-      "transforms": [
-        -86.218574,
-        2.757428,
-        67.385908,
-        1.45000005,
-        1.45000005,
-        1.45000005,
-        0,
-        0,
-        0,
-        1
-      ]
-    },
-    {
-      "uid": "PartnerStandGround.005",
-      "type": "PartnerStandGround",
-      "params": {
-        "partner": "trail"
-      },
-      "transforms": [
-        -74.70890800000001,
-        9.988922,
-        109.251425,
-        1.45000005,
-        1.45000005,
-        1.45000005,
-        0,
-        0,
-        0,
-        1
-      ]
-    },
-    {
-      "uid": "PartnerStandGround.006",
-      "type": "PartnerStandGround",
-      "params": {
-        "partner": "cobble"
-      },
-      "transforms": [
-        -46.51503300000001,
-        2.77856,
-        155.704679,
-        1.45000005,
-        1.45000005,
-        1.45000005,
-        0,
-        0,
-        0,
-        1
-      ]
-    },
-    {
-      "uid": "PartnerStandGround.007",
-      "type": "PartnerStandGround",
-      "params": {
-        "partner": "pylon"
-      },
-      "transforms": [
-        -153.156555,
-        2.817072,
-        34.687331,
-        1.45000005,
-        1.45000005,
-        1.45000005,
-        0,
-        0,
-        0,
-        1
       ]
     },
     {
