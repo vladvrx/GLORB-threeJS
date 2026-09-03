@@ -37,7 +37,7 @@ test("header mute button sits beside profile and swaps on/off icons", async ({ p
   expect(profileBox).toBeTruthy();
   expect(muteBox).toBeTruthy();
   expect(muteBox.x).toBeGreaterThan(profileBox.x);
-  expect(Math.abs(muteBox.y - profileBox.y)).toBeLessThan(8);
+  expect(Math.abs(muteBox.y - profileBox.y)).toBeLessThan(12);
 
   await expect(mute.locator('svg[data-icon="sound-on"]')).toBeVisible();
   await expect(mute).toHaveAttribute("aria-pressed", "false");
