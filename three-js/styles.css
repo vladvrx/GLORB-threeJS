@@ -295,29 +295,53 @@ html.journey-started .page-intro {
 #threejs-hud .popin[data-v-9527461f],
 .popin[data-v-26a58662],
 .notif[data-v-17d5bb62] .popin {
-  --notif-cloud: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 440 96'%3E%3Cg fill='%23000'%3E%3Cellipse cx='220' cy='54' rx='188' ry='28'/%3E%3Ccircle cx='64' cy='40' r='34'/%3E%3Ccircle cx='128' cy='20' r='40'/%3E%3Ccircle cx='204' cy='14' r='46'/%3E%3Ccircle cx='280' cy='18' r='42'/%3E%3Ccircle cx='352' cy='34' r='34'/%3E%3Ccircle cx='28' cy='54' r='28'/%3E%3Ccircle cx='412' cy='54' r='28'/%3E%3Ccircle cx='96' cy='74' r='26'/%3E%3Ccircle cx='176' cy='82' r='28'/%3E%3Ccircle cx='264' cy='82' r='28'/%3E%3Ccircle cx='348' cy='72' r='24'/%3E%3C/g%3E%3C/svg%3E");
-  background: transparent !important;
-  border-radius: 0 !important;
+  background: #fff !important;
+  border-radius: 2em !important;
   box-shadow: none !important;
-  overflow: hidden !important;
+  overflow: visible !important;
+  clip-path: inset(-1.35em);
   filter: drop-shadow(0 8px 16px rgba(35, 33, 75, 0.22)) !important;
 }
 
 #threejs-hud .popin[data-v-9527461f]::before,
 .popin[data-v-26a58662]::before,
-.notif[data-v-17d5bb62] .popin::before {
+.notif[data-v-17d5bb62] .popin::before,
+.notification[data-v-25064164]::before {
   content: "";
   position: absolute;
-  inset: 0;
-  z-index: 0;
+  left: -0.35em;
+  right: -0.35em;
+  top: -1.25em;
+  height: 4em;
+  z-index: 2;
   pointer-events: none;
-  background: #fff;
-  -webkit-mask-image: var(--notif-cloud);
-  mask-image: var(--notif-cloud);
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
+  background:
+    radial-gradient(circle at 7% 78%, #fff 1.45em, transparent 1.46em),
+    radial-gradient(circle at 21% 48%, #fff 1.85em, transparent 1.86em),
+    radial-gradient(circle at 38% 32%, #fff 2.15em, transparent 2.16em),
+    radial-gradient(circle at 56% 30%, #fff 2.2em, transparent 2.21em),
+    radial-gradient(circle at 74% 44%, #fff 1.9em, transparent 1.91em),
+    radial-gradient(circle at 90% 70%, #fff 1.5em, transparent 1.51em);
+}
+
+#threejs-hud .popin[data-v-9527461f]::after,
+.popin[data-v-26a58662]::after,
+.notif[data-v-17d5bb62] .popin::after,
+.notification[data-v-25064164]::after {
+  content: "";
+  position: absolute;
+  left: -0.35em;
+  right: -0.35em;
+  bottom: -1.2em;
+  height: 3.6em;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 10% 28%, #fff 1.4em, transparent 1.41em),
+    radial-gradient(circle at 28% 58%, #fff 1.7em, transparent 1.71em),
+    radial-gradient(circle at 48% 70%, #fff 1.85em, transparent 1.86em),
+    radial-gradient(circle at 68% 58%, #fff 1.7em, transparent 1.71em),
+    radial-gradient(circle at 88% 32%, #fff 1.4em, transparent 1.41em);
 }
 
 .popin[data-v-26a58662] > *,
@@ -421,46 +445,17 @@ html.journey-started .databeach-home-logo {
 }
 
 .notification[data-v-25064164] {
-  --notif-cloud: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 440 96'%3E%3Cg fill='%23000'%3E%3Cellipse cx='220' cy='54' rx='188' ry='28'/%3E%3Ccircle cx='64' cy='40' r='34'/%3E%3Ccircle cx='128' cy='20' r='40'/%3E%3Ccircle cx='204' cy='14' r='46'/%3E%3Ccircle cx='280' cy='18' r='42'/%3E%3Ccircle cx='352' cy='34' r='34'/%3E%3Ccircle cx='28' cy='54' r='28'/%3E%3Ccircle cx='412' cy='54' r='28'/%3E%3Ccircle cx='96' cy='74' r='26'/%3E%3Ccircle cx='176' cy='82' r='28'/%3E%3Ccircle cx='264' cy='82' r='28'/%3E%3Ccircle cx='348' cy='72' r='24'/%3E%3C/g%3E%3C/svg%3E");
-  background: transparent !important;
-  border-radius: 0 !important;
+  background-color: #fff !important;
+  border-radius: 2em !important;
   box-shadow: none !important;
-  overflow: hidden !important;
+  overflow: visible !important;
+  clip-path: inset(-1.35em);
   filter: drop-shadow(0 8px 16px rgba(35, 33, 75, 0.22)) !important;
-}
-
-.notification[data-v-25064164]::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: #fff;
-  -webkit-mask-image: var(--notif-cloud);
-  mask-image: var(--notif-cloud);
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
 }
 
 .notification[data-v-25064164] > * {
   position: relative;
   z-index: 1;
-}
-
-.notification-background[data-v-25064164] {
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  border-radius: 0 !important;
-  -webkit-mask-image: var(--notif-cloud);
-  mask-image: var(--notif-cloud);
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
 }
 
 .notif:not(.visible) .notification[data-v-25064164] {
