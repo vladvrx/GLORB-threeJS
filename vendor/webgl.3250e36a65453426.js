@@ -1143,7 +1143,7 @@ const Ai = {
 };
 function Ii(e, t) {
   if ("Neutral" === e) return;
-  if ("Idle2" === e) e = "Idle";
+  if ("Idle2" === e) e = "T-Pose";
   characterAnimationFrames[e] ? this.setAnimation(e, {
     duration: t,
     loop: Ai[e] ? E : F
@@ -1330,8 +1330,8 @@ function Ki(e, t) {
   });
 }
 let Xi = null,
-  $i = ["Idle", "Idle3"],
-  Zi = ["Idle", "Idle3"];
+  $i = ["T-Pose"],
+  Zi = ["T-Pose"];
 const Ji = .095,
   Qi = .9888;
 class CharacterAnimationMixin extends t {
@@ -1428,7 +1428,9 @@ function io() {
   this.allAnimsKeys = Object.keys(this.allAnims);
 }
 function oo(e, t = {}) {
-  "Idle1" === e && (e = "Idle");
+  "Idle1" === e && (e = "T-Pose");
+  "Idle2" === e && (e = "T-Pose");
+  "Idle" === e && (e = "T-Pose");
   const s = !!t.instant,
     i = void 0 !== t.loop ? t.loop : F,
     o = this.animations[e];
@@ -1460,7 +1462,7 @@ function no(e, t) {
 function ro() {
   if (this.isUserPose) return;
   const e = this.isMoving ? Zi : $i,
-    t = this.forcedIdle || e[this.isPlayer ? 2 : Math.floor(Math.random() * e.length)];
+    t = this.forcedIdle || e[0] || "T-Pose";
   this.setAnimation(t);
 }
 function lo(e, t, s = () => {}) {
