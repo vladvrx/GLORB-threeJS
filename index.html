@@ -26,10 +26,10 @@
     <link rel="stylesheet" href="./reference/assets/game-cursor.css">
     <link rel="stylesheet" href="./direct-port/styles/direct-port-ui.css?v=yes-red-outline">
     <link rel="stylesheet" href="./three-js/styles.css?v=palette-ref-exact">
-    <link rel="stylesheet" href="./reference/assets/studio-preloader.css?v=1788460025911">
-    <script src="./reference/assets/studio-bridge.js?v=nostands"></script>
-    <link rel="modulepreload" href="./vendor/vendor.75f6e6ae65453426.js">
-    <link rel="modulepreload" href="./vendor/webgl.3250e36a65453426.js?v=tpose-nostands">
+    <link rel="stylesheet" href="./reference/assets/studio-preloader.css?v=studio-apply-1788463216270">
+    <script src="./reference/assets/studio-bridge.js?v=studio-apply-1788463216270"></script>
+    <link rel="modulepreload" href="./vendor/vendor.75f6e6ae65453426.js?v=studio-apply-1788463216270">
+    <link rel="modulepreload" href="./vendor/webgl.3250e36a65453426.js?v=studio-apply-1788463216270">
   </head>
   <body>
     <aside id="preloader" aria-live="polite">
@@ -44,7 +44,7 @@
     <div id="app"></div>
     <noscript>This game requires JavaScript.</noscript>
     <script type="module">
-      import { startThreeJsGame } from "./three-js/src/boot.js?v=studio-locales";
+      import { startThreeJsGame } from "./three-js/src/boot.js?v=studio-apply-1788463216270";
 
       startThreeJsGame().catch((error) => {
         console.error("glorb Three.js could not start", error);

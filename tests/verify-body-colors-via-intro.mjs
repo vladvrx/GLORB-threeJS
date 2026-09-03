@@ -72,9 +72,9 @@ async function main() {
   await page.waitForTimeout(1000);
   console.log("after click", await runtime(page));
 
-  await finishBubble(page, "HELLO WELCOME");
+  await finishBubble(page, "Welcome aboard");
   await finishBubble(page, "Glorbs found");
-  await finishBubble(page, "CAN YOU HELP US");
+  await finishBubble(page, "can you help us");
 
   const yes = page.getByRole("button", { name: "Yes", exact: true });
   await yes.waitFor({ state: "visible", timeout: 20_000 });

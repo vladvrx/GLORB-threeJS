@@ -49,9 +49,9 @@ test("talk bubbles drive NPC mouths and Yes/No uses the original prompt chrome",
     )), { timeout: 15_000 }).not.toBeNull();
   }
 
-  await finishBubble(page, "HELLO WELCOME");
+  await finishBubble(page, "Welcome aboard");
   await finishBubble(page, "Glorbs found");
-  await finishBubble(page, "CAN YOU HELP US");
+  await finishBubble(page, "can you help us");
 
   const prompt = page.locator("#threejs-hud .dialog-buttons .prompt");
   await expect(prompt).toBeVisible({ timeout: 20_000 });

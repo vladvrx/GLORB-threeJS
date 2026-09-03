@@ -10699,5 +10699,106 @@
       "title": "Save your progress",
       "description": "Tap here to keep your island progress."
     }
+  },
+  "locale": {
+    "cta": {
+      "no": {
+        "thanks": "No thanks"
+      },
+      "more": "Learn more",
+      "quest": "Launch quest",
+      "about": "About",
+      "collect": "Collect",
+      "continue": "Continue",
+      "customize": "Customize",
+      "validate": "Confirm",
+      "claim": "Claim",
+      "buy": "Buy",
+      "start": "Start the journey",
+      "drive": "Drive me there",
+      "boat": "Boat me there",
+      "discover": "Learn more",
+      "reload": "Reload",
+      "interaction": {
+        "click": "Click & hold",
+        "touch": "Touch & hold",
+        "tap": "Tap tap tap"
+      },
+      "visit": "Visit",
+      "shop": "Shop items"
+    },
+    "quest": {
+      "end": {
+        "title": "Congratulations"
+      },
+      "completed": "Completed quests",
+      "locked": "Quests to unlock",
+      "progress": "Keep going on!"
+    },
+    "phone": {
+      "title": {
+        "fintech": "The Fintechs",
+        "cp": "Data B-each Points",
+        "customize": "Customize Avatar",
+        "quest": "The Quests"
+      },
+      "desc": {
+        "fintech": "<strong>Learn about each brand and the products and services they offer.</strong>",
+        "cp": "<strong>Unlock new accessories with your Data B-each Points. Those with a fire icon will give you a magic skill!</strong>",
+        "customize": "<strong>Choose your alien color.</strong>",
+        "quest": "<strong>Complete quests to earn Data B-each Points.</strong>"
+      },
+      "new": {
+        "item": "new"
+      }
+    },
+    "hint": {
+      "customize": {
+        "title": "Change your style!",
+        "description": "Click here to change your alien color."
+      },
+      "quest": {
+        "title": "New quest available",
+        "description": "Click here to check your&nbsp;quests."
+      },
+      "accessories": {
+        "title": "New accessories available",
+        "description": "Click here to buy your&nbsp;new&nbsp;accessories."
+      },
+      "map": {
+        "title": "",
+        "description": "Open the map to quickly navigate and discover places to go"
+      },
+      "fintech": {
+        "title": "Head here first",
+        "description": "Click here to open the map &amp; find out what you can visit"
+      }
+    },
+    "tutorial": {
+      "desktop": {
+        "world": "Use keys or <strong>click &amp; drag to move</strong>",
+        "game": "Use the left &amp; right buttons <strong>to drive</strong>"
+      },
+      "mobile": {
+        "world": "Drag <strong>to move</strong>",
+        "game": "Use your left &amp; right keys <strong>to drive</strong>"
+      }
+    },
+    "errors": {
+      "outdatedWindow": {
+        "title": "Oops!",
+        "desc": "You played Data B-each from another tab. Please reload the page to keep your save up-to-date."
+      },
+      "existingUser": {
+        "title": "Email sent!",
+        "desc": "",
+        "continue": "Continue as guest"
+      },
+      "invalidAccessToken": {
+        "title": "Oops!",
+        "desc": "The link you used to connect is invalid or expired. Please use the form to authenticate again.",
+        "continue": "Continue"
+      }
+    }
   }
 }

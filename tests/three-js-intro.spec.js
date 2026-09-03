@@ -70,9 +70,9 @@ test("Three.js intro Yes choice boats the player to Cove Island", async ({ page 
   expect(before.intro?.startJourneyVisible).toBe(true);
 
   await page.locator(".start-btn").first().click();
-  await finishBubble(page, "HELLO WELCOME");
+  await finishBubble(page, "Welcome aboard");
   await finishBubble(page, "Glorbs found");
-  await finishBubble(page, "CAN YOU HELP US");
+  await finishBubble(page, "can you help us");
 
   const yes = page.getByRole("button", { name: "Yes", exact: true });
   const no = page.getByRole("button", { name: "No thanks" });
