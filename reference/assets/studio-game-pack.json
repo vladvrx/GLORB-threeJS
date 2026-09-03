@@ -8548,7 +8548,7 @@
         "id": "Skip",
         "isSpeak": true,
         "bubbles": [
-          "<strong>OK OK OK OK OK</strong>"
+          "No problem, I&#39;ll drop you off on <strong>Cove Island</strong>"
         ],
         "before": [
           {
