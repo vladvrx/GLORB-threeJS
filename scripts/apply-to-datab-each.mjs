@@ -222,6 +222,7 @@ function preserveQuestIcons(root, quests) {
 }
 
 const BLOCKED_HINTS = new Set(["customize", "map"]);
+const KEEP_PLAYABLE_SCENES = new Set(["IslandIntro", "IslandWest"]);
 
 function stripMapMention(text) {
   if (typeof text !== "string") return text;
@@ -948,6 +949,10 @@ export function applyPack(root, pack) {
   stripBlockedHints(pack);
   if (pack.scenes) {
     for (const [key, scene] of Object.entries(pack.scenes)) {
+      if (!KEEP_PLAYABLE_SCENES.has(sceneIdFromPackKey(key))) {
+        delete pack.scenes[key];
+        continue;
+      }
       pack.scenes[key] = shippedScene(scene);
     }
   }

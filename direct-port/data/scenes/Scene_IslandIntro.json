@@ -14,18 +14,6 @@
   ],
   "useBaseAsCollider": false,
   "points": {
-    "Spawn.001": [
-      206.841797,
-      1.793991,
-      -145.759628,
-      1,
-      1,
-      1,
-      0,
-      0,
-      0,
-      1
-    ],
     "BoatIntro.001": [
       -23.710144,
       -0.153495,
@@ -37,67 +25,26 @@
       0,
       0,
       1
+    ],
+    "Spawn.001": [
+      206.841797,
+      1.793991,
+      -145.759628,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1
     ]
   },
+  "areas": {},
+  "curves": {},
   "assets": [
-    "TreeRoundF",
-    "TreeTriangleC",
-    "TreeSquareA",
-    "TreeRoundE",
-    "TreeTriangleA",
-    "Wall",
-    "Pillar",
-    "RockA",
-    "Slope",
-    "ShipA",
-    "ShipAVerB",
-    "ShipB",
-    "TreeRoundB",
     "PalmTree",
-    "BoatA",
-    "TreeSquareB",
-    "PicnicTable",
-    "BeachUmbrellaB",
-    "BeachUmbrella",
-    "TreeRoundA",
-    "SolidGroundLong",
-    "TreeCapsuleC",
-    "HouseG",
-    "HouseB",
-    "HouseC",
-    "HouseD",
-    "RampD",
-    "HouseF",
-    "TreeCapsule",
-    "BoatB",
-    "TreeTriangleE",
-    "HouseCabinC",
-    "CarRaceTrack",
-    "BridgeWoodCurvedB",
-    "PontoonLittle",
-    "BeachChair",
-    "Flag",
-    "BridgeWoodCurvedA",
-    "SolidGroundRound",
-    "PalmTreeStreet",
-    "CarRaceBuidling",
-    "HouseA",
-    "RampA",
-    "SkateparkBowl",
-    "RampC",
-    "RampB",
-    "FishingShip",
-    "Truck",
-    "Crossing",
-    "HouseCabinA",
-    "BeachBench",
-    "BeachTable",
-    "SurfShop",
-    "SolidGroundRoundBig",
-    "TruckFood",
-    "BuildingFOff",
-    "ShopForSaleBase",
-    "CobbleHouseOff"
+    "RockA",
+    "Character"
   ],
   "actors": [
     {
@@ -117,6 +64,56 @@
         0,
         0,
         1
+      ]
+    }
+  ],
+  "props": [
+    {
+      "asset": "PalmTree",
+      "traversable": true,
+      "transforms": [
+        72.61676025390625,
+        3.1647651195526123,
+        -55.62621307373047,
+        1.7586357593536377,
+        1.7586355209350586,
+        1.7586359977722168,
+        -0.007064770441502333,
+        -0.04296550154685974,
+        0.0783185362815857,
+        0.9959770441055298
+      ]
+    },
+    {
+      "asset": "PalmTree",
+      "traversable": true,
+      "transforms": [
+        74.86858918151766,
+        2.9018921852111816,
+        -59.56642887328564,
+        1.7586359977722168,
+        1.7586359977722168,
+        1.7586359977722168,
+        -0.1291070431470871,
+        0.3306940793991089,
+        0.07793225347995758,
+        0.931611180305481
+      ]
+    },
+    {
+      "asset": "RockA",
+      "traversable": true,
+      "transforms": [
+        156.29858644205717,
+        0.6496011614799424,
+        -0.8259095204264213,
+        -166.09430507460195,
+        -348.7474624083115,
+        -234.40977521268707,
+        -0.5280558569111641,
+        0.24091074797806475,
+        -0.8106310510168416,
+        -0.07743592588583358
       ]
     }
   ]

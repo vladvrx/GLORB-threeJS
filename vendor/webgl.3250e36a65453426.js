@@ -1991,7 +1991,7 @@ function initializeGameRuntime(t) {
         e && (G(() => r()), a || (a = !0, ha.start({
           swipeSignal: t.input.touch.swipe
         }), ha.callback = () => {
-          "EasterEgg" === t.scenes.currentSceneID.value ? t.scenes.backToIsland() : t.scenes.teleportTo("EasterEgg");
+          void 0;
         }));
       }, {
         immediate: !0

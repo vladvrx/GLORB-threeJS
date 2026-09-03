@@ -19,6 +19,8 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) (or `/`)
 3. Boat to Cove (`IslandWest`). Walk, talk, restore systems, complete quests.
 4. Header, mute, centered talk bubbles, bottom hints.
 
+The playable world is only those two islands. The bike race, secret island, and test lab are gone, along with the GLBs and music they uniquely loaded.
+
 ## Jam packaging
 
 `npm run zip` writes `glorb.zip` (under 35MB). The zip is this same recovered island, not a second game:
