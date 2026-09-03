@@ -6,6 +6,16 @@ function flag(value) {
   return !!unwrap(value);
 }
 
+function canOpenMenu(app) {
+  const store = app.$store;
+  const playing = unwrap(store.sceneStates?.Playing);
+  const state = unwrap(store.sceneState);
+  return Number(state) >= Number(playing)
+    && !flag(store.isDialogVisible)
+    && !flag(store.isTransitionActive)
+    && !flag(store.isCinematicActive);
+}
+
 function installSoundButton(app, { tone, extraClass = "" } = {}) {
   const button = circleButton({
     label: app.$l("arialabel.sound"),
@@ -37,7 +47,7 @@ function installHeader(app, host) {
     "data-v-08688f2d": "",
     tabindex: "-1",
     onClick: () => {
-      if (!header.classList.contains("is-visible")) return;
+      if (!canOpenMenu(app)) return;
       app.$store.isMenuOpen = true;
     },
   });
@@ -100,6 +110,8 @@ function installHeader(app, host) {
     () => {
       const show = visible();
       header.classList.toggle("is-visible", show);
+      header.inert = !show;
+      header.hidden = !show;
       logo.tabIndex = show ? 0 : -1;
     },
     { immediate: true },
@@ -266,6 +278,18 @@ function installMenu(app, host) {
     wipe.setOpen(open);
     if (open) playUiSound(app, "sfx_phone_swipe");
   }, { immediate: true });
+
+  watch(
+    () => [
+      unwrap(app.$store.sceneState),
+      unwrap(app.$store.sceneStates?.Playing),
+      flag(app.$store.isDialogVisible),
+      flag(app.$store.isTransitionActive),
+    ],
+    () => {
+      if (flag(app.$store.isMenuOpen) && !canOpenMenu(app)) app.$store.isMenuOpen = false;
+    },
+  );
 
   window.addEventListener("keydown", (event) => {
     if (event.code === "Escape" && flag(app.$store.isMenuOpen)) close();
