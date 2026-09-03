@@ -35,8 +35,11 @@ function installHeader(app, host) {
   const logo = el("div", {
     class: "logo white pointer",
     "data-v-08688f2d": "",
-    tabindex: "0",
-    onClick: () => { app.$store.isMenuOpen = true; },
+    tabindex: "-1",
+    onClick: () => {
+      if (!header.classList.contains("is-visible")) return;
+      app.$store.isMenuOpen = true;
+    },
   });
   logo.append(el("img", { src: "./reference/assets/databeach-logo.png?v=glorb", alt: "glorb", class: "logo-mark", width: "1515", height: "563" }));
   const buttons = el("div", { class: "buttons", "data-v-08688f2d": "" });
@@ -94,7 +97,11 @@ function installHeader(app, host) {
       unwrap(app.$store.currentFullscreenVideo),
       flag(app.$store.isCinematicActive),
     ],
-    () => header.classList.toggle("is-visible", visible()),
+    () => {
+      const show = visible();
+      header.classList.toggle("is-visible", show);
+      logo.tabIndex = show ? 0 : -1;
+    },
     { immediate: true },
   );
 }

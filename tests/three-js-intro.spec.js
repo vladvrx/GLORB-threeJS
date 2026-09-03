@@ -38,6 +38,7 @@ async function runtime(page) {
       tutorialVisible: !!document.querySelector(".tutorial-container"),
       muteVisible: !!document.querySelector("#threejs-hud [data-sound-toggle]")
         && document.querySelector("#threejs-hud .app-header")?.classList.contains("is-visible"),
+      canMove: !!webgl?.scenes?.current?.player?.canMove,
     };
   });
 }
