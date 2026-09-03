@@ -23,7 +23,7 @@ export const ACTOR_ASSETS: Record<string, string> = {
   Zipline: "Zipline",
   Lighthouse: "LightTraffic",
   BrokenBridge: "BridgeOff",
-  AvenHouse: "TechCompany03HouseOff",
+  CobbleHouse: "TechCompany03HouseOff",
   FlagPole: "Flag",
   ShopForSale: "ShopForSaleBase",
   Speakers: "Speakers",

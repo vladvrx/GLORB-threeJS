@@ -295,7 +295,7 @@ export function DialogueEditor() {
                               if (!current) return;
                               updateNode(current, node.id, (target) => {
                                 if (event.target.value === "END" || event.target.value === "GIVE_QUEST_ITEM") {
-                                  target.next = [{ action: event.target.value, opts: event.target.value === "GIVE_QUEST_ITEM" ? ["aven"] : undefined }];
+                                  target.next = [{ action: event.target.value, opts: event.target.value === "GIVE_QUEST_ITEM" ? ["cobble"] : undefined }];
                                 } else {
                                   target.next = [{ action: "GOTO", node: event.target.value }];
                                 }

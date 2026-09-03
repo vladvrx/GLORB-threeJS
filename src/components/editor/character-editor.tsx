@@ -16,7 +16,7 @@ const SCRIPTS = [
   "Ambassador",
   "MiniGame",
   "Intro",
-  "ZendaSick",
+  "SalveSick",
 ];
 
 function colorFor(gradientID: number) {
