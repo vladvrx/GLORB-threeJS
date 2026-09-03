@@ -94,6 +94,8 @@ test("Three.js intro Yes choice boats the player to Cove Island", async ({ page 
   const afterBoat = await runtime(page);
   if (Number(afterBoat.sceneState) < Number(afterBoat.playingState)) {
     await expect.poll(async () => (await runtime(page)).tutorialVisible, { timeout: 20_000 }).toBe(true);
+    expect((await runtime(page)).headerVisible).toBe(false);
+    await expect(page.locator("#threejs-hud .app-header [data-sound-toggle]")).toBeHidden();
     await page.keyboard.down("KeyW");
     await expect.poll(async () => {
       const now = await runtime(page);

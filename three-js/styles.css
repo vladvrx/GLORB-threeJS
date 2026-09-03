@@ -65,7 +65,7 @@
   }
 }
 
-#threejs-hud .app-header [data-sound-toggle] {
+#threejs-hud .app-header.is-visible [data-sound-toggle] {
   display: flex !important;
   visibility: visible !important;
   opacity: 1;

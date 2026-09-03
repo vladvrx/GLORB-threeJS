@@ -67,6 +67,7 @@ function installHeader(app, host) {
     }),
     installSoundButton(app, { tone: "bordered" }),
   );
+  for (const node of buttons.children) node.setAttribute("data-v-08688f2d", "");
   header.append(logo, buttons);
   host.append(header);
 
@@ -111,7 +112,6 @@ function installHeader(app, host) {
       const show = visible();
       header.classList.toggle("is-visible", show);
       header.inert = !show;
-      header.hidden = !show;
       logo.tabIndex = show ? 0 : -1;
     },
     { immediate: true },
@@ -229,6 +229,7 @@ function installMenu(app, host) {
     }),
     installSoundButton(app, { tone: "white" }),
   );
+  for (const node of buttons.children) node.setAttribute("data-v-2fd699fb", "");
   const infos = el("section", { class: "menu-infos", "data-v-2fd699fb": "" });
   infos.append(
     el("img", {
@@ -258,6 +259,7 @@ function installMenu(app, host) {
       },
     }),
   );
+  for (const node of infos.querySelectorAll(".cta, .menu-cta")) node.setAttribute("data-v-2fd699fb", "");
   container.append(buttons, infos);
   const overlay = el("div", {
     class: "menu-overlay",
