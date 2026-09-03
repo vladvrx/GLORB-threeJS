@@ -292,6 +292,85 @@ html.journey-started .page-intro {
   pointer-events: auto;
 }
 
+/* ─── API-notif popin → cloud card ─────────────────────────────────────── */
+#threejs-hud .popin[data-v-9527461f] {
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 55%, #eaf4ff 100%) !important;
+  border-radius: 2.8em !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 10px 24px rgba(35, 33, 75, 0.28)) !important;
+  overflow: visible !important;
+}
+
+#threejs-hud .popin[data-v-9527461f]::before {
+  content: "";
+  position: absolute;
+  top: -2.0em;
+  left: -0.4em;
+  right: -0.4em;
+  height: 3.2em;
+  background:
+    radial-gradient(ellipse 3em 3em   at  8% 100%, #eaf4ff 98%, transparent 100%),
+    radial-gradient(ellipse 4.2em 3.8em at 22% 100%, #f7fbff 98%, transparent 100%),
+    radial-gradient(ellipse 5em 4.4em  at 38% 100%, #ffffff  98%, transparent 100%),
+    radial-gradient(ellipse 3.6em 3.2em at 55% 100%, #f7fbff 98%, transparent 100%),
+    radial-gradient(ellipse 4.4em 3.8em at 70% 100%, #ffffff  98%, transparent 100%),
+    radial-gradient(ellipse 3.2em 2.8em at 84% 100%, #f7fbff 98%, transparent 100%),
+    radial-gradient(ellipse 2.4em 2.2em at 96% 100%, #eaf4ff 98%, transparent 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+#threejs-hud .popin[data-v-9527461f]::after {
+  content: "";
+  position: absolute;
+  bottom: -1.3em;
+  right: 15%;
+  width: 1.4em;
+  height: 1.4em;
+  border-radius: 50%;
+  background: #f7fbff;
+  box-shadow: 0.8em 0.9em 0 -0.1em #eaf4ff, 1.5em 1.8em 0 -0.3em #e0efff;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ─── QuestCompleted / MainQuestCompleted modal → cloud card ───────────── */
+.popin[data-v-26a58662],
+.notif[data-v-17d5bb62] .popin {
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 55%, #eaf4ff 100%) !important;
+  border-radius: 2.8em !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 10px 24px rgba(35, 33, 75, 0.28)) !important;
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.popin[data-v-26a58662]::before,
+.notif[data-v-17d5bb62] .popin::before {
+  content: "";
+  position: absolute;
+  top: -2.0em;
+  left: -0.4em;
+  right: -0.4em;
+  height: 3.2em;
+  background:
+    radial-gradient(ellipse 3em 3em   at  8% 100%, #eaf4ff 98%, transparent 100%),
+    radial-gradient(ellipse 4.2em 3.8em at 22% 100%, #f7fbff 98%, transparent 100%),
+    radial-gradient(ellipse 5em 4.4em  at 38% 100%, #ffffff  98%, transparent 100%),
+    radial-gradient(ellipse 3.6em 3.2em at 55% 100%, #f7fbff 98%, transparent 100%),
+    radial-gradient(ellipse 4.4em 3.8em at 70% 100%, #ffffff  98%, transparent 100%),
+    radial-gradient(ellipse 3.2em 2.8em at 84% 100%, #f7fbff 98%, transparent 100%),
+    radial-gradient(ellipse 2.4em 2.2em at 96% 100%, #eaf4ff 98%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.popin[data-v-26a58662] > *,
+.notif[data-v-17d5bb62] .popin > * {
+  position: relative;
+  z-index: 1;
+}
+
 #threejs-hud .interaction-button button {
   pointer-events: auto;
 }
