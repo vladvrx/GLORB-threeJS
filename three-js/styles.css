@@ -148,6 +148,15 @@ html.journey-started .page-intro {
   pointer-events: auto;
 }
 
+#threejs-hud .menu-background[data-v-2fd699fb] {
+  overflow: visible;
+}
+
+#threejs-hud .menu-background canvas {
+  display: block;
+  height: 100%;
+}
+
 .phone-overlay[data-v-99fe8ba9]:not([hidden]) {
   pointer-events: auto;
 }
