@@ -3,6 +3,8 @@ import { circleButton, unwrap } from "./dom.js";
 
 const HIP_SPREAD = 1.05;
 const KNEE_BEND = 0.22;
+const ARM_RAISE = 0.9;
+const ELBOW_BEND = 0.35;
 const MIN_AIR_MS = 180;
 const MAX_AIR_MS = 2600;
 const FLOOR_LEAVE = 0.22;
@@ -57,6 +59,10 @@ function jumpBones(player) {
     hipR: findBone(bones, "Hip_R"),
     kneeL: findBone(bones, "Knee_L"),
     kneeR: findBone(bones, "Knee_R"),
+    shoulderL: findBone(bones, "Shoulder_L"),
+    shoulderR: findBone(bones, "Shoulder_R"),
+    elbowL: findBone(bones, "Elbow_L"),
+    elbowR: findBone(bones, "Elbow_R"),
   };
   if (!map.hipL || !map.hipR) return null;
   player.__jumpBones = map;
@@ -69,10 +75,16 @@ function applyStarPose(player, amount) {
   if (!bones) return;
   const spread = HIP_SPREAD * amount;
   const bend = KNEE_BEND * amount;
+  const raise = ARM_RAISE * amount;
+  const elbows = ELBOW_BEND * amount;
   bones.hipL.rotateY(spread);
   bones.hipR.rotateY(-spread);
   if (bones.kneeL) bones.kneeL.rotateX(-bend);
   if (bones.kneeR) bones.kneeR.rotateX(-bend);
+  if (bones.shoulderL) bones.shoulderL.rotateZ(raise);
+  if (bones.shoulderR) bones.shoulderR.rotateZ(-raise);
+  if (bones.elbowL) bones.elbowL.rotateZ(elbows);
+  if (bones.elbowR) bones.elbowR.rotateZ(-elbows);
 }
 
 function setAirGravity(player, enabled) {

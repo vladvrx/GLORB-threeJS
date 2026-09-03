@@ -18,7 +18,7 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) (or `/`)
 2. Intro camera down to the red/yellow boat and the Hello / Yes / No thanks graph.
 3. Boat to **GLORB** (`IslandWest`). Walk, talk, restore systems, complete quests.
 4. Header, mute, centered talk bubbles, bottom hints.
-5. **Jump** with Space or the small button in the bottom-right. In the air the character spreads their legs.
+5. **Jump** with Space or the small button in the bottom-right. In the air the character spreads their legs and raises their arms.
 
 The playable world is the intro boat plus **GLORB**. The bike race, secret island, and test lab are gone, along with the GLBs and music they uniquely loaded.
 
