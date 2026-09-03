@@ -10,7 +10,11 @@ const THREE_JS_URL = process.env.GLORB_URL || "http://127.0.0.1:43219/three-js";
 
 async function showHeader(page) {
   await page.evaluate(() => {
-    document.querySelector("#threejs-hud .app-header")?.classList.add("is-visible");
+    const header = document.querySelector("#threejs-hud .app-header");
+    if (!header) return;
+    header.hidden = false;
+    header.inert = false;
+    header.classList.add("is-visible");
   });
 }
 
