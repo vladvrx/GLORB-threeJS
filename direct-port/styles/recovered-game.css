@@ -6409,11 +6409,6 @@ h1 {
   color:#fff!important
 }
 
-.dialog .cta.intro-choice-no {
-  background:#fff!important;
-  color:#3b3777!important
-}
-
 .phone-navigation[data-v-ad29435e] {
    left: calc(50% -(62px * var(--phone-scale)));
    width: calc(124px * var(--phone-scale));

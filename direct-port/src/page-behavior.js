@@ -39,8 +39,8 @@ function styleIntroChoices(root) {
       button.classList.add("green", "intro-choice-yes");
     }
     if (label === "no thanks" || label === "no thanks!") {
-      button.classList.remove("gray", "green");
-      button.classList.add("white", "intro-choice-no");
+      button.classList.remove("white", "green");
+      button.classList.add("gray", "intro-choice-no");
     }
   });
 }

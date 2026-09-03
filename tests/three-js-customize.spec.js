@@ -57,7 +57,7 @@ test("profile opens the original Customize color picker", async ({ page }) => {
   await expect(page.locator(".page-phone")).toHaveCount(0);
   await expect(page.locator(".phone-hud")).toHaveCount(0);
 
-  await page.locator(".page-customize [aria-label], .actions [aria-label]").first().click();
+  await page.locator(".page-customize .actions [aria-label]").first().click();
   await expect.poll(async () => page.evaluate(() => window.__THREE_JS_GAME__.app.$route?.name), { timeout: 10_000 }).toBe("Home");
   await expect.poll(async () => page.evaluate(() => !!window.__THREE_JS_GAME__.app.$store.isCustomizeOpen), { timeout: 10_000 }).toBe(false);
 });
