@@ -1,15 +1,34 @@
 import { w as watch } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { circleButton, unwrap } from "./dom.js";
 
-const HIP_SPREAD = 1.05;
-const KNEE_BEND = 0.22;
+const WORLD_GRAVITY = 30;
+const JUMP_GRAVITY = 14;
 const MIN_AIR_MS = 180;
-const MAX_AIR_MS = 2200;
+const MAX_AIR_MS = 3600;
 const FLOOR_LEAVE = 0.22;
 const FLOOR_LAND = 0.14;
+const POSE_RISE_MS = 1200;
+const POSE_FALL_MS = 480;
+
+const POSES = {
+  jump: {
+    hipSpread: 0.2,
+    hipTuck: 0.32,
+    kneeBend: 0.38,
+  },
+  jump1: {
+    hipSpread: 1.05,
+    hipTuck: 0,
+    kneeBend: 0.22,
+  },
+};
 
 function flag(value) {
   return !!unwrap(value);
+}
+
+function jumpStyle(name) {
+  return name === "jump1" ? "jump1" : "jump";
 }
 
 export function getIslandPlayer(app) {
@@ -61,16 +80,48 @@ function jumpBones(player) {
   return map;
 }
 
-function applyStarPose(player, amount) {
+function captureJumpRest(player, state) {
+  const bones = jumpBones(player);
+  if (!bones) return;
+  state.hipRestL = bones.hipL.quaternion.clone();
+  state.hipRestR = bones.hipR.quaternion.clone();
+  state.kneeRestL = bones.kneeL ? bones.kneeL.quaternion.clone() : null;
+  state.kneeRestR = bones.kneeR ? bones.kneeR.quaternion.clone() : null;
+}
+
+function applyJumpPose(player, amount, style, state) {
   if (amount <= 0) return;
   const bones = jumpBones(player);
   if (!bones) return;
-  const spread = HIP_SPREAD * amount;
-  const bend = KNEE_BEND * amount;
+  if (!state.hipRestL) captureJumpRest(player, state);
+  if (state.hipRestL) bones.hipL.quaternion.copy(state.hipRestL);
+  if (state.hipRestR) bones.hipR.quaternion.copy(state.hipRestR);
+  if (state.kneeRestL && bones.kneeL) bones.kneeL.quaternion.copy(state.kneeRestL);
+  if (state.kneeRestR && bones.kneeR) bones.kneeR.quaternion.copy(state.kneeRestR);
+  const pose = POSES[jumpStyle(style)] || POSES.jump;
+  const spread = pose.hipSpread * amount;
+  const tuck = pose.hipTuck * amount;
+  const bend = pose.kneeBend * amount;
   bones.hipL.rotateY(spread);
   bones.hipR.rotateY(-spread);
+  if (tuck) {
+    bones.hipL.rotateX(tuck);
+    bones.hipR.rotateX(tuck);
+  }
   if (bones.kneeL) bones.kneeL.rotateX(-bend);
   if (bones.kneeR) bones.kneeR.rotateX(-bend);
+}
+
+function setAirGravity(player, enabled) {
+  const physics = player?.scene?.physics;
+  if (!physics?.setGravity) return;
+  physics.setGravity(enabled ? JUMP_GRAVITY : WORLD_GRAVITY);
+}
+
+function restoreGravity(player, state) {
+  if (!state.gravityLow) return;
+  setAirGravity(player, false);
+  state.gravityLow = false;
 }
 
 function hookPlayer(player, state) {
@@ -109,6 +160,10 @@ function tickJump(player, state) {
   const dist = Number(physics.playerDistanceFromFloor || 0);
   const now = performance.now();
   if (state.airborne) {
+    if (!state.gravityLow) {
+      setAirGravity(player, true);
+      state.gravityLow = true;
+    }
     if (!state.leftFloor && dist > FLOOR_LEAVE) state.leftFloor = true;
     const elapsed = now - state.startedAt;
     if (state.leftFloor && dist < FLOOR_LAND && elapsed > MIN_AIR_MS) {
@@ -119,18 +174,26 @@ function tickJump(player, state) {
       state.leftFloor = false;
     }
   }
+  if (!state.airborne) restoreGravity(player, state);
   const dt = Number(player.webgl?.time?.dt || 16.67);
-  const target = state.airborne ? 1 : 0;
-  const rate = state.airborne ? 0.32 : 0.2;
-  state.pose += (target - state.pose) * Math.min(1, rate * (dt / 16.67));
+  if (state.airborne) {
+    const elapsed = now - state.startedAt;
+    state.pose = Math.min(1, elapsed / POSE_RISE_MS);
+  } else if (state.pose > 0) {
+    state.pose = Math.max(0, state.pose - dt / POSE_FALL_MS);
+  }
   if (state.pose < 0.01 && !state.airborne) {
     state.pose = 0;
+    state.hipRestL = null;
+    state.hipRestR = null;
+    state.kneeRestL = null;
+    state.kneeRestR = null;
     return;
   }
-  applyStarPose(player, state.pose);
+  applyJumpPose(player, state.pose, state.style, state);
 }
 
-export function tryJump(app) {
+export function tryJump(app, style = "jump") {
   const state = app.__jumpState;
   if (!state) return false;
   if (playBlocked(app)) return false;
@@ -143,12 +206,20 @@ export function tryJump(app) {
   if (!physics || physics.takeOver?.active) return false;
   const dist = Number(physics.playerDistanceFromFloor || 0);
   if (dist > 0.2 && !physics.playerIsCollidingGround) return false;
+  state.style = jumpStyle(style);
   state.pendingImpulse = true;
   state.airborne = true;
   state.leftFloor = false;
   state.startedAt = performance.now();
+  state.pose = 0;
+  state.hipRestL = null;
+  state.hipRestR = null;
+  state.kneeRestL = null;
+  state.kneeRestR = null;
   player.timeNotOnFloor = 2000;
   player.isOnFloorDebounced = false;
+  setAirGravity(player, true);
+  state.gravityLow = true;
   return true;
 }
 
@@ -160,18 +231,29 @@ export function installJump(app) {
     leftFloor: false,
     startedAt: 0,
     pose: 0,
+    style: "jump",
+    gravityLow: false,
+    hipRestL: null,
+    hipRestR: null,
+    kneeRestL: null,
+    kneeRestR: null,
   };
   app.__jumpState = state;
-  const jump = () => tryJump(app);
+  const jump = (style) => tryJump(app, style);
   app.__tryJump = jump;
 
   const onKeyDown = (event) => {
-    if (event.code !== "Space" && event.key !== " ") return;
     if (event.repeat) return;
     if (typingTarget(event)) return;
     if (playBlocked(app)) return;
+    if (event.code === "Digit1" || event.code === "Numpad1") {
+      event.preventDefault();
+      jump("jump1");
+      return;
+    }
+    if (event.code !== "Space" && event.key !== " ") return;
     event.preventDefault();
-    jump();
+    jump("jump");
   };
   window.addEventListener("keydown", onKeyDown);
 
@@ -185,10 +267,16 @@ export function installJump(app) {
     const scenes = app.$webgl?.scenes;
     return unwrap(scenes?.currentSceneID) || scenes?.current?.id || null;
   }, () => {
+    const player = getIslandPlayer(app);
+    restoreGravity(player, state);
     state.airborne = false;
     state.leftFloor = false;
     state.pendingImpulse = false;
     state.pose = 0;
+    state.hipRestL = null;
+    state.hipRestR = null;
+    state.kneeRestL = null;
+    state.kneeRestR = null;
     attach();
   });
   window.addEventListener("beforeunload", () => window.clearInterval(timer));
@@ -208,14 +296,14 @@ export function installJumpButton(app, host) {
     extraClass: "pointer sm jump-circle",
     onClick: (event) => {
       event.preventDefault();
-      jump();
+      jump("jump");
     },
   });
   button.addEventListener("pointerdown", (event) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
     event.preventDefault();
     event.stopPropagation();
-    jump();
+    jump("jump");
   });
   wrap.append(button);
   host.append(wrap);
