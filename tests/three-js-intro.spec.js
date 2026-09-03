@@ -107,11 +107,11 @@ test("Three.js intro Yes choice boats the player to Cove Island", async ({ page 
   await expect.poll(async () => (await runtime(page)).canMove, { timeout: 30_000 }).toBe(true);
   await expect.poll(async () => (await runtime(page)).headerVisible, { timeout: 30_000 }).toBe(true);
   await expect(page.locator("#threejs-hud .app-header [data-sound-toggle]")).toBeVisible();
+  await expect.poll(async () => (await runtime(page)).tutorialVisible, { timeout: 5_000 }).toBe(false);
 
   const header = await runtime(page);
   expect(header.dialogVisible).toBe(false);
   expect(header.menuOpen).toBe(false);
-  expect(header.tutorialVisible).toBe(false);
 
   await page.locator("#threejs-hud .app-header .logo").click();
   await expect.poll(async () => (await runtime(page)).menuOpen, { timeout: 10_000 }).toBe(true);
