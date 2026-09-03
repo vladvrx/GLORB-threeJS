@@ -10,7 +10,8 @@ import {
   w as watch,
 } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { ThreeJsRoot } from "./root.js";
-import { installHud } from "./hud.js?v=no-pause-menu";
+import { installHud } from "./hud.js?v=jump-1";
+import { installJump } from "./jump.js";
 
 function suppressRemovedHints(app) {
   const blocked = new Set(["customize", "map", "fintech", "partner"]);
@@ -173,8 +174,9 @@ export async function startEngine() {
     });
     vueApp.mount("#app");
     keepOnlyWestIslandMusic(app);
+    installJump(app);
     installHud(app);
-    window.__THREE_JS_GAME__ = { vueApp, app };
+    window.__THREE_JS_GAME__ = { vueApp, app, tryJump: app.__tryJump };
   };
 
   await new Promise((resolve, reject) => {
