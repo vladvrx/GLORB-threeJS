@@ -80,7 +80,6 @@ test("hint toast sits on the bottom edge on desktop", async ({ page }) => {
   expect(ty).toBeGreaterThan(150);
   const fs = require("fs");
   fs.mkdirSync("/opt/cursor/artifacts", { recursive: true });
-  await toast.screenshot({ path: "/opt/cursor/artifacts/notification_bottom_desktop.png" });
   await page.screenshot({ path: "/opt/cursor/artifacts/notification_bottom_desktop_page.png" });
 });
 
@@ -114,6 +113,5 @@ test("hint toast sits on the bottom edge on iPhone 13", async ({ page }) => {
   expect(metrics.isBottomActive).toBe(true);
   const fs2 = require("fs");
   fs2.mkdirSync("/opt/cursor/artifacts", { recursive: true });
-  await toast.screenshot({ path: "/opt/cursor/artifacts/notification_bottom_iphone.png" });
   await page.screenshot({ path: "/opt/cursor/artifacts/notification_bottom_iphone_page.png" });
 });
