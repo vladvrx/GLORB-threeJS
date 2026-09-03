@@ -128,10 +128,21 @@ const BLOCKED_ASSETS = new Set([
   "StandNeutral05",
 ]);
 
+const BLOCKED_ACTORS = new Set(["FintechStandGround", "PartnerStandGround"]);
+
 function isBlockedAsset(name) {
   if (!name) return false;
   if (BLOCKED_ASSETS.has(name)) return true;
   return String(name).startsWith("StandTechCompany");
+}
+
+function isBlockedActor(actor) {
+  if (!actor || typeof actor !== "object") return false;
+  const type = actor.type || actor.actorType || actor.className;
+  if (BLOCKED_ACTORS.has(type)) return true;
+  if (isBlockedAsset(actor.asset)) return true;
+  const uid = String(actor.uid || actor.id || "");
+  return uid.startsWith("FintechStandGround") || uid.startsWith("PartnerStandGround");
 }
 
 function sceneIdFromPackKey(key) {
@@ -141,7 +152,7 @@ function sceneIdFromPackKey(key) {
 function shippedScene(scene) {
   const props = (scene.props ?? []).filter((item) => !isCustomAsset(item.asset) && !isBlockedAsset(item.asset));
   const assets = [...new Set((scene.assets ?? []).filter((item) => !isCustomAsset(item) && !isBlockedAsset(item)))];
-  const actors = (scene.actors ?? []).filter((item) => !isCustomAsset(item.type));
+  const actors = (scene.actors ?? []).filter((item) => !isCustomAsset(item.type) && !isBlockedActor(item));
   return { ...scene, props, assets, actors };
 }
 
@@ -323,7 +334,13 @@ function sceneFromRaw(raw, id) {
         transforms: object.transform,
       }));
     const actors = raw.objects
-      .filter((object) => object.kind === "actor")
+      .filter((object) => object.kind === "actor" && !isBlockedActor({
+        type: object.actorType,
+        actorType: object.actorType,
+        asset: object.asset,
+        uid: object.id,
+        id: object.id,
+      }))
       .map((object) => ({
         uid: object.id,
         type: object.actorType ?? "NPC",
@@ -879,6 +896,11 @@ export function applyPack(root, pack) {
   }
 
   pack = remap(pack);
+  if (pack.scenes) {
+    for (const [key, scene] of Object.entries(pack.scenes)) {
+      pack.scenes[key] = shippedScene(scene);
+    }
+  }
   pack.quests_en = preserveQuestIcons(root, pack.quests_en ?? {});
   pack.site_hints = Object.fromEntries(
     (Array.isArray(pack.notifications) ? pack.notifications : [])
@@ -1012,16 +1034,73 @@ if (isMain) {
             { kind: "prop", asset: "Barrel", traversable: false, transform: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
             { kind: "prop", asset: "StandAven", traversable: false, transform: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
             { kind: "prop", asset: "StandFair", traversable: false, transform: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
+            { kind: "prop", asset: "StandA", traversable: false, transform: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
+            {
+              id: "FintechStandGround.004",
+              kind: "actor",
+              actorType: "FintechStandGround",
+              params: { fintech: "salve" },
+              transform: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1],
+            },
+            {
+              id: "PartnerStandGround.001",
+              kind: "actor",
+              actorType: "PartnerStandGround",
+              params: {},
+              transform: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1],
+            },
+            {
+              id: "NPC_A",
+              kind: "actor",
+              actorType: "NPC",
+              params: { subtype: "Citizen_West_StandingA" },
+              transform: [4, 5, 6, 1, 1, 1, 0, 0, 0, 1],
+            },
+          ],
+          actors: [
+            { uid: "FintechStandGround.005", type: "FintechStandGround", params: { fintech: "trail" }, transforms: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
           ],
           curves: [],
         },
       },
     });
-    if (withBooths.scenes.Scene_IslandWest.props.some((item) => String(item.asset).startsWith("Stand"))) {
+    if (withBooths.scenes.Scene_IslandWest.props.some((item) => String(item.asset).startsWith("Stand") || item.asset === "underStand")) {
       throw new Error("self-test: partner booths were not stripped");
+    }
+    if (withBooths.scenes.Scene_IslandWest.actors.some((item) => item.type === "FintechStandGround" || item.type === "PartnerStandGround")) {
+      throw new Error("self-test: StandFair actors were not stripped");
     }
     if (withBooths.scenes.Scene_IslandWest.props[0].asset !== "Barrel") {
       throw new Error("self-test: non-booth props were stripped");
+    }
+    if (withBooths.scenes.Scene_IslandWest.actors[0].uid !== "NPC_A") {
+      throw new Error("self-test: standing NPCs were stripped with booths");
+    }
+    const packedBooths = packFromUnknown({
+      format: "datab-each-game-pack-v1",
+      quests_en: {},
+      scenes: {
+        Scene_IslandWest: {
+          name: "Cove",
+          props: [
+            { asset: "Barrel", traversable: false, transforms: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
+            { asset: "StandFair", traversable: false, transforms: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
+          ],
+          actors: [
+            { uid: "FintechStandGround.005", type: "FintechStandGround", params: { fintech: "trail" }, transforms: [1, 2, 3, 1, 1, 1, 0, 0, 0, 1] },
+            { uid: "NPC_Keep", type: "NPC", params: { subtype: "Citizen_West_StandingA" }, transforms: [4, 5, 6, 1, 1, 1, 0, 0, 0, 1] },
+          ],
+        },
+      },
+    });
+    if (packedBooths.scenes.Scene_IslandWest.props.some((item) => item.asset === "StandFair")) {
+      throw new Error("self-test: packed StandFair props were not stripped");
+    }
+    if (packedBooths.scenes.Scene_IslandWest.actors.some((item) => item.type === "FintechStandGround")) {
+      throw new Error("self-test: packed StandFair actors were not stripped");
+    }
+    if (packedBooths.scenes.Scene_IslandWest.actors[0].uid !== "NPC_Keep") {
+      throw new Error("self-test: packed standing NPCs were stripped with booths");
     }
     console.log(JSON.stringify({ ok: true, selfTest: true }, null, 2));
     process.exit(0);
