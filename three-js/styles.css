@@ -292,77 +292,37 @@ html.journey-started .page-intro {
   pointer-events: auto;
 }
 
-/* ─── API-notif popin → cloud card ─────────────────────────────────────── */
-#threejs-hud .popin[data-v-9527461f] {
-  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 55%, #eaf4ff 100%) !important;
-  border-radius: 2.8em !important;
-  box-shadow: none !important;
-  filter: drop-shadow(0 10px 24px rgba(35, 33, 75, 0.28)) !important;
-  overflow: visible !important;
-}
-
-#threejs-hud .popin[data-v-9527461f]::before {
-  content: "";
-  position: absolute;
-  top: -2.0em;
-  left: -0.4em;
-  right: -0.4em;
-  height: 3.2em;
-  background:
-    radial-gradient(ellipse 3em 3em   at  8% 100%, #eaf4ff 98%, transparent 100%),
-    radial-gradient(ellipse 4.2em 3.8em at 22% 100%, #f7fbff 98%, transparent 100%),
-    radial-gradient(ellipse 5em 4.4em  at 38% 100%, #ffffff  98%, transparent 100%),
-    radial-gradient(ellipse 3.6em 3.2em at 55% 100%, #f7fbff 98%, transparent 100%),
-    radial-gradient(ellipse 4.4em 3.8em at 70% 100%, #ffffff  98%, transparent 100%),
-    radial-gradient(ellipse 3.2em 2.8em at 84% 100%, #f7fbff 98%, transparent 100%),
-    radial-gradient(ellipse 2.4em 2.2em at 96% 100%, #eaf4ff 98%, transparent 100%);
-  pointer-events: none;
-  z-index: 2;
-}
-
-#threejs-hud .popin[data-v-9527461f]::after {
-  content: "";
-  position: absolute;
-  bottom: -1.3em;
-  right: 15%;
-  width: 1.4em;
-  height: 1.4em;
-  border-radius: 50%;
-  background: #f7fbff;
-  box-shadow: 0.8em 0.9em 0 -0.1em #eaf4ff, 1.5em 1.8em 0 -0.3em #e0efff;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* ─── QuestCompleted / MainQuestCompleted modal → cloud card ───────────── */
+/* Shared inscribed-cloud mask: same box, scalloped silhouette. */
+.notification[data-v-25064164],
+#threejs-hud .popin[data-v-9527461f],
 .popin[data-v-26a58662],
 .notif[data-v-17d5bb62] .popin {
-  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 55%, #eaf4ff 100%) !important;
-  border-radius: 2.8em !important;
-  box-shadow: none !important;
-  filter: drop-shadow(0 10px 24px rgba(35, 33, 75, 0.28)) !important;
-  overflow: visible !important;
-  position: relative !important;
+  --cloud-mask:
+    radial-gradient(ellipse 19% 78% at 7% 48%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 20% 70% at 18% 18%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 24% 82% at 34% 8%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 26% 88% at 52% 6%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 22% 78% at 70% 10%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 18% 68% at 86% 20%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 16% 72% at 96% 48%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 20% 64% at 88% 84%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 24% 58% at 68% 96%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 26% 60% at 46% 98%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 22% 58% at 24% 92%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 16% 64% at 8% 78%, #000 98%, transparent 100%),
+    radial-gradient(ellipse 88% 58% at 50% 56%, #000 100%, transparent 100%);
 }
 
-.popin[data-v-26a58662]::before,
-.notif[data-v-17d5bb62] .popin::before {
-  content: "";
-  position: absolute;
-  top: -2.0em;
-  left: -0.4em;
-  right: -0.4em;
-  height: 3.2em;
-  background:
-    radial-gradient(ellipse 3em 3em   at  8% 100%, #eaf4ff 98%, transparent 100%),
-    radial-gradient(ellipse 4.2em 3.8em at 22% 100%, #f7fbff 98%, transparent 100%),
-    radial-gradient(ellipse 5em 4.4em  at 38% 100%, #ffffff  98%, transparent 100%),
-    radial-gradient(ellipse 3.6em 3.2em at 55% 100%, #f7fbff 98%, transparent 100%),
-    radial-gradient(ellipse 4.4em 3.8em at 70% 100%, #ffffff  98%, transparent 100%),
-    radial-gradient(ellipse 3.2em 2.8em at 84% 100%, #f7fbff 98%, transparent 100%),
-    radial-gradient(ellipse 2.4em 2.2em at 96% 100%, #eaf4ff 98%, transparent 100%);
-  pointer-events: none;
-  z-index: 0;
+#threejs-hud .popin[data-v-9527461f],
+.popin[data-v-26a58662],
+.notif[data-v-17d5bb62] .popin {
+  background: #fff !important;
+  border-radius: 2em !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  filter: drop-shadow(0 8px 16px rgba(35, 33, 75, 0.2)) !important;
+  -webkit-mask-image: var(--cloud-mask);
+  mask-image: var(--cloud-mask);
 }
 
 .popin[data-v-26a58662] > *,
@@ -447,7 +407,7 @@ html.journey-started .databeach-home-logo {
 
 
 /* ─── Toast notifications as cloud popups ───────────────────────────────── */
-/* Same footprint as the original card; puffiness comes from in-bounds bumps. */
+/* Original card size. Cloud lobes are carved from that box, not added outside. */
 
 .notif[data-v-25064164] {
   top: auto !important;
@@ -466,22 +426,13 @@ html.journey-started .databeach-home-logo {
 
 .notification[data-v-25064164] {
   background-color: #fff !important;
-  background-image:
-    radial-gradient(ellipse 2.2em 1.5em at 10% 0%, #f0f6ff 72%, transparent 73%),
-    radial-gradient(ellipse 3em 1.9em at 28% 0%, #ffffff 72%, transparent 73%),
-    radial-gradient(ellipse 3.4em 2.1em at 48% 0%, #f7fbff 72%, transparent 73%),
-    radial-gradient(ellipse 2.8em 1.7em at 68% 0%, #ffffff 72%, transparent 73%),
-    radial-gradient(ellipse 2.4em 1.5em at 86% 0%, #eef4ff 72%, transparent 73%),
-    radial-gradient(ellipse 1.4em 1.1em at 0% 38%, #f5f9ff 70%, transparent 71%),
-    radial-gradient(ellipse 1.4em 1.1em at 100% 42%, #f0f6ff 70%, transparent 71%),
-    linear-gradient(180deg, #ffffff 0%, #f8fbff 42%, #ffffff 100%) !important;
+  background-image: none !important;
   border-radius: 2em !important;
-  box-shadow:
-    0 6px 16px rgba(35, 33, 75, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -4px 10px rgba(234, 244, 255, 0.35) !important;
-  filter: none !important;
+  box-shadow: none !important;
   overflow: hidden !important;
+  filter: drop-shadow(0 8px 16px rgba(35, 33, 75, 0.2)) !important;
+  -webkit-mask-image: var(--cloud-mask);
+  mask-image: var(--cloud-mask);
 }
 
 .notif:not(.visible) .notification[data-v-25064164] {
