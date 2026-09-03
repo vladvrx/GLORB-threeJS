@@ -6400,8 +6400,7 @@ h1 {
 
 .start-desc,
 .start-resume,
-.form-container,
-.menu .menu-infos .menu-cta + .menu-cta {
+.form-container {
   display:none!important
 }
 
