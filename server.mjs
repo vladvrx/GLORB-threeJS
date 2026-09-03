@@ -1,55 +1,106 @@
 #!/usr/bin/env node
-import fs from "node:fs";
+
+import fs from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { spawnSync } from "node:child_process";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const HOST = process.env.HOST || "0.0.0.0";
-const PORT = Number(process.env.PORT || 43217);
+const PORT = Number(process.env.GLORB_PORT || process.env.DATAB_EACH_PORT || process.env.PORT || 43219);
+const ROOT_INDEX = path.join(ROOT, "index.html");
+const GAME_INDEX = path.join(ROOT, "three-js", "index.html");
 
-spawnSync(process.execPath, [path.join(ROOT, "scripts/build.mjs")], { stdio: "inherit" });
-
-const MIME = {
+const MIME_TYPES = {
+  ".avif": "image/avif",
+  ".bin": "application/octet-stream",
   ".css": "text/css; charset=utf-8",
+  ".glb": "model/gltf-binary",
+  ".gltf": "model/gltf+json",
+  ".glsl": "text/plain; charset=utf-8",
   ".html": "text/html; charset=utf-8",
+  ".ico": "image/x-icon",
+  ".jpeg": "image/jpeg",
+  ".jpg": "image/jpeg",
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".m4a": "audio/mp4",
   ".map": "application/json; charset=utf-8",
+  ".mp4": "video/mp4",
   ".png": "image/png",
   ".svg": "image/svg+xml",
-  ".txt": "text/plain; charset=utf-8",
+  ".wasm": "application/wasm",
+  ".webmanifest": "application/manifest+json",
+  ".webp": "image/webp",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
 };
 
-const server = http.createServer((request, response) => {
-  const url = new URL(request.url || "/", `http://${request.headers.host || "127.0.0.1"}`);
-  let filePath = path.normalize(path.join(ROOT, decodeURIComponent(url.pathname)));
-  if (!filePath.startsWith(ROOT)) {
-    response.writeHead(403);
-    response.end("forbidden");
-    return;
-  }
-  if (url.pathname === "/" || url.pathname === "/index.html") {
-    spawnSync(process.execPath, [path.join(ROOT, "scripts/build.mjs")], { stdio: "ignore" });
-    filePath = path.join(ROOT, "index.html");
-  }
-  fs.stat(filePath, (error, stat) => {
-    if (error || !stat.isFile()) {
-      response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
-      response.end("not found");
+function safeJoin(root, urlPath) {
+  const decoded = decodeURIComponent(urlPath.split("?")[0]);
+  const filePath = path.resolve(root, `.${decoded}`);
+  const prefix = `${root}${path.sep}`;
+  if (filePath !== root && !filePath.startsWith(prefix)) return null;
+  return filePath;
+}
+
+async function sendFile(response, filePath) {
+  const data = await fs.readFile(filePath);
+  const type = MIME_TYPES[path.extname(filePath).toLowerCase()] ?? "application/octet-stream";
+  response.writeHead(200, {
+    "cache-control": "no-store",
+    "content-type": type,
+    "content-length": data.length,
+  });
+  response.end(data);
+}
+
+const server = http.createServer(async (request, response) => {
+  try {
+    const url = new URL(request.url || "/", `http://${request.headers.host || "127.0.0.1"}`);
+    let pathname = url.pathname;
+
+    if (pathname === "/three-js/") {
+      response.writeHead(308, { location: "/three-js" });
+      response.end();
       return;
     }
-    const data = fs.readFileSync(filePath);
-    response.writeHead(200, {
-      "cache-control": "no-store",
-      "content-type": MIME[path.extname(filePath)] || "application/octet-stream",
-      "content-length": data.length,
-    });
-    response.end(data);
-  });
+
+    if (pathname === "/") {
+      await sendFile(response, ROOT_INDEX);
+      return;
+    }
+
+    if (pathname === "/three-js") {
+      await sendFile(response, GAME_INDEX);
+      return;
+    }
+
+    const filePath = safeJoin(ROOT, pathname);
+    if (!filePath) {
+      response.writeHead(403, { "content-type": "text/plain; charset=utf-8" });
+      response.end("forbidden");
+      return;
+    }
+
+    try {
+      const stat = await fs.stat(filePath);
+      if (stat.isDirectory()) {
+        await sendFile(response, path.join(filePath, "index.html"));
+        return;
+      }
+      await sendFile(response, filePath);
+    } catch (error) {
+      const code = error && typeof error === "object" && "code" in error ? error.code : "";
+      response.writeHead(code === "ENOENT" ? 404 : 500, { "content-type": "text/plain; charset=utf-8" });
+      response.end(code === "ENOENT" ? "not found" : "unable to read file");
+    }
+  } catch (error) {
+    response.writeHead(500, { "content-type": "text/plain; charset=utf-8" });
+    response.end(error instanceof Error ? error.message : "server error");
+  }
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`glorb at http://127.0.0.1:${PORT}/`);
+  console.log(`glorb at http://127.0.0.1:${PORT}/three-js`);
 });

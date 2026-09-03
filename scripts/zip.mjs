@@ -1,25 +1,52 @@
-import fs from "node:fs";
-import path from "node:path";
+#!/usr/bin/env node
+
 import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-spawnSync(process.execPath, [path.join(root, "scripts/build.mjs")], { stdio: "inherit" });
+const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const STAGE = fs.mkdtempSync(path.join(os.tmpdir(), "glorb-zip-"));
+const OUT = path.join(ROOT, "glorb.zip");
+const LIMIT = 35 * 1024 * 1024;
 
-const staging = path.join(root, ".zip-stage");
-fs.rmSync(staging, { recursive: true, force: true });
-fs.mkdirSync(path.join(staging, "vendor"), { recursive: true });
-fs.copyFileSync(path.join(root, "index.html"), path.join(staging, "index.html"));
-fs.copyFileSync(path.join(root, "vendor/three.module.min.js"), path.join(staging, "vendor/three.module.min.js"));
-fs.copyFileSync(path.join(root, "vendor/three.core.min.js"), path.join(staging, "vendor/three.core.min.js"));
-fs.copyFileSync(path.join(root, "vendor/LICENSE-three.txt"), path.join(staging, "vendor/LICENSE-three.txt"));
+function copy(from, to) {
+  fs.cpSync(from, to, {
+    recursive: true,
+    filter: (source) => {
+      const base = path.basename(source);
+      if (base.endsWith(".map")) return false;
+      if (base === ".DS_Store") return false;
+      return true;
+    },
+  });
+}
 
-const zipPath = path.join(root, "glorb.zip");
-fs.rmSync(zipPath, { force: true });
-const zipped = spawnSync("zip", ["-r", zipPath, "index.html", "vendor"], { cwd: staging, stdio: "inherit" });
-if (zipped.status !== 0) throw new Error("zip failed");
+fs.mkdirSync(path.join(STAGE, "vendor"), { recursive: true });
+fs.copyFileSync(path.join(ROOT, "index.html"), path.join(STAGE, "index.html"));
+fs.copyFileSync(
+  path.join(ROOT, "vendor", "vendor.75f6e6ae65453426.js"),
+  path.join(STAGE, "vendor", "vendor.75f6e6ae65453426.js"),
+);
+fs.copyFileSync(
+  path.join(ROOT, "vendor", "webgl.3250e36a65453426.js"),
+  path.join(STAGE, "vendor", "webgl.3250e36a65453426.js"),
+);
+copy(path.join(ROOT, "three-js"), path.join(STAGE, "three-js"));
+copy(path.join(ROOT, "reference"), path.join(STAGE, "reference"));
+copy(path.join(ROOT, "direct-port"), path.join(STAGE, "direct-port"));
 
-const bytes = fs.statSync(zipPath).size;
-const mb = bytes / (1024 * 1024);
-console.log(`Wrote glorb.zip (${mb.toFixed(2)} MB)`);
-if (bytes > 35 * 1024 * 1024) throw new Error("zip exceeds 35MB");
+const zip = spawnSync("zip", ["-r", "-q", OUT, "."], { cwd: STAGE, stdio: "inherit" });
+fs.rmSync(STAGE, { recursive: true, force: true });
+if (zip.status !== 0) {
+  console.error("zip failed");
+  process.exit(zip.status ?? 1);
+}
+
+const size = fs.statSync(OUT).size;
+console.log(`glorb.zip ${(size / (1024 * 1024)).toFixed(2)} MB`);
+if (size > LIMIT) {
+  console.error(`zip is over 35MB (${size} bytes)`);
+  process.exit(1);
+}

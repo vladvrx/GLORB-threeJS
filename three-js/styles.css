@@ -1,0 +1,241 @@
+#threejs-hud {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 12;
+}
+
+#threejs-hud .pointer,
+#threejs-hud button,
+#threejs-hud a,
+#threejs-hud [data-pointer] {
+  pointer-events: auto;
+}
+
+#threejs-hud .hidden,
+#threejs-hud .hidden *,
+#threejs-hud [hidden],
+#threejs-hud [hidden] *,
+#threejs-hud .menu:not(.is-open),
+#threejs-hud .menu:not(.is-open) * {
+  pointer-events: none !important;
+}
+
+#threejs-hud .menu:not(.is-open) .menu-background {
+  visibility: hidden;
+}
+
+#threejs-hud header:not(.is-visible),
+#threejs-hud header:not(.is-visible) * {
+  pointer-events: none !important;
+  visibility: hidden;
+}
+
+#threejs-hud .circle-button .icon-svg {
+  width: 46%;
+  height: 46%;
+  fill: currentColor;
+}
+
+#threejs-hud .circle-button .button-content {
+  position: relative;
+  z-index: 1;
+}
+
+#threejs-hud .circle-button[data-sound-toggle] .sound {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+#threejs-hud .circle-button[data-sound-toggle] .sound .icon-svg {
+  width: 52%;
+  height: 52%;
+}
+
+@media (hover: hover) {
+  #threejs-hud .circle-button.bordered.is-hoverable:hover,
+  #threejs-hud .circle-button.bordered.is-hoverable:hover .icon-svg {
+    color: #3b3777;
+  }
+}
+
+#threejs-hud .app-header [data-sound-toggle] {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1;
+}
+
+#threejs-hud header .logo {
+  --logo-size: min(46vw, 228px);
+  flex-shrink: 0;
+  width: var(--logo-size) !important;
+  height: auto;
+  aspect-ratio: 1515 / 563;
+}
+
+#threejs-hud header .logo-mark,
+#threejs-hud .menu .menu-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.55));
+}
+
+#threejs-hud .menu-logo {
+  width: min(72vw, 320px) !important;
+  height: auto;
+  aspect-ratio: 1515 / 563;
+  margin-bottom: 10px;
+}
+
+.page-intro[data-v-366b880d] {
+  z-index: 16;
+}
+
+html.journey-started .page-intro {
+  z-index: 0;
+  pointer-events: none !important;
+}
+
+.dialog-bubble[data-v-9946fd7c],
+.dialog-buttons[data-v-a65553f3] {
+  pointer-events: auto;
+}
+
+#threejs-hud .dialog[data-v-fda03aae] {
+  pointer-events: none;
+}
+
+#threejs-hud .dialog-bubble[data-v-9946fd7c],
+.dialog-bubble[data-v-9946fd7c] {
+  position: fixed !important;
+  top: 50vh !important;
+  right: var(--app-padding);
+  bottom: auto !important;
+  left: var(--app-padding);
+  width: auto;
+  transform: translateY(-50%);
+}
+
+#threejs-hud .dialog-component.dialog-bubble:not(.visible) {
+  transform: translateY(calc(-50% + 80px));
+}
+
+#threejs-hud .dialog-component.dialog-bubble.visible {
+  transform: translateY(-50%);
+}
+
+.page-intro.threejs-start-fallback[hidden] {
+  display: none !important;
+}
+
+.page-intro .start-btn,
+.start .start-btn,
+.start.v-enter-active .start-btn,
+.start.v-leave-active .start-btn {
+  pointer-events: auto !important;
+}
+
+.menu.is-open .menu-overlay[data-v-2fd699fb] {
+  pointer-events: auto;
+}
+
+.phone-overlay[data-v-99fe8ba9]:not([hidden]) {
+  pointer-events: auto;
+}
+
+.phone-hud,
+.new-phone,
+.phone-overlay,
+.page-phone,
+.phone-tab.map,
+#session-pressure,
+body.pressure-surge::after {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+html:not(.intro-cta-visible) .databeach-home-logo,
+html.journey-started .databeach-home-logo {
+  display: none !important;
+}
+
+.threejs-circle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4em;
+  height: 4.4em;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background: #fff;
+  color: #3b3777;
+  box-shadow: 0 0.35em 0 rgba(31, 44, 96, 0.18);
+}
+
+.threejs-circle.green {
+  background: #02c6a7;
+  color: #fff;
+}
+
+.threejs-circle.bordered {
+  background: transparent;
+  border: 0.18em solid #fff;
+  color: #fff;
+  box-shadow: none;
+}
+
+.threejs-circle .icon-svg {
+  width: 46%;
+  height: 46%;
+  fill: currentColor;
+}
+
+.threejs-circle.muted .icon-svg {
+  opacity: 0.45;
+}
+
+
+/* Toast banners rise from the bottom edge instead of dropping from the top. */
+.notif[data-v-25064164] {
+  top: auto !important;
+  bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: var(--app-padding) !important;
+  align-items: flex-end !important;
+}
+
+@media (min-width: 640px) {
+  .notif[data-v-25064164] {
+    padding-bottom: calc(var(--app-padding) / 2) !important;
+  }
+}
+
+.notif:not(.visible) .notification[data-v-25064164] {
+  transform: translateY(200px) rotate(-4deg) !important;
+}
+
+html.phone .notif[data-v-72a9796e],
+html.phone .notif[data-v-788c7aca] {
+  top: auto !important;
+  bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: var(--app-padding) !important;
+}
+
+html.phone .popin[data-v-72a9796e],
+html.phone .popin[data-v-788c7aca] {
+  transform: translateY(25em) rotate(-4deg) !important;
+}

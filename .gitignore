@@ -1,6 +1,11 @@
 node_modules/
 .next/
 .DS_Store
-.zip-stage/
 *.pem
+.env*
 npm-debug.log*
+.vercel
+.zip-stage/
+playwright-report/
+test-results/
+glorb.zip

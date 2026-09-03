@@ -1,0 +1,20 @@
+[
+  {
+    "id": "MainQuestCompleted",
+    "type": "mainQuest",
+    "title": "Congratulations",
+    "description": "You finished a company quest. Claim your Data B-each Points."
+  },
+  {
+    "id": "QuestProgress",
+    "type": "progress",
+    "title": "Quest update",
+    "description": "Keep going on!"
+  },
+  {
+    "id": "ChestOpen",
+    "type": "coastalPoints",
+    "title": "Chest opened",
+    "description": "You found Data B-each Points inside a chest."
+  }
+]

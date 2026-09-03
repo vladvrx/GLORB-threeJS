@@ -1,42 +1,36 @@
 # glorb
 
-A single-player, portrait Three.js prototype. You are a glorb on a cove that is dissolving. Gather data shards, restore three pylons, and keep corruption from eating the island.
+The playable game is the recovered **Three.js r150** island (`loadWebGL`): intro boat, LETS GO, dialogue, Cove, neon water, original GLBs and HUD. There is no phone and no map.
 
-Genre: **Survival & Resource Management**.
+This is the same glorb build we have been iterating — not a replacement loop and not a from-scratch island.
 
-There is no Vue, no React, no phone, no map, and no notification toasts. The whole game is Three.js plus a small HTML layer for the start button, meters, and thumb controls.
-
-## Play
+## Run locally
 
 ```bash
-node server.mjs
+npm run dev
 ```
 
-Open [http://127.0.0.1:43217](http://127.0.0.1:43217). The playfield is locked to a 9:16 frame.
+Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) (or `/`).
 
-- Drag the left pad to walk. WASD also works if you are on a desk.
-- Walk into cyan shards to pick them up. Purple shards are poisoned — they raise corruption.
-- Tap **RESTORE** near a dark pylon when you have 5 shards.
-- Talk to the other glorb for the short briefing.
-- Restore all three pylons to win. If the corruption bar fills, the island dissolves and you reset.
+## What you play
 
-## Package for the competition
+1. Preloader with the glorb mark, then **LETS GO**.
+2. Intro camera down to the red/yellow boat and the Hello / Yes / No thanks graph.
+3. Boat to Cove (`IslandWest`). Walk, talk, restore systems, complete quests.
+4. Header, mute, pause menu, centered talk bubbles, bottom hints.
 
-```bash
-node scripts/zip.mjs
-```
+## Jam packaging
 
-That writes `glorb.zip` with `index.html` at the top level and Three.js in `vendor/`. Game code is concatenated into `index.html` and is not minified. The zip stays under 35MB.
+`npm run zip` writes `glorb.zip` (under 35MB). The zip is the recovered game: `index.html` boots it, `vendor/` holds the original engine libraries, `reference/` holds the hashed GLBs / audio / UI, `three-js/` is the HUD and boot, `direct-port/` is locale and recovered CSS.
 
-Unzip into a clean folder, serve it locally, open a private window, turn the network off, and play a full portrait session.
+The island is **portrait-first** on phones (the original rotate overlay only appears in landscape). Single-player, offline, no CDN.
 
-## Files
+## Layout
 
 | Path | Role |
 | --- | --- |
-| `src/glorb.js` | Readable game source |
-| `src/shell.html` | Portrait shell, HUD, import map |
-| `scripts/build.mjs` | Assembles `index.html` |
-| `vendor/three.module.min.js` | Three.js r185 WebGL build |
-| `vendor/three.core.min.js` | Three.js r185 core (required sibling of the module build) |
-| `index.html` | Built game (all game code, not minified) |
+| `index.html` | Preloader + boot (zip / `/`) |
+| `three-js/` | HUD, boot, engine glue |
+| `vendor/` | Original `loadWebGL` + Vue plugin vendor |
+| `reference/assets/` | Island GLBs, character, audio, UI |
+| `direct-port/` | `site.json` (LETS GO), recovered CSS |
