@@ -8,7 +8,7 @@ import {
   aK as getByPath,
   aL as FontFaceObserver,
   w as watch,
-} from "../../vendor/vendor.75f6e6ae65453426.js";
+} from "../../vendor/vendor.75f6e6ae65453426.js?v=cam-back";
 import { ThreeJsRoot } from "./root.js";
 import { installHud } from "./hud.js?v=no-pause-menu";
 

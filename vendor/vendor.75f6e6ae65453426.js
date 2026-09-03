@@ -30795,7 +30795,7 @@ class dF extends QN {
     if (!this.scene.player) return;
     const e = this.scene.player.cameraOptions,
       t = hy(py(this.cam.fov, 70, 50), 0, 1);
-    e.distance = gy(6.7, 9, t), e.elevation = gy(3.55, 3.7, t), this.scene.physics.setCameraOptions({
+    e.distance = gy(8, 10.8, t), e.elevation = gy(3.85, 4, t), this.scene.physics.setCameraOptions({
       distance: e.distance,
       elevation: e.elevation
     });
