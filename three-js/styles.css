@@ -483,21 +483,21 @@ html.phone .popin[data-v-788c7aca] {
 /* (colorId 27–31) and Character_Texture strips 251–255.                    */
 /* color-0: Electric Orange */
 .color-0[data-v-d2fd83f8] {
-  background: linear-gradient(180deg, #ffb347 10%, #ff4500 85%) !important;
+  background: linear-gradient(180deg, #ffb347 10%, #ff560b 85%) !important;
 }
 /* color-1: Hot Magenta → Electric Purple */
 .color-1[data-v-d2fd83f8] {
-  background: linear-gradient(180deg, #ff6ef7 10%, #a000ff 85%) !important;
+  background: linear-gradient(180deg, #fd6cf7 10%, #ae11fd 85%) !important;
 }
 /* color-2: Neon Blue → Cyan */
 .color-2[data-v-d2fd83f8] {
-  background: linear-gradient(180deg, #30cfff 10%, #0055ff 85%) !important;
+  background: linear-gradient(180deg, #27baff 10%, #0768ff 85%) !important;
 }
-/* color-3: Neon lime (not mint/emerald) */
+/* color-3: Neon lime */
 .color-3[data-v-d2fd83f8] {
-  background: linear-gradient(180deg, #c8ff00 10%, #70dc00 85%) !important;
+  background: linear-gradient(180deg, #c4fe00 10%, #7de100 85%) !important;
 }
-/* color-4: Hot pink → vermilion (redder than color-0 orange) */
+/* color-4: Hot pink → vermilion red */
 .color-4[data-v-d2fd83f8] {
-  background: linear-gradient(180deg, #ff408c 10%, #ff2800 85%) !important;
+  background: linear-gradient(180deg, #ff3b74 10%, #ff2b16 85%) !important;
 }
