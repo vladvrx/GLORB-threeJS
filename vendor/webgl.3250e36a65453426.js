@@ -4873,10 +4873,10 @@ Fr.default = {
     TERRAIN_BASE_COLOR: zt(new V("#ffffff")),
     TERRAIN_BASE_NUANCE_COLOR: zt(new V("#ffffff")),
     TERRAIN_HIGHGRASS_COLOR: zt(new V("#ffffff")),
-    TERRAIN_PAVE_COLOR: zt(new V("#000000")),
-    TERRAIN_ROAD_COLOR: zt(new V("#000000")),
-    TERRAIN_SAND_LIGHT_COLOR: zt(new V("#fbf2b1")),
-    TERRAIN_SAND_DARK_COLOR: zt(new V("#ffcb53")),
+    TERRAIN_PAVE_COLOR: zt(new V("#ffffff")),
+    TERRAIN_ROAD_COLOR: zt(new V("#ffffff")),
+    TERRAIN_SAND_LIGHT_COLOR: zt(new V("#ffffff")),
+    TERRAIN_SAND_DARK_COLOR: zt(new V("#ffffff")),
     FAKE_AO_MULT: Bt(2.2, 2, 1.1),
     AO_MULT_BOTTOM_TINT: Bt(0, .1, .2),
     AO_MULT_UP_TINT: Bt(1.02, 1.09, 1),
@@ -4894,8 +4894,8 @@ Fr.default = {
     ISLAND_AO_SUB: Ut(.7),
     TERRAIN_BASE_COLOR: zt(new V("#ffffff")),
     TERRAIN_HIGHGRASS_COLOR: zt(new V("#ffffff")),
-    TERRAIN_SAND_LIGHT_COLOR: zt(new V("#fff5a7")),
-    TERRAIN_SAND_DARK_COLOR: zt(new V("#ffc534"))
+    TERRAIN_SAND_LIGHT_COLOR: zt(new V("#ffffff")),
+    TERRAIN_SAND_DARK_COLOR: zt(new V("#ffffff"))
   }
 }, Fr.bike = {
   ...Fr.default,
@@ -4906,7 +4906,7 @@ Fr.default = {
     ISLAND_AO_SUB: Ut(.6),
     TERRAIN_BASE_COLOR: zt(new V("#ffffff")),
     TERRAIN_HIGHGRASS_COLOR: zt(new V("#ffffff")),
-    TERRAIN_SAND_LIGHT_COLOR: zt(new V("#ceb47f"))
+    TERRAIN_SAND_LIGHT_COLOR: zt(new V("#ffffff"))
   }
 }, Fr.car = {
   ...Fr.default,
@@ -4947,10 +4947,10 @@ Fr.default = {
     TERRAIN_BASE_COLOR: zt(new V("#ffffff")),
     TERRAIN_BASE_NUANCE_COLOR: zt(new V("#ffffff")),
     TERRAIN_HIGHGRASS_COLOR: zt(new V("#ffffff")),
-    TERRAIN_PAVE_COLOR: zt(new V("#000000")),
-    TERRAIN_ROAD_COLOR: zt(new V("#000000")),
-    TERRAIN_SAND_LIGHT_COLOR: zt(new V("#ffef9f")),
-    TERRAIN_SAND_DARK_COLOR: zt(new V("#ffcb5a")),
+    TERRAIN_PAVE_COLOR: zt(new V("#ffffff")),
+    TERRAIN_ROAD_COLOR: zt(new V("#ffffff")),
+    TERRAIN_SAND_LIGHT_COLOR: zt(new V("#ffffff")),
+    TERRAIN_SAND_DARK_COLOR: zt(new V("#ffffff")),
     FAKE_AO_MULT: Bt(1.12, 1.6, 1.3),
     IS_BIOME_DEF_ISLAND: !1,
     ISLAND_AO_SUB: Ut(.55)
@@ -4999,10 +4999,10 @@ const nightModeDefines = {
   TERRAIN_BASE_COLOR: zt(new V("#ffffff")),
   TERRAIN_BASE_NUANCE_COLOR: zt(new V("#ffffff")),
   TERRAIN_HIGHGRASS_COLOR: zt(new V("#ffffff")),
-  TERRAIN_PAVE_COLOR: zt(new V("#000000")),
-  TERRAIN_ROAD_COLOR: zt(new V("#000000")),
-  TERRAIN_SAND_LIGHT_COLOR: zt(new V("#a6a58a")),
-  TERRAIN_SAND_DARK_COLOR: zt(new V("#777653")),
+  TERRAIN_PAVE_COLOR: zt(new V("#ffffff")),
+  TERRAIN_ROAD_COLOR: zt(new V("#ffffff")),
+  TERRAIN_SAND_LIGHT_COLOR: zt(new V("#ffffff")),
+  TERRAIN_SAND_DARK_COLOR: zt(new V("#ffffff")),
   FAKE_AO_MULT: Bt(.8, .9, 1.2),
   AO_MULT_BOTTOM_TINT: Bt(.02, .06, .16),
   AO_MULT_UP_TINT: Bt(.55, .7, 1),
