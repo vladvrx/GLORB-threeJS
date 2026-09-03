@@ -525,10 +525,19 @@ html.phone .popin[data-v-788c7aca] {
   height: 44%;
 }
 
+html,
+body,
+canvas,
+.webgl-wrapper,
+#app {
+  touch-action: none;
+}
+
 #threejs-hud .paint-meter {
   position: fixed;
   left: 50%;
-  top: max(12px, calc(var(--app-padding, 24px) + env(safe-area-inset-top, 0px)));
+  top: auto;
+  bottom: max(18px, calc(var(--app-padding, 24px) + env(safe-area-inset-bottom, 0px)));
   transform: translateX(-50%);
   z-index: 9;
   width: min(42vw, 280px);
@@ -625,8 +634,8 @@ html.phone .popin[data-v-788c7aca] {
 
 @media (max-width: 749px) {
   #threejs-hud .paint-meter {
-    top: max(10px, calc(var(--app-padding, 16px) + env(safe-area-inset-top, 0px) + 52px));
-    width: min(56vw, 220px);
+    bottom: max(18px, calc(var(--app-padding, 16px) + env(safe-area-inset-bottom, 0px)));
+    width: min(46vw, 200px);
   }
 }
 

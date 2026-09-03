@@ -27,11 +27,41 @@ async function loadSiteData() {
   return data;
 }
 
+function pinVisualViewportScale() {
+  const viewport = window.visualViewport;
+  if (!viewport) return;
+  try {
+    Object.defineProperty(viewport, "scale", {
+      configurable: true,
+      enumerable: true,
+      get() {
+        return 1;
+      },
+    });
+  } catch {
+    /* some browsers freeze the native getter */
+  }
+}
+
+function lockTouchViewport() {
+  const meta = document.querySelector('meta[name="viewport"]');
+  if (meta) {
+    meta.setAttribute("content", "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no, viewport-fit=cover");
+  }
+  const blockZoom = (event) => event.preventDefault();
+  document.addEventListener("gesturestart", blockZoom, { passive: false });
+  document.addEventListener("gesturechange", blockZoom, { passive: false });
+  document.documentElement.style.touchAction = "none";
+  if (document.body) document.body.style.touchAction = "none";
+  pinVisualViewportScale();
+}
+
 async function boot() {
+  lockTouchViewport();
   document.documentElement.classList.remove("no-js");
   initializePageBehavior({ logoUrl, cursorUrl });
   window.__DATA = await loadSiteData();
-  const { startEngine } = await import("./engine.js?v=paint-3");
+  const { startEngine } = await import("./engine.js?v=paint-4");
   return startEngine();
 }
 

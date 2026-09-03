@@ -10,9 +10,9 @@ import {
   w as watch,
 } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { ThreeJsRoot } from "./root.js";
-import { installHud } from "./hud.js?v=paint-3";
+import { installHud } from "./hud.js?v=paint-4";
 import { installJump } from "./jump.js?v=jump-5";
-import { installPaint } from "./paint.js?v=paint-3";
+import { installPaint } from "./paint.js?v=paint-4";
 
 function suppressRemovedHints(app) {
   const blocked = new Set(["customize", "map", "fintech", "partner"]);
@@ -72,7 +72,24 @@ function keepOnlyWestIslandMusic(app) {
   }, 50);
 }
 
+function pinVisualViewportScale() {
+  const viewport = window.visualViewport;
+  if (!viewport) return;
+  try {
+    Object.defineProperty(viewport, "scale", {
+      configurable: true,
+      enumerable: true,
+      get() {
+        return 1;
+      },
+    });
+  } catch {
+    /* some browsers freeze the native getter */
+  }
+}
+
 export async function startEngine() {
+  pinVisualViewportScale();
   await restoreReloadOverlay();
   await assets.test();
 

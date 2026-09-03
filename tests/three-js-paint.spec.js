@@ -81,6 +81,25 @@ test("standing on GLORB paints the ground and fills the paint bar", async ({ pag
   });
   expect(hud.percent).toMatch(/^[1-9]\d*%$/);
   expect(Number.parseFloat(hud.fill)).toBeGreaterThan(0);
+
+  const coverage = await page.evaluate(() => {
+    const state = window.__THREE_JS_GAME__.app.__paintState;
+    const meter = document.querySelector("#threejs-hud .paint-meter");
+    const rect = meter?.getBoundingClientRect();
+    return {
+      complete: !!state?.complete,
+      total: state?.total ?? 0,
+      painted: state?.painted ?? 0,
+      frozen: Number(window.__THREE_JS_GAME__.app.$webgl?.store?.frozenPlayerDelay) || 0,
+      meterTop: rect?.top ?? 0,
+      viewport: window.innerHeight,
+    };
+  });
+  expect(coverage.complete).toBe(false);
+  expect(coverage.total).toBeGreaterThan(80);
+  expect(coverage.painted).toBeLessThan(coverage.total);
+  expect(coverage.frozen).toBe(0);
+  expect(coverage.meterTop).toBeGreaterThan(coverage.viewport * 0.55);
 });
 
 test("covering the island shows Painted and ends the game", async ({ page }) => {
@@ -89,15 +108,11 @@ test("covering the island shows Painted and ends the game", async ({ page }) => 
 
   await page.waitForFunction(() => {
     const paint = window.__THREE_JS_GAME__?.app?.__paintState;
-    return !!paint && (paint.ready || paint.scanIndex > 0 || !!paint.mesh);
+    return !!paint && paint.ready && paint.total > 80;
   }, null, { timeout: 30_000 });
 
-  await page.evaluate(async () => {
-    const app = window.__THREE_JS_GAME__.app;
-    for (let i = 0; i < 40 && !app.__paintState?.ready; i += 1) {
-      await new Promise((resolve) => requestAnimationFrame(resolve));
-    }
-    app.__paintFillAll();
+  await page.evaluate(() => {
+    window.__THREE_JS_GAME__.app.__paintFillAll();
   });
 
   await expect(page.locator("#threejs-hud .paint-complete-overlay")).toBeVisible({ timeout: 10_000 });
