@@ -22,4 +22,4 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) or `/`.
 4. Vanilla HUD in `src/hud/` that talks to `$webgl.store`, `$dialogs`, and `$router`:
    - Start overlay if the intro route is late
    - Dialogue bubbles, typewriter, Yes / No thanks choices
-   - Header, pause menu, joystick, interaction button
+   - Header, mute, joystick, interaction button

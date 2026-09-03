@@ -17,7 +17,7 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) (or `/`)
 1. Preloader with the glorb mark, then **LETS GO**.
 2. Intro camera down to the red/yellow boat and the Hello / Yes / No thanks graph.
 3. Boat to Cove (`IslandWest`). Walk, talk, restore systems, complete quests.
-4. Header, mute, pause menu, centered talk bubbles, bottom hints.
+4. Header, mute, centered talk bubbles, bottom hints.
 
 ## Jam packaging
 

@@ -73,6 +73,23 @@ test("expired save overlay matches the original API notif", async ({ page }) => 
   expect(visible).toBe(true);
 });
 
+test("header logo does not open the white pause tab", async ({ page }) => {
+  await waitForGame(page);
+  await enterPlaying(page);
+
+  const header = page.locator("#threejs-hud .app-header");
+  await expect.poll(async () => header.evaluate((node) => node.classList.contains("is-visible")), { timeout: 10_000 }).toBe(true);
+  await page.locator("#threejs-hud .app-header .logo").click();
+  await page.waitForTimeout(500);
+
+  await expect(page.locator("#threejs-hud .menu")).toHaveCount(0);
+  await expect(page.locator(".menu.is-open")).toHaveCount(0);
+  await expect(page.getByText(/proudly brought to you/i)).toHaveCount(0);
+  await expect(page.getByText(/Learn more/)).toHaveCount(0);
+  expect(await page.evaluate(() => !!window.__THREE_JS_GAME__.app.$store.isMenuOpen)).toBe(false);
+  await expect(header).toHaveClass(/is-visible/);
+});
+
 test("hold interaction fills the original ring and fires onDone", async ({ page }) => {
   await waitForGame(page);
   await enterPlaying(page);

@@ -42,7 +42,6 @@ async function runtime(page) {
       canMove: !!scene?.player?.canMove,
       introCamProgress: scene?.introCamProgress ?? null,
       isEntered: !!scene?.isEntered,
-      pauseLetsGo: [...document.querySelectorAll("#threejs-hud .menu .menu-cta")].map((node) => node.textContent.trim()),
       isFormOpen: !!app?.$store?.isFormOpen,
       isGuest: !!app?.$store?.isGuest,
     };
@@ -116,15 +115,16 @@ test("Three.js intro Yes choice boats the player to Cove Island", async ({ page 
   expect(header.menuOpen).toBe(false);
 
   await page.locator("#threejs-hud .app-header .logo").click();
-  await expect.poll(async () => (await runtime(page)).menuOpen, { timeout: 10_000 }).toBe(true);
-  const paused = await runtime(page);
-  expect(paused.pauseLetsGo).toContain("LETS GO");
-  await expect(page.locator("#threejs-hud .menu.is-open .menu-cta").filter({ hasText: "LETS GO" })).toBeVisible();
-  await expect(page.locator("#threejs-hud .menu.is-open .menu-cta").filter({ hasText: "LETS GO" })).toHaveClass(/blue/);
-  expect(paused.isGuest).toBe(true);
-  expect(paused.isFormOpen ?? false).toBe(false);
-  await page.locator("#threejs-hud .menu.is-open [aria-label]").first().click();
-  await expect.poll(async () => (await runtime(page)).menuOpen, { timeout: 10_000 }).toBe(false);
+  await page.waitForTimeout(400);
+  const afterLogo = await runtime(page);
+  expect(afterLogo.menuOpen).toBe(false);
+  expect(afterLogo.headerVisible).toBe(true);
+  await expect(page.locator("#threejs-hud .menu")).toHaveCount(0);
+  await expect(page.locator(".menu.is-open")).toHaveCount(0);
+  await expect(page.getByText(/proudly brought to you/i)).toHaveCount(0);
+  await expect(page.getByText(/tech company/i)).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /learn more/i })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /learn more/i })).toHaveCount(0);
 
   const after = await runtime(page);
   expect(after.dialogVisible).toBe(false);

@@ -1,19 +1,16 @@
-import { s as createSpring, w as watch } from "../../../vendor/vendor.75f6e6ae65453426.js";
-import { circleButton, ctaButton, el, playUiSound, svgIcon, unwrap } from "../dom.js";
+import { w as watch } from "../../../vendor/vendor.75f6e6ae65453426.js";
+import { circleButton, el, playUiSound, svgIcon, unwrap } from "../dom.js";
 import { installInteraction } from "./interaction.js";
 
 function flag(value) {
   return !!unwrap(value);
 }
 
-function canOpenMenu(app) {
-  const store = app.$store;
-  const playing = unwrap(store.sceneStates?.Playing);
-  const state = unwrap(store.sceneState);
-  return Number(state) >= Number(playing)
-    && !flag(store.isDialogVisible)
-    && !flag(store.isTransitionActive)
-    && !flag(store.isCinematicActive);
+function lockMenuClosed(app) {
+  app.$store.isMenuOpen = false;
+  watch(() => flag(app.$store.isMenuOpen), (open) => {
+    if (open) app.$store.isMenuOpen = false;
+  });
 }
 
 function installSoundButton(app, { tone, extraClass = "" } = {}) {
@@ -46,9 +43,9 @@ function installHeader(app, host) {
     class: "logo white pointer",
     "data-v-08688f2d": "",
     tabindex: "-1",
-    onClick: () => {
-      if (!canOpenMenu(app)) return;
-      app.$store.isMenuOpen = true;
+    onClick: (event) => {
+      event.preventDefault();
+      event.stopPropagation();
     },
   });
   logo.append(el("img", { src: "./reference/assets/databeach-logo.png?v=glorb", alt: "glorb", class: "logo-mark", width: "1515", height: "563" }));
@@ -112,193 +109,10 @@ function installHeader(app, host) {
       const show = visible();
       header.classList.toggle("is-visible", show);
       header.inert = !show;
-      logo.tabIndex = show ? 0 : -1;
+      logo.tabIndex = -1;
     },
     { immediate: true },
   );
-}
-
-function clampDpr() {
-  return Math.min(Math.max(window.devicePixelRatio || 1, 1), 2);
-}
-
-function installMenuWipe(app, canvas) {
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return { setOpen() {}, dispose() {} };
-
-  const OVERHANG = 60;
-  const edge = createSpring({ initial: 0, mass: 1, friction: 0.6 });
-  const bulge = createSpring({ initial: 0 });
-  let panelWidth = 1;
-  let extra = OVERHANG;
-  let running = false;
-  let raf = 0;
-
-  const paint = (force = false) => {
-    const dt = app.$webgl?.time?.dt || 16.67;
-    edge.update(dt);
-    bulge.update(dt);
-    const left = (1 - edge.value) * panelWidth + extra;
-    const ctrl = (1 - bulge.value) * panelWidth + extra;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.moveTo(left, 0);
-    ctx.quadraticCurveTo(ctrl, canvas.height * 0.5, left, canvas.height);
-    ctx.lineTo(panelWidth + extra, canvas.height);
-    ctx.lineTo(panelWidth + extra, 0);
-    ctx.closePath();
-    ctx.fill();
-    if (!force && edge.stopped && bulge.stopped) running = false;
-  };
-
-  const tick = () => {
-    raf = 0;
-    if (!running) return;
-    paint();
-    if (running) raf = window.requestAnimationFrame(tick);
-  };
-
-  const start = () => {
-    if (running) return;
-    running = true;
-    if (!raf) raf = window.requestAnimationFrame(tick);
-  };
-
-  const resize = () => {
-    const bounds = canvas.parentElement?.getBoundingClientRect();
-    const cssW = Math.max(1, bounds?.width || 400);
-    const cssH = Math.max(1, bounds?.height || 400);
-    const dpr = clampDpr();
-    extra = OVERHANG * dpr;
-    panelWidth = cssW * dpr;
-    const layoutW = cssW + extra;
-    canvas.width = layoutW * dpr;
-    canvas.height = cssH * dpr;
-    canvas.style.marginLeft = `${-OVERHANG}px`;
-    canvas.style.width = `${layoutW}px`;
-    canvas.style.height = `${cssH}px`;
-    paint(true);
-  };
-
-  const observer = new ResizeObserver(resize);
-  if (canvas.parentElement) observer.observe(canvas.parentElement);
-  resize();
-
-  return {
-    setOpen(open) {
-      if (open) {
-        edge.setTarget(1);
-        bulge.setTarget(1);
-        bulge.setMass(0.3);
-        bulge.setFriction(0.15);
-        bulge.setTension(0.02);
-      } else {
-        edge.setTarget(0);
-        bulge.setTarget(0);
-        bulge.setMass(1);
-        bulge.setFriction(0.3);
-        bulge.setTension(0.1);
-      }
-      start();
-    },
-    dispose() {
-      running = false;
-      if (raf) window.cancelAnimationFrame(raf);
-      observer.disconnect();
-    },
-  };
-}
-
-function installMenu(app, host) {
-  const menu = el("aside", { class: "menu", "data-v-2fd699fb": "", tabindex: "-1" });
-  const background = el("div", { class: "menu-background", "data-v-2fd699fb": "" });
-  const canvas = el("canvas");
-  background.append(canvas);
-  const wipe = installMenuWipe(app, canvas);
-  const container = el("div", { class: "menu-container", "data-v-2fd699fb": "" });
-  const buttons = el("section", { class: "menu-buttons", "data-v-2fd699fb": "" });
-  const close = () => { app.$store.isMenuOpen = false; };
-  buttons.append(
-    circleButton({
-      label: app.$l("arialabel.close"),
-      icon: "cross",
-      tone: "green",
-      extraClass: "pointer",
-      onClick: close,
-    }),
-    installSoundButton(app, { tone: "white" }),
-  );
-  for (const node of buttons.children) node.setAttribute("data-v-2fd699fb", "");
-  const infos = el("section", { class: "menu-infos", "data-v-2fd699fb": "" });
-  infos.append(
-    el("img", {
-      src: "./reference/assets/databeach-logo.png?v=glorb",
-      alt: "glorb",
-      "data-v-2fd699fb": "",
-      class: "menu-logo",
-    }),
-    el("p", { "data-v-2fd699fb": "", html: app.$l("global.baseline") }),
-    ctaButton({
-      text: app.$l("cta.discover"),
-      color: "white",
-      extraClass: "menu-cta pointer",
-      href: app.$l("menu.islandlink"),
-      onClick: () => app.$analytics.event({ event_category: "menu", event_action: "access_CCBUrl", event_value: "" }),
-    }),
-    ctaButton({
-      text: app.$l("cta.start"),
-      color: flag(app.$store.isGuest) ? "blue" : "gray",
-      extraClass: "menu-cta pointer",
-      onClick: () => {
-        app.$store.isFormOpen = false;
-        app.$savestate.clear();
-      },
-    }),
-  );
-  for (const node of infos.querySelectorAll(".cta, .menu-cta")) node.setAttribute("data-v-2fd699fb", "");
-  const startCta = infos.querySelector(".menu-cta:last-of-type");
-  watch(() => flag(app.$store.isGuest), (guest) => {
-    if (!startCta) return;
-    startCta.classList.toggle("blue", guest);
-    startCta.classList.toggle("gray", !guest);
-  }, { immediate: true });
-  container.append(buttons, infos);
-  const overlay = el("div", {
-    class: "menu-overlay",
-    "data-bypass-touch": "",
-    "data-v-2fd699fb": "",
-    hidden: true,
-    onClick: close,
-  });
-  menu.append(background, container, overlay);
-  menu.inert = true;
-  host.append(menu);
-
-  watch(() => flag(app.$store.isMenuOpen), (open) => {
-    menu.classList.toggle("is-open", open);
-    menu.tabIndex = open ? 0 : -1;
-    overlay.hidden = !open;
-    menu.inert = !open;
-    wipe.setOpen(open);
-    if (open) playUiSound(app, "sfx_phone_swipe");
-  }, { immediate: true });
-
-  watch(
-    () => [
-      unwrap(app.$store.sceneState),
-      unwrap(app.$store.sceneStates?.Playing),
-      flag(app.$store.isDialogVisible),
-      flag(app.$store.isTransitionActive),
-    ],
-    () => {
-      if (flag(app.$store.isMenuOpen) && !canOpenMenu(app)) app.$store.isMenuOpen = false;
-    },
-  );
-
-  window.addEventListener("keydown", (event) => {
-    if (event.code === "Escape" && flag(app.$store.isMenuOpen)) close();
-  });
 }
 
 function installJoystick(app, host) {
@@ -380,8 +194,8 @@ function installRotateDevice(app) {
 }
 
 export function installChrome(app, host) {
+  lockMenuClosed(app);
   installHeader(app, host);
-  installMenu(app, host);
   installJoystick(app, host);
   installInteraction(app, host);
   try { installRotateDevice(app); } catch (error) { console.error("Three.js rotate overlay failed", error); }

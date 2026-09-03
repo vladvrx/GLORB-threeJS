@@ -17,14 +17,8 @@
 #threejs-hud .hidden,
 #threejs-hud .hidden *,
 #threejs-hud [hidden],
-#threejs-hud [hidden] *,
-#threejs-hud .menu:not(.is-open),
-#threejs-hud .menu:not(.is-open) * {
+#threejs-hud [hidden] * {
   pointer-events: none !important;
-}
-
-#threejs-hud .menu:not(.is-open) .menu-background {
-  visibility: hidden;
 }
 
 #threejs-hud header:not(.is-visible),
@@ -77,6 +71,7 @@
   width: var(--logo-size) !important;
   height: auto;
   aspect-ratio: 1515 / 563;
+  cursor: default;
 }
 
 #threejs-hud header .logo-mark,
@@ -282,7 +277,7 @@ html.journey-started .page-intro {
 }
 
 .menu.is-open .menu-overlay[data-v-2fd699fb] {
-  pointer-events: auto;
+  pointer-events: none !important;
 }
 
 #threejs-hud .api-notif[data-v-9527461f]:not(.is-visible),
@@ -320,7 +315,9 @@ html.journey-started .page-intro {
 .page-phone,
 .phone-tab.map,
 #session-pressure,
-body.pressure-surge::after {
+body.pressure-surge::after,
+#threejs-hud .menu,
+.menu[data-v-2fd699fb] {
   display: none !important;
   visibility: hidden !important;
   pointer-events: none !important;
