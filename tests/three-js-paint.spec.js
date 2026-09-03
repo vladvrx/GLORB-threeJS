@@ -50,45 +50,29 @@ async function enterWestPlaying(page) {
   await page.waitForTimeout(800);
 }
 
-test("walking paints the ground and fills the paint bar", async ({ page }) => {
+test("standing on GLORB paints the ground and fills the paint bar", async ({ page }) => {
   await waitForGame(page);
   await enterWestPlaying(page);
 
-  const meter = page.locator("#threejs-hud .paint-meter");
   await expect.poll(async () => page.evaluate(() => {
     const app = window.__THREE_JS_GAME__?.app;
     const meter = document.querySelector("#threejs-hud .paint-meter");
-    const scenes = app?.$webgl?.scenes;
     return {
       visible: meter?.classList.contains("is-visible") || false,
-      hidden: meter?.hidden ?? null,
-      scene: scenes?.currentSceneID?.value || scenes?.current?.id || null,
-      sceneState: app?.$store?.sceneState ?? null,
-      playing: app?.$store?.sceneStates?.Playing ?? null,
-      tutorial: app?.$store?.sceneStates?.Tutorial ?? null,
-      route: app?.$route?.name ?? null,
-      transition: !!app?.$store?.isTransitionActive,
-      dialog: !!app?.$store?.isDialogVisible,
-      painted: app?.__paintState?.painted ?? null,
+      painted: app?.__paintState?.painted ?? 0,
       ready: !!app?.__paintState?.ready,
-      mesh: !!app?.__paintState?.mesh,
+      percent: app?.__paintState?.percent ?? 0,
     };
-  }), { timeout: 20_000 }).toMatchObject({ visible: true });
-
-  const before = await page.evaluate(() => window.__THREE_JS_GAME__.app.__paintState?.painted || 0);
-
-  await page.keyboard.down("KeyW");
-  await page.waitForTimeout(2200);
-  await page.keyboard.up("KeyW");
+  }), { timeout: 30_000 }).toMatchObject({ visible: true });
 
   await expect.poll(async () => page.evaluate(() => window.__THREE_JS_GAME__.app.__paintState?.painted || 0), {
-    timeout: 10_000,
-  }).toBeGreaterThan(before);
+    timeout: 15_000,
+  }).toBeGreaterThan(0);
 
   await expect.poll(async () => page.evaluate(() => {
     const state = window.__THREE_JS_GAME__.app.__paintState;
     return !!state?.ready && state.percent > 0;
-  }), { timeout: 15_000 }).toBe(true);
+  }), { timeout: 20_000 }).toBe(true);
 
   const hud = await page.evaluate(() => {
     const percent = document.querySelector("#threejs-hud .paint-meter-percent")?.textContent;

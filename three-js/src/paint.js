@@ -221,7 +221,12 @@ function publish(state) {
     return;
   }
   state.ratio = Math.min(1, state.painted / state.total);
-  state.percent = state.painted >= state.total ? 100 : Math.min(99, Math.floor(state.ratio * 100));
+  if (state.painted >= state.total) {
+    state.percent = 100;
+    state.ratio = 1;
+    return;
+  }
+  state.percent = state.painted > 0 ? Math.max(1, Math.min(99, Math.round(state.ratio * 100))) : 0;
 }
 
 function attachVisual(state, scene) {
@@ -523,7 +528,8 @@ export function installPaintHud(app, host) {
     meter.toggleAttribute("hidden", !show);
     const value = state?.percent ?? 0;
     percent.textContent = `${value}%`;
-    fill.style.width = `${Math.round((state?.ratio || 0) * 1000) / 10}%`;
+    const width = state?.complete ? 100 : (state?.painted ? Math.max(2.5, (state.ratio || 0) * 100) : 0);
+    fill.style.width = `${Math.round(width * 10) / 10}%`;
     track.setAttribute("aria-valuenow", String(value));
     const done = !!state?.complete;
     overlay.hidden = !done;
