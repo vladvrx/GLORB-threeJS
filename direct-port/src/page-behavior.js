@@ -31,6 +31,29 @@ function removeRetiredPhoneTabs(root) {
   });
 }
 
+const NOTIF_CLOUD_PUFFS = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
+
+function decorateNotifClouds(root) {
+  const cards = [
+    ...elements(root, ".notification[data-v-25064164]"),
+    ...elements(root, ".popin[data-v-9527461f]"),
+    ...elements(root, ".popin[data-v-26a58662]"),
+    ...elements(root, ".notif[data-v-17d5bb62] .popin"),
+  ];
+  for (const card of cards) {
+    if (card.querySelector(":scope > .notif-cloud")) continue;
+    const shape = document.createElement("div");
+    shape.className = "notif-cloud";
+    shape.setAttribute("aria-hidden", "true");
+    for (const name of NOTIF_CLOUD_PUFFS) {
+      const puff = document.createElement("span");
+      puff.className = `notif-puff puff-${name}`;
+      shape.append(puff);
+    }
+    card.insertBefore(shape, card.firstChild);
+  }
+}
+
 function styleIntroChoices(root) {
   elements(root, ".dialog button.cta").forEach((button) => {
     const label = (button.textContent ?? "").trim().toLowerCase();
@@ -150,6 +173,7 @@ export function initializePageBehavior({ logoUrl, cursorUrl }) {
     removeRetiredAccess(document);
     removeRetiredPhoneTabs(document);
     styleIntroChoices(document);
+    decorateNotifClouds(document);
     syncHomeLogo(logoUrl);
   };
   const scheduleRefresh = () => {

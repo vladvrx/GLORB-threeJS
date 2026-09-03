@@ -1,4 +1,4 @@
-import { initializePageBehavior } from "../../direct-port/src/page-behavior.js";
+import { initializePageBehavior } from "../../direct-port/src/page-behavior.js?v=notif-cloud-puffs";
 
 const siteDataUrl = new URL("../../direct-port/data/site.json", import.meta.url);
 const logoUrl = new URL("../../reference/assets/databeach-logo.png", import.meta.url);
