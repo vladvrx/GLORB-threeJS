@@ -89,7 +89,7 @@ export function installDialog(app, host) {
     });
     const section = el("section", { class: "bubble cloud-bubble", "data-v-9946fd7c": "" });
     const puffs = el("div", { class: "cloud-shape", "data-v-9946fd7c": "", "aria-hidden": "true" });
-    for (const name of ["puff-a", "puff-b", "puff-c", "puff-d", "puff-e", "puff-f"]) {
+    for (const name of ["puff-a", "puff-b", "puff-c", "puff-d", "puff-e", "puff-f", "puff-g", "puff-h"]) {
       puffs.append(el("span", { class: `cloud-puff ${name}`, "data-v-9946fd7c": "" }));
     }
     for (const name of ["tail-a", "tail-b", "tail-c"]) {
