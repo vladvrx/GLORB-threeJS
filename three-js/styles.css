@@ -524,3 +524,113 @@ html.phone .popin[data-v-788c7aca] {
   width: 44%;
   height: 44%;
 }
+
+#threejs-hud .paint-meter {
+  position: fixed;
+  left: 50%;
+  top: max(12px, calc(var(--app-padding, 24px) + env(safe-area-inset-top, 0px)));
+  transform: translateX(-50%);
+  z-index: 9;
+  width: min(42vw, 280px);
+  pointer-events: none;
+}
+
+#threejs-hud .paint-meter:not(.is-visible),
+#threejs-hud .paint-meter[hidden] {
+  visibility: hidden;
+}
+
+#threejs-hud .paint-meter-copy {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  color: #3b3777;
+  font-family: Gilmer, Helvetica, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+#threejs-hud .paint-meter-label {
+  font-size: 12px;
+}
+
+#threejs-hud .paint-meter-percent {
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+#threejs-hud .paint-meter-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 0.25em 0 rgba(31, 44, 96, 0.12);
+  overflow: hidden;
+}
+
+#threejs-hud .paint-meter-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #b9e7ff 0%, #67c8ff 55%, #3aa7ff 100%);
+  transition: width 80ms linear;
+}
+
+#threejs-hud .paint-complete-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(18, 42, 78, 0.58);
+  color: #f4fbff;
+  text-align: center;
+  pointer-events: auto;
+}
+
+#threejs-hud .paint-complete-overlay[hidden] {
+  display: none !important;
+}
+
+#threejs-hud .paint-complete-kicker {
+  margin: 0 0 8px;
+  font-family: Gilmer, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #b9e7ff;
+}
+
+#threejs-hud .paint-complete-title {
+  margin: 0 0 10px;
+  font-family: Gilmer, Helvetica, sans-serif;
+  font-size: clamp(40px, 8vw, 72px);
+  font-weight: 700;
+  line-height: 0.95;
+  color: #fff;
+}
+
+#threejs-hud .paint-complete-body {
+  margin: 0;
+  font-family: Comfortaa, Helvetica, sans-serif;
+  font-size: 18px;
+  color: #dff4ff;
+}
+
+@media (max-width: 749px) {
+  #threejs-hud .paint-meter {
+    top: max(10px, calc(var(--app-padding, 16px) + env(safe-area-inset-top, 0px) + 52px));
+    width: min(56vw, 220px);
+  }
+}
+
+html.paint-complete #threejs-hud .jump-button {
+  visibility: hidden;
+  pointer-events: none;
+}

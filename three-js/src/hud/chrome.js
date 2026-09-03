@@ -1,6 +1,7 @@
 import { w as watch } from "../../../vendor/vendor.75f6e6ae65453426.js";
 import { circleButton, el, playUiSound, svgIcon, unwrap } from "../dom.js";
 import { installJumpButton } from "../jump.js?v=jump-5";
+import { installPaintHud } from "../paint.js?v=paint-1";
 import { installInteraction } from "./interaction.js";
 
 function flag(value) {
@@ -200,5 +201,6 @@ export function installChrome(app, host) {
   installJoystick(app, host);
   installInteraction(app, host);
   try { installJumpButton(app, host); } catch (error) { console.error("Three.js jump button failed", error); }
+  try { installPaintHud(app, host); } catch (error) { console.error("Three.js paint meter failed", error); }
   try { installRotateDevice(app); } catch (error) { console.error("Three.js rotate overlay failed", error); }
 }
