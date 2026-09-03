@@ -20,6 +20,7 @@ test("intro talk bubble sits in the vertical middle of the viewport", async ({ p
   await expect(bubble).toHaveClass(/cloud-bubble/);
   await expect(bubble.locator(".cloud-puff")).toHaveCount(8);
   await expect(bubble.locator(".cloud-tail")).toHaveCount(3);
+  await expect(page.locator("#threejs-hud .dialog-bubble .badge.red .point")).toHaveCount(3);
   await expect(bubble).toContainText("HELLO WELCOME");
   await expect(page.locator("#session-pressure")).toHaveCount(0);
   await expect(page.getByText("Signal pressure")).toHaveCount(0);

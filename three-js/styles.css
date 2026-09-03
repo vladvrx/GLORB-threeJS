@@ -239,6 +239,15 @@ html.journey-started .page-intro {
   z-index: 1;
 }
 
+#threejs-hud .dialog-bubble .badge-wrapper[data-v-9946fd7c] {
+  pointer-events: none;
+  max-width: min(28em, calc(100vw - var(--app-padding) * 2));
+}
+
+#threejs-hud .prompt .badge[data-v-984a6ff8] {
+  pointer-events: none;
+}
+
 #threejs-hud .cloud-bubble[data-v-9946fd7c]:after {
   z-index: 2;
   right: 1.1em;

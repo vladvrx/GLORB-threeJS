@@ -10,7 +10,7 @@ import {
   w as watch,
 } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { ThreeJsRoot } from "./root.js";
-import { installHud } from "./hud.js";
+import { installHud } from "./hud.js?v=dialog-mouth-1";
 
 function disablePhoneAndMap(app) {
   const blocked = new Set(["Phone", "QuestsDebug"]);
