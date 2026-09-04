@@ -7,7 +7,7 @@ import {
   w as watch,
 } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { el, playUiSound, unwrap } from "./dom.js";
-import { getIslandPlayer } from "./jump.js?v=jump-5";
+import { getIslandPlayer } from "./jump.js?v=jump-6";
 import {
   WEST_MAX_X,
   WEST_MAX_Z,

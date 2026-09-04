@@ -164,6 +164,7 @@ function tickJump(player, state) {
 export function tryJump(app) {
   const state = app.__jumpState;
   if (!state) return false;
+  if (app.__danceState?.holding) return false;
   if (playBlocked(app)) return false;
   const player = getIslandPlayer(app);
   if (!player) return false;

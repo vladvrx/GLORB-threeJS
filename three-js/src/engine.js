@@ -11,9 +11,10 @@ import {
 } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { ThreeJsRoot } from "./root.js";
 import { GLORB_ISLAND } from "./island.js?v=paint-11";
-import { installHud } from "./hud.js?v=paint-11";
-import { installJump } from "./jump.js?v=jump-5";
-import { installPaint } from "./paint.js?v=paint-11";
+import { installHud } from "./hud.js?v=dance-1";
+import { installJump } from "./jump.js?v=jump-6";
+import { installDance } from "./dance.js?v=dance-1";
+import { installPaint } from "./paint.js?v=dance-1";
 
 window.__GLORB_ISLAND__ = GLORB_ISLAND;
 
@@ -196,9 +197,10 @@ export async function startEngine() {
     vueApp.mount("#app");
     keepOnlyWestIslandMusic(app);
     installJump(app);
+    installDance(app);
     installPaint(app);
     installHud(app);
-    window.__THREE_JS_GAME__ = { vueApp, app, tryJump: app.__tryJump, paint: app.__paintState };
+    window.__THREE_JS_GAME__ = { vueApp, app, tryJump: app.__tryJump, tryDance: app.__tryDance, paint: app.__paintState };
   };
 
   await new Promise((resolve, reject) => {

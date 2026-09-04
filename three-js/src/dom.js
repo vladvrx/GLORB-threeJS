@@ -54,6 +54,10 @@ export const ICONS = {
     viewBox: "0 0 24 24",
     html: '<path d="M12 3.2 5.4 10.4h3.5V20h6.2v-9.6h3.5L12 3.2z" fill="currentColor"></path>',
   },
+  dance: {
+    viewBox: "0 0 24 24",
+    html: '<path d="M11.2 3.1c.9 0 1.6.7 1.6 1.6s-.7 1.6-1.6 1.6-1.6-.7-1.6-1.6.7-1.6 1.6-1.6zm-5 5.2 5.1 1.7-.8 3.1-3.9 1.3.8 2.1 4.2-1.4.7 7.1h2.5l.3-8.1 3.2-1.8 2.4 3.6 2.1-1.3-3.4-5.1-4.8 2 .6-2.2 4.4-1.5-.8-2.2z" fill="currentColor"></path>',
+  },
 };
 
 ICONS.sound = ICONS["sound-on"];

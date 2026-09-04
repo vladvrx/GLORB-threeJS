@@ -506,27 +506,45 @@ html.phone .popin[data-v-788c7aca] {
   background: linear-gradient(180deg, #ff3b74 10%, #ff2b16 85%) !important;
 }
 
-#threejs-hud .jump-button {
+#threejs-hud .jump-button,
+#threejs-hud .dance-button {
   position: fixed;
-  right: max(12px, calc(var(--app-padding, 24px) + env(safe-area-inset-right, 0px)));
   bottom: max(12px, calc(var(--app-padding, 24px) + env(safe-area-inset-bottom, 0px)));
   z-index: 8;
 }
 
+#threejs-hud .jump-button {
+  right: max(12px, calc(var(--app-padding, 24px) + env(safe-area-inset-right, 0px)));
+}
+
+#threejs-hud .dance-button {
+  left: max(12px, calc(var(--app-padding, 24px) + env(safe-area-inset-left, 0px)));
+}
+
 #threejs-hud .jump-button:not(.is-visible),
-#threejs-hud .jump-button:not(.is-visible) * {
+#threejs-hud .jump-button:not(.is-visible) *,
+#threejs-hud .dance-button:not(.is-visible),
+#threejs-hud .dance-button:not(.is-visible) * {
   pointer-events: none !important;
   visibility: hidden;
 }
 
-#threejs-hud .jump-button .circle-button {
+#threejs-hud .jump-button .circle-button,
+#threejs-hud .dance-button .circle-button {
   color: #3b3777;
   box-shadow: 0 0.35em 0 rgba(31, 44, 96, 0.16);
 }
 
-#threejs-hud .jump-button .circle-button .icon-svg {
+#threejs-hud .jump-button .circle-button .icon-svg,
+#threejs-hud .dance-button .circle-button .icon-svg {
   width: 44%;
   height: 44%;
+}
+
+#threejs-hud .dance-button.is-held .circle-button,
+#threejs-hud .dance-button .circle-button[aria-pressed="true"] {
+  transform: translateY(0.12em);
+  box-shadow: 0 0.12em 0 rgba(31, 44, 96, 0.16);
 }
 
 html,
@@ -645,7 +663,8 @@ canvas,
   }
 }
 
-html.paint-complete #threejs-hud .jump-button {
+html.paint-complete #threejs-hud .jump-button,
+html.paint-complete #threejs-hud .dance-button {
   visibility: hidden;
   pointer-events: none;
 }
