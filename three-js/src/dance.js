@@ -2,6 +2,10 @@ import { w as watch } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { circleButton, unwrap } from "./dom.js";
 import { getIslandPlayer } from "./jump.js?v=jump-6";
 
+const DANCE_TIME_SCALE = 0.7;
+const ARM_UP = 1.08;
+const ELBOW_BEND = 0.22;
+
 function flag(value) {
   return !!unwrap(value);
 }
@@ -29,56 +33,20 @@ function danceArmBones(player) {
   return map;
 }
 
-function armScratch(player, sample) {
-  if (player.__danceArmScratch) return player.__danceArmScratch;
-  const Vec3 = sample.position.constructor;
-  const Mat4 = sample.matrixWorld.constructor;
-  player.__danceArmScratch = {
-    origin: new Vec3(),
-    end: new Vec3(),
-    from: new Vec3(),
-    to: new Vec3(0, 1, 0),
-    axis: new Vec3(),
-    localAxis: new Vec3(),
-    invWorld: new Mat4(),
-  };
-  return player.__danceArmScratch;
-}
-
-function rotateBoneOnWorldAxis(bone, worldAxis, angle, scratch) {
-  bone.updateWorldMatrix(true, false);
-  scratch.invWorld.copy(bone.matrixWorld).invert();
-  scratch.localAxis.copy(worldAxis).transformDirection(scratch.invWorld);
-  if (scratch.localAxis.lengthSq() < 1e-8) return;
-  scratch.localAxis.normalize();
-  bone.rotateOnAxis(scratch.localAxis, angle);
-}
-
-function raiseArm(shoulder, elbow, scratch) {
-  if (!shoulder || !elbow) return;
-  shoulder.updateWorldMatrix(true, false);
-  elbow.updateWorldMatrix(true, false);
-  shoulder.getWorldPosition(scratch.origin);
-  elbow.getWorldPosition(scratch.end);
-  scratch.from.copy(scratch.end).sub(scratch.origin);
-  if (scratch.from.lengthSq() < 1e-8) return;
-  scratch.from.normalize();
-  scratch.to.set(0, 1, 0);
-  const align = scratch.from.dot(scratch.to);
-  if (align > 0.92) return;
-  scratch.axis.copy(scratch.from).cross(scratch.to);
-  if (scratch.axis.lengthSq() < 1e-8) scratch.axis.set(1, 0, 0);
-  else scratch.axis.normalize();
-  const angle = Math.acos(Math.max(-1, Math.min(1, align)));
-  rotateBoneOnWorldAxis(shoulder, scratch.axis, Math.min(angle, 1.45), scratch);
-}
-
 function applyRaisedArms(player) {
   const bones = danceArmBones(player);
   if (!bones) return;
-  const scratch = armScratch(player, bones.shoulderL);
-  raiseArm(bones.shoulderL, bones.elbowL, scratch);
-  raiseArm(bones.shoulderR, bones.elbowR, scratch);
+  bones.shoulderL.rotateZ(ARM_UP);
+  bones.shoulderR.rotateZ(-ARM_UP);
+  if (bones.elbowL) bones.elbowL.rotateZ(ELBOW_BEND);
+  if (bones.elbowR) bones.elbowR.rotateZ(-ELBOW_BEND);
+}
+
+function setDanceTimeScale(player, scale) {
+  const clips = player?.animations;
+  if (!clips) return;
+  if (clips.Action) clips.Action.timeScale = scale;
+  if (clips.JetpackAction) clips.JetpackAction.timeScale = scale;
 }
 
 function typingTarget(event) {
@@ -122,6 +90,7 @@ function hookPlayer(player, state) {
     if (state.holding) {
       stillJoystick(this);
       keepAction(this);
+      setDanceTimeScale(this, DANCE_TIME_SCALE);
       applyRaisedArms(this);
     }
   };
@@ -130,9 +99,11 @@ function hookPlayer(player, state) {
 function keepAction(player) {
   if (!player) return;
   const clip = player.animation?.animationID || player.currentAnimation;
-  if (clip === "Action" || clip === "JetpackAction") return;
-  if (typeof player.actionStart === "function") player.actionStart("Default");
-  else player.setAnimation?.("Action");
+  if (clip !== "Action" && clip !== "JetpackAction") {
+    if (typeof player.actionStart === "function") player.actionStart("Default");
+    else player.setAnimation?.("Action");
+  }
+  setDanceTimeScale(player, DANCE_TIME_SCALE);
 }
 
 function paintHoldUi(holding) {
@@ -158,6 +129,7 @@ export function startDance(app) {
   stillJoystick(player);
   if (typeof player.actionStart === "function") player.actionStart("Default");
   else player.setAnimation?.("Action");
+  setDanceTimeScale(player, DANCE_TIME_SCALE);
   state.holding = true;
   paintHoldUi(true);
   return true;
@@ -173,6 +145,7 @@ export function stopDance(app) {
   paintHoldUi(false);
   const player = getIslandPlayer(app);
   if (!player) return true;
+  setDanceTimeScale(player, 1);
   if (app.__paintState?.complete) return true;
   if (typeof player.actionDone === "function") player.actionDone();
   else player.setIdleAnimation?.();
