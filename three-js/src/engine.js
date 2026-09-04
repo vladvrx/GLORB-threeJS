@@ -10,10 +10,10 @@ import {
   w as watch,
 } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { ThreeJsRoot } from "./root.js";
-import { GLORB_ISLAND } from "./island.js?v=paint-9";
-import { installHud } from "./hud.js?v=paint-9";
+import { GLORB_ISLAND } from "./island.js?v=paint-10";
+import { installHud } from "./hud.js?v=paint-10";
 import { installJump } from "./jump.js?v=jump-5";
-import { installPaint } from "./paint.js?v=paint-9";
+import { installPaint } from "./paint.js?v=paint-10";
 
 window.__GLORB_ISLAND__ = GLORB_ISLAND;
 
