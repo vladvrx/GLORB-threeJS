@@ -7391,6 +7391,7 @@ window.__STUDIO_APPLY__=function(id,manifest,runtime,phase){
 // Readable application source follows. Library implementations are external.
 
 document.documentElement.classList.remove('no-js');
+globalThis.__GLORB_ASSET_BASE__ = new URL('./', document.baseURI).pathname;
 const dataResponse = await fetch('./direct-port/data/site.json');
 if (!dataResponse.ok) throw new Error('Missing local game data');
 window.__DATA = await dataResponse.json();
@@ -17879,7 +17880,8 @@ var init_vendor_75f6e6ae65453426 = __esm({
         if (Wb.get(e2)) return Promise.resolve(Wb.get(e2));
         if (qb[e2]) return qb[e2];
         if (!e2.startsWith("http") && !e2.startsWith("/")) {
-          e2 = "/" + e2;
+          const t2 = globalThis.__GLORB_ASSET_BASE__;
+          e2 = t2 ? t2.replace(/\/$/, "") + "/" + e2.replace(/^\.\//, "") : "/" + e2;
         }
         let s;
         return s = t.loader && jb[t.loader] ? jb[t.loader].function(e2, t) : (function(e3, t2) {
