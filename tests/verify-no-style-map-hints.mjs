@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
 
@@ -55,9 +56,6 @@ if (pack.site_hints?.fintech || pack.site_hints?.partner || pack.locale?.hint?.f
 
 const files = [
   ["vendor bundle", "vendor/vendor.75f6e6ae65453426.js"],
-  ["assets vendor bundle", "reference/assets/vendor.75f6e6ae65453426.js"],
-  ["index.html", "reference/index.html"],
-  ["reference.html", "reference/reference.html"],
   ["engine.js", "three-js/src/engine.js"],
 ];
 for (const [label, rel] of files) {
@@ -67,11 +65,6 @@ for (const [label, rel] of files) {
 const engine = fs.readFileSync(path.join(ROOT, "three-js/src/engine.js"), "utf8");
 if (!/blocked = new Set\(\["customize", "map", "fintech", "partner"\]\)/.test(engine)) {
   fail("engine.js does not suppress fintech/partner hints");
-}
-
-const apply = fs.readFileSync(path.join(ROOT, "scripts/apply-to-datab-each.mjs"), "utf8");
-if (!apply.includes('BLOCKED_HINTS = new Set(["customize", "map", "fintech", "partner"])')) {
-  fail("apply-to-datab-each.mjs does not block fintech/partner hints");
 }
 
 console.log("ok: customize, map, and head-here-first hint copy is gone");

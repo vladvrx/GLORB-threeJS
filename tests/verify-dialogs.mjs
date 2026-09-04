@@ -21,9 +21,4 @@ const packExtra = Object.keys(pack.dialogs_en ?? {}).filter((id) => !KEEP.has(id
 if (packExtra.length) fail(`studio-game-pack dialogs_en still has ${packExtra.join(", ")}`);
 if (!pack.dialogs_en?.Intro || !pack.dialogs_en?.dev) fail("studio-game-pack is missing Intro or dev");
 
-const apply = fs.readFileSync(path.join(ROOT, "scripts/apply-to-datab-each.mjs"), "utf8");
-if (!apply.includes("DROPPED_DIALOG_SCRIPTS")) {
-  fail("apply-to-datab-each.mjs does not drop the extra dialogue scripts");
-}
-
 console.log("ok: only Intro and dev dialogue scripts remain");

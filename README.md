@@ -1,8 +1,8 @@
 # glorb
 
-The playable game is the recovered **Three.js r150** island (`loadWebGL`): intro boat, LETS GO, dialogue, GLORB, neon water, original GLBs and HUD. There is no phone and no map.
+Playable **Three.js r150** island: intro boat, LETS GO, dialogue, then a square of land in the water that you paint. There is no phone and no map.
 
-This is the same glorb build we have been iterating — not a replacement loop and not a from-scratch island.
+This tree only keeps files that slice loads. Unused islands, scenery GLBs, partner art, dump pages, and duplicate bundles are gone.
 
 ## Run locally
 
@@ -16,32 +16,30 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) (or `/`)
 
 1. Preloader with the glorb mark, then **LETS GO**.
 2. Intro camera down to the red/yellow boat and the Hello / Yes / No thanks graph.
-3. Boat to **GLORB** (`IslandWest`): one solid flat chunk of land in the neon water. Trees, booths, and NPCs stay out of this build.
+3. Boat to **GLORB** (`IslandWest`): one solid square of land. Walking paints it. The bottom bar is coverage; **100%** ends the game.
 4. Header, mute, centered talk bubbles, bottom hints.
-5. **Jump** with Space or the small button in the bottom-right. In the air the character spreads their legs and raises their arms.
-6. **Dance** with E or the matching button in the bottom-left. Hold it to play the original interact animation; release to idle.
-7. Walking paints a light-blue trail on GLORB. The bottom bar is how much ground is covered. At **100%** the island is painted and the game ends. On a phone, drag anywhere on the island to walk.
+5. **Jump** with Space or the small button in the bottom-right.
+6. **Dance** with E or the matching button in the bottom-left. Hold it for the original interact animation.
 
-Decorating the island belongs in **Glorb Studio**, not the main game. The playable world is the intro boat plus this empty GLORB. The bike race, secret island, and test lab are gone, along with the GLBs and music they uniquely loaded.
+Decorating belongs in **Glorb Studio**, not this game.
 
 ## Jam packaging
 
-`npm run zip` writes `glorb.zip` (under 35MB). The zip is this same recovered island, not a second game:
+`npm run zip` writes `glorb.zip` (under 35MB):
 
 - Root `index.html` holds **all** JS and CSS (engine, HUD, shaders, Draco decoder text).
 - `reference/` holds the hashed GLBs, audio, fonts, UI images, and `draco_decoder.wasm`.
-- `direct-port/` holds `site.json` (LETS GO) and other JSON locale/data.
+- `direct-port/` holds `site.json` (LETS GO) and recovered CSS.
 
-On phones the zip adds `html.phone` and tries `screen.orientation.lock('portrait')`. Landscape phones still get the original rotate overlay. Desktop HUD is unchanged.
-
-The zip is gitignored. Rebuild with `npm run zip` (needs `zip` and will install `esbuild` if missing).
+On phones the zip adds `html.phone` and tries `screen.orientation.lock('portrait')`.
 
 ## Layout
 
 | Path | Role |
 | --- | --- |
 | `index.html` | Preloader + boot (zip / `/`) |
-| `three-js/` | HUD, boot, engine glue |
-| `vendor/` | Original `loadWebGL` + Vue plugin vendor |
-| `reference/assets/` | Island GLBs, character, audio, UI |
-| `direct-port/` | `site.json` (LETS GO), recovered CSS |
+| `three-js/` | HUD, boot, engine glue, paint square |
+| `vendor/` | `loadWebGL` + Vue plugin vendor |
+| `reference/assets/` | Intro + square-island GLBs, character, audio, UI |
+| `direct-port/` | `site.json`, recovered CSS |
+| `scripts/prune-to-paint-map.mjs` | Keep-list for this slice |
