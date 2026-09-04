@@ -181,9 +181,20 @@ function publish(state) {
   state.percent = Math.min(99, Math.floor(state.ratio * 100));
 }
 
+function ensureLandMaterial(scene) {
+  const mesh = scene?.main;
+  if (!mesh || mesh.__glorbLand || window.__GLORB_STUDIO__) return;
+  mesh.material = new MeshBasicMaterial({
+    color: 0xffffff,
+    fog: true,
+  });
+  mesh.__glorbLand = true;
+}
+
 function attachVisual(state, scene) {
   if (!scene?.base || state.mesh?.parent === scene.base) return;
   detachVisual(state);
+  ensureLandMaterial(scene);
   const order = (scene.webgl?.store?.renderOrder?.grass ?? 8) + 1;
   const capacity = Math.max(state.total, MIN_LAND) * GLOB_COUNT;
   const { mesh, splash } = createVisuals(capacity, order);
@@ -415,6 +426,7 @@ function tickPaint(app, state) {
   const scene = player?.scene || app.$webgl?.scenes?.current;
   if (!scene) return;
   attachVisual(state, scene);
+  ensureLandMaterial(scene);
   if (!westPlayable(app) || flag(app.$store?.isTransitionActive) || flag(app.$store?.isDialogVisible)) {
     tickSplash(state);
     publish(state);

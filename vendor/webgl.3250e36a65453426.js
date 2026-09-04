@@ -4378,37 +4378,50 @@ function makeFlatIslandSlab(floorY) {
   if (geo.computeBoundingSphere) geo.computeBoundingSphere();
   return geo;
 }
-function makeFlatIslandTerrain(floorY) {
+function sampleLandUV(geo) {
+  const uv = geo && geo.attributes && geo.attributes.uv && geo.attributes.uv.array;
+  const pos = geo && geo.attributes && geo.attributes.position && geo.attributes.position.array;
+  if (!uv || !pos) return [.5, .5];
+  const i = glorbIsland();
+  for (let n = 0, vi = 0; n < pos.length; n += 3, vi += 2) {
+    const nx = (pos[n] - i.cx) / i.rx;
+    const nz = (pos[n + 2] - i.cz) / i.rz;
+    if (nx * nx + nz * nz < .15) return [uv[vi], uv[vi + 1]];
+  }
+  return [uv[0], uv[1]];
+}
+function makeFlatIslandTerrain(floorY, landUV) {
   const i = glorbIsland();
   const cx = i.cx, cz = i.cz, rx = i.rx, rz = i.rz;
   const y1 = floorY, y0 = floorY - (i.thickness || 2.4);
   const x0 = cx - rx, x1 = cx + rx, z0 = cz - rz, z1 = cz + rz;
+  const uu = landUV ? landUV[0] : .5, vv = landUV ? landUV[1] : .5;
   const sx = 16, sz = 16;
   const pos = [], nrm = [], uv = [], ao = [], idx = [];
-  function vert(x, y, z, nx, ny, nz, u, v) {
+  function vert(x, y, z, nx, ny, nz) {
     pos.push(x, y, z);
     nrm.push(nx, ny, nz);
-    uv.push(u, v);
+    uv.push(uu, vv);
     ao.push(210);
   }
   for (let iz = 0; iz <= sz; iz++) {
     for (let ix = 0; ix <= sx; ix++) {
       const u = ix / sx, v = iz / sz;
-      vert(x0 + u * (x1 - x0), y1, z0 + v * (z1 - z0), 0, 1, 0, u, v);
+      vert(x0 + u * (x1 - x0), y1, z0 + v * (z1 - z0), 0, 1, 0);
     }
   }
   for (let iz = 0; iz < sz; iz++) {
     for (let ix = 0; ix < sx; ix++) {
       const a = iz * (sx + 1) + ix;
-      idx.push(a, a + 1, a + sx + 1, a + 1, a + sx + 2, a + sx + 1);
+      idx.push(a, a + sx + 1, a + 1, a + 1, a + sx + 1, a + sx + 2);
     }
   }
   function quad(ax, ay, az, bx, by, bz, cx, cy, cz, dx, dy, dz, nx, ny, nz) {
     const i0 = pos.length / 3;
-    vert(ax, ay, az, nx, ny, nz, 0, 0);
-    vert(bx, by, bz, nx, ny, nz, 1, 0);
-    vert(cx, cy, cz, nx, ny, nz, 1, 1);
-    vert(dx, dy, dz, nx, ny, nz, 0, 1);
+    vert(ax, ay, az, nx, ny, nz);
+    vert(bx, by, bz, nx, ny, nz);
+    vert(cx, cy, cz, nx, ny, nz);
+    vert(dx, dy, dz, nx, ny, nz);
     idx.push(i0, i0 + 1, i0 + 2, i0, i0 + 2, i0 + 3);
   }
   quad(x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1, 0, 0, 1);
@@ -4887,7 +4900,7 @@ function Er(e, t) {
         r.props = [];
         r.propsCollider = null;
         r.groundCollider = null;
-        r.base = makeFlatIslandTerrain(3.8);
+        r.base = makeFlatIslandTerrain(3.8, sampleLandUV(r.base));
         r.baseGroundCollider = makeFlatIslandSlab(3.8);
         r.boundingBox = r.base.boundingBox;
         r.boundingSphere = r.base.boundingSphere;
