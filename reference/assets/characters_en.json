@@ -1,7 +1,7 @@
 {
   "npcs": {
     "Intro": {
-      "gradientID": 0,
+      "gradientID": 31,
       "face": 1,
       "script": "Intro",
       "scriptArgs": {

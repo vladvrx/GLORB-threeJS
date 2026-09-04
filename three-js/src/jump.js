@@ -163,6 +163,7 @@ function tickJump(player, state) {
 }
 
 export function tryJump(app) {
+  if (app.__runner?.active) return false;
   const state = app.__jumpState;
   if (!state) return false;
   if (app.__danceState?.holding) return false;

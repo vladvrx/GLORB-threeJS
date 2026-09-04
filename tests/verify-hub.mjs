@@ -30,6 +30,27 @@ try {
   assert.equal(hub.hub,true);
   assert.ok(hub.camera.elevation>=3.7&&hub.camera.elevation<=4);
   assert.ok(hub.camera.distance>=8&&hub.camera.distance<=10.8);
+  const collision=await page.evaluate(()=>{
+    const a=window.__THREE_JS_GAME__.app,h=a.__hub,p=h.scene.player,physics=h.scene.physics;
+    const circles=h.group.userData.colliders.filter(c=>c.kind==='circle'&&c.radius>.6);
+    const collider=circles.sort((u,v)=>Math.hypot(h.group.position.x+u.x-p.base.position.x,h.group.position.z+u.z-p.base.position.z)-Math.hypot(h.group.position.x+v.x-p.base.position.x,h.group.position.z+v.z-p.base.position.z))[0];
+    const center={x:h.group.position.x+collider.x,z:h.group.position.z+collider.z};
+    physics.playerPosition.set(center.x,physics.playerPosition.y,center.z);
+    p.body.position.set(center.x,p.body.position.y,center.z);
+    p.base.position.set(center.x,p.base.position.y,center.z);
+    const resolved=h.resolvePlayerCollision();
+    const distance=Math.hypot(p.base.position.x-center.x,p.base.position.z-center.z);
+    return {count:h.group.userData.colliders.length,resolved,distance,required:collider.radius+.62,bodySynced:p.body.position.x===p.base.position.x&&p.body.position.z===p.base.position.z,physicsSynced:physics.playerPosition.x===p.base.position.x&&physics.playerPosition.z===p.base.position.z};
+  });
+  assert.ok(collision.count>40,'solid hub meshes expose collision volumes');
+  assert.equal(collision.resolved,true);
+  assert.ok(collision.distance>=collision.required-.01,'runtime player hook pushes Glorb out of a solid hub mesh');
+  assert.ok(collision.bodySynced&&collision.physicsSynced,'collision correction persists in the recovered physics controller');
+  await page.evaluate(async()=>{
+    const a=window.__THREE_JS_GAME__.app,p=a.__hub.scene.player,physics=a.__hub.scene.physics,spawn=a.__hub.scene.getPoint('Spawn').position;
+    physics.playerPosition.copy(spawn);p.body.position.copy(spawn);p.base.position.copy(spawn);
+    await new Promise(resolve=>setTimeout(resolve,80));
+  });
   await page.screenshot({path:'test-results-hub/arrival.png'});
   await page.keyboard.down('KeyW');
   await page.waitForTimeout(900);
@@ -79,5 +100,5 @@ try {
   await page.keyboard.up('KeyW');
   assert.equal((await snapshot()).phase,'playing');
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({hub,moved,level,returned,continued,errors},null,2));
+  console.log(JSON.stringify({hub,collision,moved,level,returned,continued,errors},null,2));
 } finally {await browser.close();}

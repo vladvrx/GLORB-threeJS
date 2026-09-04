@@ -1,11 +1,15 @@
 # GLORB competition plan
 
 Authoritative starting point: vladvrx/GLORB-threeJS, commit c3758c1.
-Current scope: walkable hub plus Survival & Resource Management minigame only. No Simulation & Management expansion for now. The art-colony proposal and implementation were rejected and removed.
+Planned full-game structure: the existing hub, four minigames, and one final level that becomes playable after all four minigames are complete. The user will define the games and their completion conditions later.
+
+Current work is planning and architecture only. Do not add required-game flags, completion tracking, locked entrances, new gameplay, or final-level behavior yet. See [Minigame and final-level architecture](docs/minigame-architecture.md) for the proposed module boundaries, lifecycle, save format, and implementation stages.
+
+The checkout currently contains survival and Temple Dash. Neither is assigned to a planned slot by this document. The survival notes below describe existing gameplay, not a decision about the four future games. The separate Simulation & Management expansion remains on hold. The art-colony proposal and implementation were rejected and removed.
 
 ## Locked design
 
-Keep the existing Three.js r150 controller, red alien, UFO arrival, paint island, movement, jump, and dance animation. Replace scenery models and audio as directed by the entrant; retain their character, UFO and logo. New scenery is generated in code. The original intro now arrives in a walkable hub; Level One is the survival paint square. The hub uses the original close camera; starting Level One raises the follow camera.
+Keep the recovered `loadWebGL` world, HUD, and GLBs 1:1, including the existing Three.js r150 controller, red alien, UFO arrival, paint island, movement, jump, and dance animation. The original intro now arrives in a walkable hub; the current Level One is the survival paint square. The hub uses the original close camera; starting Level One raises the follow camera. The planned progression system must fit around this world.
 
 The intro dialogue is locked to the supplied original, including wording and choices. All new gameplay instructions belong in the island briefing, not in the boat conversation.
 

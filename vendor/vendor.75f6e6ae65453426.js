@@ -2742,7 +2742,7 @@ const Uc = "./reference/assets/Asset_Algae.e4fb453265453426.glb",
   }, Symbol.toStringTag, {
     value: "Module"
   })),
-  Jg = JSON.parse('{"name":"IslandIntro","bounds":[[13.113579,-11.613289,-213.433426],[252.187531,17.247711,87.036461]],"useBaseAsCollider":false,"points":{"BoatIntro.001":[-23.710144,-0.153495,-88.873047,1,1,1,0,0,0,1],"Spawn.001":[206.841797,1.793991,-145.759628,1,1,1,0,0,0,1]},"assets":["PalmTree","RockA","Character"],"actors":[{"uid":"NPC_Intro.001","type":"NPC","params":{"subtype":"Intro"},"transforms":[-20.716511,0,-100.081581,1,1,1,0,0,0,1]}],"areas":{},"curves":{},"props":[{"asset":"PalmTree","traversable":true,"transforms":[72.61676025390625,3.1647651195526123,-55.62621307373047,1.7586357593536377,1.7586355209350586,1.7586359977722168,-0.007064770441502333,-0.04296550154685974,0.0783185362815857,0.9959770441055298]},{"asset":"PalmTree","traversable":true,"transforms":[74.86858918151766,2.9018921852111816,-59.56642887328564,1.7586359977722168,1.7586359977722168,1.7586359977722168,-0.1291070431470871,0.3306940793991089,0.07793225347995758,0.931611180305481]},{"asset":"RockA","traversable":true,"transforms":[156.29858644205717,0.6496011614799424,-0.8259095204264213,-166.09430507460195,-348.7474624083115,-234.40977521268707,-0.5280558569111641,0.24091074797806475,-0.8106310510168416,-0.07743592588583358]}]}'),
+  Jg = JSON.parse('{"name":"IslandIntro","bounds":[[13.113579,-11.613289,-213.433426],[252.187531,17.247711,87.036461]],"useBaseAsCollider":false,"points":{"BoatIntro.001":[-23.710144,-0.153495,-88.873047,1,1,1,0,0,0,1],"Spawn.001":[206.841797,1.793991,-145.759628,1,1,1,0,0,0,1]},"assets":["PalmTree","RockA","Character"],"actors":[{"uid":"NPC_Intro.001","type":"NPC","params":{"subtype":"Intro"},"transforms":[-20.716511,0,-100.081581,1,1,1,0,0,0,1]}],"areas":{},"curves":{},"props":[{"asset":"PalmTree","traversable":true,"transforms":[72.61676025390625,3.1647651195526123,-55.62621307373047,1.7586357593536377,1.7586355209350586,1.7586359977722168,-0.007064770441502333,-0.04296550154685974,0.0783185362815857,0.9959770441055298]},{"asset":"PalmTree","traversable":true,"transforms":[74.86858918151766,2.9018921852111816,-59.56642887328564,1.7586359977722168,1.7586359977722168,1.7586359977722168,-0.1291070431470871,0.3306940793991089,0.07793225347995758,0.931611180305481]},{"asset":"RockA","traversable":true,"transforms":[156.29858644205717,0.6496011614799424,-0.8259095204264213,3,6.5,3,-0.5280558569111641,0.24091074797806475,-0.8106310510168416,-0.07743592588583358]}]}'),
   Qg = Object.freeze(Object.defineProperty({
     __proto__: null,
     default: Jg
@@ -9437,7 +9437,24 @@ function Vz(e, t) {
   for (let i in e) i.toLowerCase().match(t) && s.push(e[i]);
   return s;
 }
-const Wz = WL("uniform sampler2D noise;varying vec2 vUv;varying vec2 vWorld;uniform float time;void main(){float globalNoise=texture2D(noise,vWorld*0.003+vec2(time*0.0034,0.)).r;vec3 color=WATER_TOP_COLOR+0.2;float n=texture2D(noise,vWorld*0.035+vec2(time*0.02,0.)).r;float n2=texture2D(noise,vWorld*0.02-vec2(0.,time*0.013)).r;float lineA=smoothstep(0.48,0.10,abs(sin(vWorld.x*0.035+vWorld.y*0.95+n*1.6+time*0.32)));float lineB=smoothstep(0.52,0.14,abs(sin(vWorld.y*0.03-vWorld.x*0.8+n2*1.3-time*0.21)));float stains=max(lineA,lineB*0.65);color=mix(color,vec3(0.),stains);float alpha=max(mix(0.62,0.95,globalNoise),stains);vec2 foLen=vUv-vec2(0.5);float foDist=1.-dot(foLen,foLen)*5.;alpha*=foDist;\n#if defined(IS_BIOME_TESTLAB)\nfloat d=distance(vUv,vec2(0.5));alpha*=step(d,0.045);\n#endif\ngl_FragColor=vec4(color,alpha);}", "fragmentShader"),
+const Wz = WL(`uniform sampler2D noise;
+varying vec2 vUv;
+varying vec2 vWorld;
+uniform float time;
+void main(){
+  float broad=texture2D(noise,vWorld*0.007+vec2(time*0.002,0.)).r;
+  float detail=texture2D(noise,vWorld*0.042-vec2(0.,time*0.006)).r;
+  float wave=sin(vWorld.y*0.34+vWorld.x*0.08+broad*5.-time*0.55);
+  float crest=smoothstep(0.93,1.,wave)*smoothstep(0.49,0.68,detail);
+  vec3 color=WATER_TOP_COLOR*mix(0.84,1.18,broad);
+  color=mix(color,vec3(0.52,0.79,0.70),crest*0.42);
+  vec2 foLen=vUv-vec2(0.5);
+  float alpha=mix(0.78,0.91,broad)*clamp(1.-dot(foLen,foLen)*5.,0.,1.);
+  #if defined(IS_BIOME_TESTLAB)
+  alpha*=step(distance(vUv,vec2(0.5)),0.045);
+  #endif
+  gl_FragColor=vec4(color,alpha);
+}`, "fragmentShader"),
   jz = WL("varying vec2 vUv;varying vec2 vWorld;void main(){vUv=uv;vec4 wp=modelMatrix*vec4(position,1.);vWorld=wp.xz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}", "vertexShader"),
   qz = ZL(class extends cP {
     constructor() {
@@ -10578,6 +10595,10 @@ class dF extends QN {
   }
   updateCameraOptions() {
     if (!this.scene.player) return;
+    if (window.__THREE_JS_GAME__?.app?.__runner?.active) {
+      this.scene.player.updateOptions({}, { distance: 11, elevation: 5.8, intersectGround: false });
+      return;
+    }
     const e = this.scene.player.cameraOptions,
       t = hy(py(this.cam.fov, 70, 50), 0, 1);
     const run = window.__THREE_JS_GAME__?.app?.__survival?.run;
@@ -10844,13 +10865,87 @@ const lU = Ay(),
   mU = Ll(.375, .015, .395, .99);
 new HA();
 const bU = Ay();
+// Keep the ship, its passenger anchor, and close intro camera poses together.
+// The sea and hub spawn remain at their existing elevations.
+const INTRO_HOVER_HEIGHT = 24;
+// The preserved UFO has only two atlas UV samples. Its dedicated finish uses
+// local hull coordinates instead of the scenery atlas and metallic matcap.
+export function createGlorbUfoMaterial(options = {}) {
+  const masked = !!options.transitionUniforms;
+  const material = new cP({
+    name: "Glorb UFO ceramic and jade",
+    uniforms: { time: { value: 0 }, ...(options.transitionUniforms || {}) },
+    transparent: true,
+    depthWrite: true,
+    side: 2,
+    vertexShader: `
+      varying vec3 ufoPosition;
+      varying vec3 ufoNormal;
+      varying vec3 ufoViewNormal;
+      varying vec3 ufoView;
+      void main() {
+        ufoPosition = position;
+        ufoNormal = normalize(normal);
+        ufoViewNormal = normalize(normalMatrix * normal);
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        ufoView = -mvPosition.xyz;
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    `,
+    fragmentShader: `
+      varying vec3 ufoPosition;
+      varying vec3 ufoNormal;
+      varying vec3 ufoViewNormal;
+      varying vec3 ufoView;
+      ${masked ? '#include <transition_mask_pars>\nuniform float pixelRatio;\nuniform vec2 res;' : ''}
+      vec3 ceramic(vec3 rgb) { return pow(rgb, vec3(2.2)); }
+      void main() {
+        ${masked ? '#include <transition_mask>\nif (circle < 1.0) discard;' : ''}
+        vec3 p = ufoPosition;
+        vec2 ellipse = vec2((p.x + .209238) / 2.63926, p.z / 1.15125);
+        float radial = length(ellipse);
+        float angle = atan(ellipse.y, ellipse.x);
+        vec3 jade = ceramic(vec3(.235, .49, .445));
+        vec3 darkJade = ceramic(vec3(.125, .285, .27));
+        vec3 cream = ceramic(vec3(.94, .895, .745));
+        vec3 gold = ceramic(vec3(.82, .66, .335));
+        vec3 color = mix(darkJade, jade, smoothstep(-.48, .42, p.y));
+        color = mix(color, cream, smoothstep(.81, .92, p.y));
+        float rim = smoothstep(.62, .64, p.y) * (1.0 - smoothstep(.79, .82, p.y));
+        color = mix(color, gold, rim);
+        float rimGroove = smoothstep(.701, .710, p.y) * (1.0 - smoothstep(.733, .743, p.y));
+        color = mix(color, darkJade, rimGroove);
+        // Thin radial panel joints and a restrained jade collar add scale.
+        float panel = abs(fract((angle + 3.141593) * 1.90986) - .5);
+        float seam = (1.0 - smoothstep(.003, .010, panel)) * smoothstep(.88, .92, p.y) * (1.0 - smoothstep(1.28, 1.3, p.y));
+        color = mix(color, ceramic(vec3(.61, .64, .535)), seam * .65);
+        float collar = smoothstep(1.266, 1.284, p.y) * (1.0 - smoothstep(1.312, 1.325, p.y));
+        color = mix(color, gold, collar);
+        vec3 n = normalize(ufoNormal);
+        float light = .72 + .28 * max(0.0, dot(n, normalize(vec3(-.35, .88, .32))));
+        color *= light;
+        float broadSheen = pow(max(0.0, dot(normalize(ufoViewNormal), normalize(vec3(-.3, .7, .7)))), 18.0);
+        color += broadSheen * .055 * mix(vec3(1.0), vec3(1.0, .87, .59), rim);
+        float alpha = 1.0;
+        if (p.y > 1.325) {
+          // Clear jade glazing keeps the passenger and horizon visible.
+          float fresnel = pow(1.0 - abs(dot(normalize(ufoViewNormal), normalize(ufoView))), 3.0);
+          color = ceramic(vec3(.47, .72, .69)) + fresnel * .11;
+          alpha = .10 + fresnel * .17;
+        }
+        gl_FragColor = vec4(color, alpha);
+        #include <encodings_fragment>
+      }
+    `
+  });
+  material.forceSinglePass = true;
+  return material;
+}
 class yU extends ML {
   init() {
     const e = this.webgl.resources.assets.BoatYellow.geometry,
       t = this.scene.getPoint("BoatIntro");
-    this.base = new sP(e, bO.use({
-      biome: this.scene.biome
-    })), this.base.castShadow = !0, this.base.receiveShadow = !0, this.base.frustumCulled = !1, this.base.renderOrder = this.webgl.store.renderOrder.vehicles, this.base.position.copy(t.position), this.base.quaternion.copy(t.quaternion), this.basePos = this.base.position.clone(), this.baseQt = this.base.quaternion.clone(), this.npcPt = this.addObject3D(new rC()), this.npcPt.translateX(.85), this.npcPt.translateY(.92), this.npcPt.translateZ(.03), this.npcPt.rotateY(Math.PI), this.time = 0;
+    this.base = new sP(e, createGlorbUfoMaterial()), this.base.castShadow = !0, this.base.receiveShadow = !0, this.base.frustumCulled = !1, this.base.renderOrder = this.webgl.store.renderOrder.vehicles, this.base.position.copy(t.position), this.base.position.y += INTRO_HOVER_HEIGHT, this.base.quaternion.copy(t.quaternion), this.basePos = this.base.position.clone(), this.baseQt = this.base.quaternion.clone(), this.npcPt = this.addObject3D(new rC()), this.npcPt.translateX(.85), this.npcPt.translateY(.92), this.npcPt.translateZ(.03), this.npcPt.rotateY(Math.PI), this.time = 0;
   }
   update() {
     if (!this.scene) return;
@@ -10864,6 +10959,10 @@ class yU extends ML {
     const a = .06 * bU(50, 3e-4 * this.time) * .5 * t,
       r = .05 * bU(-120, -2e-4 * this.time) * .5 * t;
     this.base.rotateX(a + .09 * i), this.base.rotateZ(r + .14 * i);
+  }
+  beforeDestroy() {
+    this.base.material.dispose();
+    super.beforeDestroy?.();
   }
 }
 const _U = {
@@ -10888,7 +10987,11 @@ const _U = {
     quaternion: [.0965187, -.61305203, .07581644, .78045065]
   }
 };
-for (let TG in _U) _U[TG].position = new HA().fromArray(_U[TG].position), _U[TG].quaternion = new UA().fromArray(_U[TG].quaternion);
+for (const pose in _U) {
+  _U[pose].position = new HA().fromArray(_U[pose].position);
+  _U[pose].quaternion = new UA().fromArray(_U[pose].quaternion);
+  if (pose === 'descentTo' || pose === 'startedTo' || pose === 'endTo') _U[pose].position.y += INTRO_HOVER_HEIGHT;
+}
 const xU = Ay(),
   {
     introFrom: wU,

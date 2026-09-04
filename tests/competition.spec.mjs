@@ -135,23 +135,64 @@ test('chasing blight leaves purple ground trails, and PAINT and icons fit a smal
 });
 
 test('public boat intro reaches the survival briefing', async ({page}) => {
+  const shaderErrors=[];
+  page.on('console',message=>{
+    if(message.type()==='error'&&/shader error|VALIDATE_STATUS|COMPILE_STATUS|program not valid/i.test(message.text())) shaderErrors.push(message.text());
+  });
   const check = await launch(page);
-  await page.getByRole('button',{name:'GO GO GO',exact:true}).click();
+  const go=page.getByRole('button',{name:'GO GO GO',exact:true});
+  await expect(go).toBeVisible({timeout:40000});
+  await page.waitForFunction(()=>window.__THREE_JS_GAME__.app.$webgl.store.intro.descentDone.value);
+  await page.screenshot({path:'test-results/intro-floating-arrival.png'});
+  await go.click();
   for (const text of ['HELLO HELLO HELLO HELLO', 'WE FOUND MORE LAND TO PAINT', 'ARE YOU COMING']) {
     const bubble = page.locator('.dialog-bubble').filter({hasText:text}).last();
     await expect(bubble).toBeVisible({timeout:40000});
     await expect(bubble.locator('.bubble')).toHaveClass(/is-done/, {timeout:40000});
+    if(text==='HELLO HELLO HELLO HELLO') {
+      await page.screenshot({path:'test-results/intro-floating.png'});
+      const heights=await page.evaluate(()=>{
+        const s=window.__THREE_JS_GAME__.app.$webgl.scenes.current;
+        return {ship:s.boat.base.position.y,glorb:s.npcIntro.base.position.y,camera:s.introCam.cam.position.y};
+      });
+      expect(heights.ship).toBeGreaterThan(20);
+      expect(heights.glorb).toBeGreaterThan(heights.ship);
+      expect(heights.camera).toBeGreaterThan(24);
+    }
     await page.keyboard.press('Space');
   }
   await page.getByRole('button', {name:'YES YES YES',exact:true}).click();
   const final = page.locator('.dialog-bubble').filter({hasText:'GLORB'}).last();
   await expect(final.locator('.bubble')).toHaveClass(/is-done/, {timeout:40000});
   await page.keyboard.press('Space');
+  await page.waitForFunction(()=>{
+    const app=window.__THREE_JS_GAME__.app,t=app.$webgl.transitionScene;
+    return app.$store.isSpinnerVisible&&t.bg.base.visible&&t.ground.base.visible&&t.bg.base.material.uniforms.sea.value>.99&&t.bg.base.material.uniforms.maskRadius.value<.001;
+  },null,{timeout:40000});
+  const flightColors=await page.evaluate(()=>{
+    const t=window.__THREE_JS_GAME__.app.$webgl.transitionScene;
+    return [t.bg.base.material,t.ground.base.material].map(m=>m.defines.WATER_TOP_COLOR);
+  });
+  expect(new Set(flightColors).size).toBe(1);
+  const neon=flightColors[0].slice(flightColors[0].indexOf('(')+1,-1).split(',').map(Number);
+  expect(neon[1]).toBeGreaterThan(.95);
+  expect(neon[0]).toBeLessThan(.3);
+  expect(neon[2]).toBeLessThan(.15);
+  await page.screenshot({path:'test-results/intro-flight-neon.png'});
+  await expect(page.getByRole('button',{name:'Enter Level One',exact:true})).toBeVisible({timeout:90000});
+  await page.waitForFunction(()=>{
+    const app=window.__THREE_JS_GAME__.app;
+    return app.__hub?.active&&!app.$store.isTransitionActive&&!app.$webgl.transitionScene.bg.base.visible;
+  },null,{timeout:40000});
+  const hubWater=await page.evaluate(()=>window.__THREE_JS_GAME__.app.$webgl.store.biomes.default.defines.WATER_TOP_COLOR);
+  expect(hubWater).not.toBe(flightColors[0]);
+  await page.screenshot({path:'test-results/intro-hub-coastal.png'});
   await enterLevelFromHub(page);
   await expect(page.getByRole('button',{name:"Let's paint",exact:true})).toBeVisible({timeout:90000});
   expect(check.errors).toEqual([]);
   expect(check.external).toEqual([]);
   expect(check.missing).toEqual([]);
+  expect(shaderErrors).toEqual([]);
 });
 
 // This driver only reads runtime state. Movement and actions use public input;

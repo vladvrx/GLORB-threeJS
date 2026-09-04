@@ -53,18 +53,25 @@ function installHeader(app, host) {
   });
   logo.append(el("img", { src: "./reference/assets/databeach-logo.png?v=glorb", alt: "glorb", class: "logo-mark", width: "1515", height: "563" }));
   const buttons = el("div", { class: "buttons", "data-v-08688f2d": "" });
+  const customize = circleButton({
+    label: "Change Glorb color",
+    icon: "profile",
+    tone: "bordered",
+    extraClass: "pointer glorb-color-button",
+    onClick: () => {
+      if (!app.__hub?.active) return;
+      playUiSound(app, "sfx_phone_click_soft");
+      app.$store.isCustomizeOpen = true;
+      app.$router.push({ name: "Customize" });
+    },
+  });
+  customize.setAttribute("data-color-customize", "");
+  customize.querySelector(".button-content")?.replaceChildren(
+    el("span", { class: "glorb-color-strip", "aria-hidden": "true" }),
+    el("span", { class: "glorb-color-label", text: "COLOR", "aria-hidden": "true" }),
+  );
   buttons.append(
-    circleButton({
-      label: app.$l("arialabel.customize"),
-      icon: "profile",
-      tone: "bordered",
-      extraClass: "pointer",
-      onClick: () => {
-        playUiSound(app, "sfx_phone_click_soft");
-        app.$store.isCustomizeOpen = true;
-        app.$router.push({ name: "Customize" });
-      },
-    }),
+    customize,
     installSoundButton(app, { tone: "bordered" }),
   );
   for (const node of buttons.children) node.setAttribute("data-v-08688f2d", "");

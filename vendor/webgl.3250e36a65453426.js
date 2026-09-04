@@ -1,5 +1,6 @@
 //  glorb [R]
 //  Build 20250626-165126
+import { createGlorbUfoMaterial } from "./vendor.75f6e6ae65453426.js";
 import { aM as e, aN as t, aO as s, aP as i, aQ as o, aR as a, aS as n, aT as r, aU as l, aV as c, aW as h, aX as u, aY as d, a9 as p, aZ as f, s as m, a_ as g, a$ as y, b0 as b, w as v, a8 as w, b1 as _, b2 as x, b3 as S, b4 as M, b5 as T, b6 as O, b7 as P, b8 as A, b9 as I, ba as C, bb as R, bc as k, bd as D, be as L, bf as E, bg as F, j as U, bh as z, bi as B, bj as N, bk as j, bl as V, bm as H, y as W, aA as G, G as Y, ah as K, bo as X, bp as $, bq as Z, br as J, bs as Q, bt as ee, bu as te, bv as se, bw as ie, bx as oe, by as ae, O as re, bA as le, bB as ce, bC as he, i as ue, bD as de, bE as pe, bF as fe, bG as me, bH as ge, bI as ye, bJ as be, bK as ve, bL as we, bM as _e, bN as xe, bO as Se, bP as Me, bQ as Te, bR as Oe, aH as Pe, bX as De, c2 as Ne, ce as Je, cg as et, cl as at, cs as dt, ct as pt, cx as yt, a as wt, cA as _t, cB as xt, cC as St, cD as Mt, cE as Tt, cF as Ot, cG as Pt, ae as At, cH as It, cI as Ct, cJ as Rt, cK as kt, cL as Dt, cM as Lt, aC as Et, cN as Ft, cO as Ut, cP as zt, cQ as Bt, h as Nt, cR as jt, cS as Vt, cT as Ht, cU as Wt, cV as Gt, cW as qt, cX as Yt, cY as Kt, cZ as Xt, c_ as $t, c$ as Zt, d0 as Jt, d1 as Qt, d2 as es, d3 as ts, d4 as ss, d5 as is, d6 as os, d7 as as, d8 as ns, d9 as rs, da as ls, ad as cs, db as hs } from "./vendor.75f6e6ae65453426.js";
 const us = Object.freeze(Object.defineProperty({
     __proto__: null,
@@ -1509,6 +1510,11 @@ const uo = new Int8Array([-1, -1, 4, -1, -1, 4]),
 po.setAttribute("position", new O(uo, 2));
 const fo = ["precision highp float;", "attribute lowp vec2 position;", "varying highp vec2 vUv;", "void main() {", "vUv = position * 0.5 + 0.5;", "gl_Position =  vec4(position, 0., 1);", "}"].join(""),
   mo = fo;
+// Only the flying/loading scene uses this neon sea palette.
+const flyingSeaDefines = {
+  WATER_TOP_COLOR: zt(new V("#39ff14")),
+  WATER_COLOR: zt(new V("#12d82b"))
+};
 class go extends u {
   init() {
     const e = new J(Object.assign({}, {
@@ -1522,7 +1528,8 @@ class go extends u {
       },
       defines: {
         ...ee(),
-        ...p.store.biomes.default.defines
+        ...p.store.biomes.default.defines,
+        ...flyingSeaDefines
       }
     }));
     e.transparent = !0, this.base = new T(po, e), this.base.frustumCulled = !1, this.base.renderOrder = this.webgl.store.renderOrder.transitionPlane, this.base.matrixAutoUpdate = !1;
@@ -1575,7 +1582,8 @@ class wo extends se {
       };
     this.defines = {
       ...ee(),
-      ...p.store.biomes.default.defines
+      ...p.store.biomes.default.defines,
+      ...flyingSeaDefines
     }, this.map = t.map.value, yo.use(this), bo.use(this), this.lights = !0, this.fog = !0, this.type = "ShaderMaterial", this.isShaderMaterial = !0, this.isTransitionAssetMaterial = !0, this.transparent = !0, p.hooks.beforeUpdate.watch(this.udpate, this);
   }
   pauseEffects(e) {
@@ -1614,7 +1622,7 @@ class Mo extends u {
   init() {
     this.base = new L(), this.base.rotation.y = Math.PI / 2;
     const e = this.webgl.resources.assets.BoatYellow.geometry;
-    this.boat = new T(e, wo.use()), this.boat.position.y = -.1, this.boat.renderOrder = this.webgl.store.renderOrder.transitionPlane + 2, this.qt = new H(), this.base.add(this.boat);
+    this.boat = new T(e, createGlorbUfoMaterial({transitionUniforms:{...Q.transitions,...Q.global,pixelRatio:Q.pixelRatio}})), this.boat.position.y = -.1, this.boat.renderOrder = this.webgl.store.renderOrder.transitionPlane + 2, this.qt = new H(), this.base.add(this.boat);
   }
   update() {
     if (!this.base.visible) return;
@@ -1639,7 +1647,8 @@ class Lo extends se {
       depthWrite: !1,
       defines: {
         ...ee(),
-        ...p.store.biomes.default.defines
+        ...p.store.biomes.default.defines,
+        ...flyingSeaDefines
       }
     }), this.uniforms = {
       noise: {
@@ -3368,22 +3377,23 @@ Fr.default = {
     ISLAND_AO_SUB: Ut(.4)
   }
 };
-const nightModeDefines = {
-  SKY_TOP_COLOR: zt(new V("#030a24")),
-  SKY_BOTTOM_COLOR: zt(new V("#00e83a")),
+// Shared coastal palette; existing terrain remains white for paint coverage.
+const coastalDefines = {
+  SKY_TOP_COLOR: zt(new V("#77bdcf")),
+  SKY_BOTTOM_COLOR: zt(new V("#def1dd")),
   SKY_HORIZON_FADE: Ut(.44),
   SKY_HORIZON_STRENGTH: Ut(.7),
-  SKY_CLOUDS_ALPHA: Ut(.55),
-  SKY_CLOUDS_MULT: Bt(.42, .5, .78),
-  CLOUDS_COLOR: Bt(.7, .85, 1.15),
-  WATER_TOP_COLOR: zt(new V("#39ff14")),
-  WATER_COLOR: zt(new V("#00e83a")),
-  UNDERWATER_MULT: Ut(.45),
-  FOG_FAR: zt(new V("#39ff14")),
-  FOG_NEAR: zt(new V("#00e83a")),
-  SHADOW_COLOR: zt(new V("#020617")),
-  RIM_COLOR: Bt(.35, .55, 1),
-  CHAR_RIM_COLOR: Bt(.5, .72, 1.2),
+  SKY_CLOUDS_ALPHA: Ut(.32),
+  SKY_CLOUDS_MULT: Bt(.94, 1, .95),
+  CLOUDS_COLOR: Bt(1, 1.03, .96),
+  WATER_TOP_COLOR: zt(new V("#319a9f")),
+  WATER_COLOR: zt(new V("#247f8c")),
+  UNDERWATER_MULT: Ut(.65),
+  FOG_FAR: zt(new V("#b3dcd3")),
+  FOG_NEAR: zt(new V("#76bdbd")),
+  SHADOW_COLOR: zt(new V("#3a5364")),
+  RIM_COLOR: Bt(.8, .94, .82),
+  CHAR_RIM_COLOR: Bt(.9, 1, .87),
   GRASS_BOTTOM_COLOR: zt(new V("#ffffff")),
   GRASS_TOP_COLOR: zt(new V("#ffffff")),
   TERRAIN_BASE_COLOR: zt(new V("#ffffff")),
@@ -3399,7 +3409,7 @@ const nightModeDefines = {
   AO_ILLUM_LOW: Ut(.58),
   AO_ILLUM_HIGH: Ut(1.05)
 };
-for (const nightBiome of Object.values(Fr)) Object.assign(nightBiome.defines, nightModeDefines);
+for (const biome of Object.values(Fr)) Object.assign(biome.defines, coastalDefines);
 for (let Nu in Fr) {
   const e = Fr[Nu];
   e.id = Nu;

@@ -1,111 +1,56 @@
-import { a$ as MeshBasicMaterial, b5 as Mesh, b7 as BufferGeometry, b6 as BufferAttribute, cd as Group } from '../../vendor/vendor.75f6e6ae65453426.js';
 import { GLORB_ISLAND as island } from './island.js';
 import { el } from './dom.js';
+import { installRunner } from './runner.js';
+import { buildHub } from './hub-visuals.js';
+import { resolveHubCollision } from './hub-collision.js';
 
 // The hub and Level One share the recovered controller and collision floor.
 // Only this additive scenery layer is toggled; Level One's assets stay intact.
-function buildHub(scene) {
-  const group = new Group();
-  group.name = 'glorb-hub';
-  group.position.set(island.cx, island.floorY, island.cz);
-  const positions = [], colors = [];
-  function triangle(a, b, c, color, shade = 1) {
-    for (const p of [a, b, c]) {
-      positions.push(...p);
-      colors.push(((color >> 16) & 255) / 255 * shade, ((color >> 8) & 255) / 255 * shade, (color & 255) / 255 * shade);
-    }
-  }
-  function box(x, y, z, w, h, d, color) {
-    const p = Array.from({ length: 8 }, (_, i) => [x + (i & 1 ? 1 : -1) * w / 2, y + (i & 2 ? 1 : -1) * h / 2, z + (i & 4 ? 1 : -1) * d / 2]);
-    [[0,4,6,2],[1,3,7,5],[0,1,5,4],[2,6,7,3],[0,2,3,1],[4,5,7,6]].forEach(([a,b,c,d], i) => {
-      triangle(p[a], p[b], p[c], color, .72 + i * .05);
-      triangle(p[a], p[c], p[d], color, .72 + i * .05);
-    });
-  }
-  function disc(x, z, rx, rz, color, y = .055) {
-    for (let i = 0; i < 48; i++) {
-      const a = i / 48 * Math.PI * 2, b = (i + 1) / 48 * Math.PI * 2;
-      triangle([x,y,z], [x + Math.cos(b)*rx,y,z + Math.sin(b)*rz], [x + Math.cos(a)*rx,y,z + Math.sin(a)*rz], color);
-    }
-  }
-  box(0, .015, 0, 104, .025, 112, 0xf3dba0);
-  disc(0, 0, 46, 50, 0x83c99c);
-  disc(0, 2, 20, 22, 0xf8e5b2, .07);
-  box(3, .09, 8, 9, .025, 57, 0xf8e5b2);
-  box(17, .1, 10, 45, .025, 7, 0xf8e5b2);
-  disc(0, 3, 8, 8, 0xe2b875, .12);
-  disc(0, 3, 6.8, 6.8, 0xfaf1d2, .13);
-  function palm(x,z,h,turn) {
-    box(x,h/2,z,.85,h,.85,0xa98459);
-    for(let i=0;i<7;i++) {
-      const a=turn+i*Math.PI*2/7;
-      triangle([x,h,z], [x+Math.cos(a-.4)*3.1,h+1.2,z+Math.sin(a-.4)*3.1], [x+Math.cos(a)*6,h-1,z+Math.sin(a)*6], 0x429d71, .8+i*.025);
-      triangle([x,h,z], [x+Math.cos(a)*6,h-1,z+Math.sin(a)*6], [x+Math.cos(a+.4)*3.1,h+1.2,z+Math.sin(a+.4)*3.1], 0x62bc78, .8+i*.025);
-    }
-    disc(x,z,3.2,2.1,0x69b28c,.075);
-  }
-  [[-28,-28],[-16,-37],[18,-34],[33,-23],[36,4],[29,30],[13,39],[-17,36],[-34,22],[-36,-4],[-27,5],[24,-12]].forEach(([x,z],i)=>palm(x,z,8+i%3*1.5,i));
-  for(let i=0;i<16;i++) {
-    const a=i*2.4, x=Math.cos(a)*40, z=Math.sin(a)*43;
-    box(x,.65,z,2+i%3,.95+i%2,2.3,0x8caaa5);
-    disc(x+2,z+1,1.6,1.1,0xd1e89e,.08);
-  }
-  // The entrance is a mint arch opening toward the arrival plaza.
-  box(30,4,5,2.4,8,1.8,0xf5edcf);
-  box(30,4,15,2.4,8,1.8,0xf5edcf);
-  box(30,8,10,2.4,2,12,0x53cba9);
-  box(30,9.5,10,2,1,7,0xffd55d);
-  box(28.7,8,10,.15,1.4,.5,0x286b58);
-  disc(30,10,3,5,0x85e7d3,.14);
-  // Low benches and a small garden leave the paths clear.
-  for(const x of [-14,17]) {
-    box(x,1,21,5,.7,1.8,0xc49163);
-    box(x-1.7,.5,21,.5,1,1.2,0x775e52);
-    box(x+1.7,.5,21,.5,1,1.2,0x775e52);
-  }
-  const geometry = new BufferGeometry();
-  geometry.setAttribute('position',new BufferAttribute(new Float32Array(positions),3));
-  geometry.setAttribute('color',new BufferAttribute(new Float32Array(colors),3));
-  geometry.computeVertexNormals();
-  group.add(new Mesh(geometry,new MeshBasicMaterial({vertexColors:true,side:2,fog:true})));
-  scene.base.add(group);
-  return group;
-}
-
 export function installHub(app) {
   if (app.__hub) return app.__hub;
   const c = { active:false, scene:null, group:null, busy:false, savedPhase:'briefing', savedPage:'briefing', levelPosition:null };
   app.__hub = c;
+  installRunner(app);
   const style = el('style', {text: `
     .hub-ui{position:fixed;inset:0;z-index:65;pointer-events:none;font-family:Gilmer,sans-serif;color:#163e39}
     .hub-ui[hidden],.hub-ui [hidden]{display:none!important}
     .hub-location{position:absolute;top:calc(env(safe-area-inset-top) + 84px);left:18px;right:18px;text-align:center;font-weight:700;letter-spacing:.18em;font-size:12px;color:#fff8e8;text-shadow:0 2px 8px #163e3999}
     .hub-location strong{display:block;font-size:25px;letter-spacing:-.03em;margin-top:5px}
     .hub-panel{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 92px);left:22px;right:22px;max-width:380px;margin:auto;background:#fff8e8ed;border:2px solid #fff9e7;border-radius:22px;padding:16px 18px;box-shadow:0 6px 0 #28685e20}
-    .hub-panel p{margin:0 0 10px;font-size:13px;line-height:1.45}.hub-panel h2{font-size:22px;margin:0 0 5px}
+    .hub-panel p{margin:0 0 10px;font-size:12px;line-height:1.4}.hub-panel h2{font-size:18px;margin:0 0 5px}
+    .hub-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .hub-choices button{font-size:12px!important;padding:12px 8px!important}
+    .hub-panel .hub-runner-entry{background:#79529b;color:#fff7e8}
     .hub-ui button{pointer-events:auto;cursor:pointer;border:0;font:700 15px Gilmer,sans-serif;border-radius:14px;background:#256956;color:#fff;padding:14px 18px;min-height:46px;width:100%}
     .hub-ui button:focus-visible{outline:3px solid #ffc64b;outline-offset:4px}
     .hub-return{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 48px);left:14px;width:auto!important;font-size:12px!important;padding:10px 14px!important;background:#fff8e8!important;color:#256956!important}
-    html.glorb-in-hub .survival-hud,html.glorb-in-hub .survival-modal,html.glorb-in-hub .paint-progress,html.glorb-in-hub .dance-button{display:none!important}
+    html.glorb-in-hub .survival-hud,html.glorb-in-hub .survival-modal,html.glorb-in-hub .paint-progress{display:none!important}
+    html.glorb-in-hub #threejs-hud .dance-button{left:14px!important;right:auto!important}
   `});
   document.head.append(style);
   const label = el('div',{class:'hub-location'},['GLORB',el('strong',{text:'The Hub'})]);
-  const title = el('h2',{text:'01 / The paint square'});
-  const info = el('p',{text:'A little land. A lot of colour. Head through the mint arch to begin.'});
+  const title = el('h2',{text:'Choose a shrine'});
+  const info = el('p',{text:'Walk into a shrine, or choose a game.'});
   const enter = el('button',{text:'Enter Level One',type:'button'});
-  const panel = el('div',{class:'hub-panel'},[title,info,enter]);
+  const runnerEnter = el('button',{class:'hub-runner-entry',text:'02 / Temple Dash',type:'button',onClick:()=>c.enterRunner()});
+  const panel = el('div',{class:'hub-panel'},[title,info,el('div',{class:'hub-choices'},[enter,runnerEnter])]);
   const back = el('button',{class:'hub-return',text:'← Hub',type:'button','aria-label':'Return to hub',hidden:true});
   const ui = el('section',{class:'hub-ui',hidden:true,'aria-label':'World navigation'},[label,panel,back]);
   document.body.append(ui);
   for(const root of [panel,back]) for(const event of ['pointerdown','touchstart','mousedown']) root.addEventListener(event,e=>e.stopPropagation(),{passive:true});
   function paint() {
-    ui.hidden = !c.scene;
+    ui.hidden = !c.scene || app.__runner?.active;
     label.hidden = panel.hidden = !c.active;
     back.hidden = c.active;
     document.documentElement.classList.toggle('glorb-in-hub',c.active);
+    if(c.active) {
+      const dance=document.querySelector('#threejs-hud .dance-button button');
+      dance?.setAttribute('aria-label','Dance');
+      dance?.setAttribute('data-caption','Dance');
+    }
     document.documentElement.classList.remove('survival-blocked','glorb-hurt');
-    if(app.__survival?.visuals) app.__survival.visuals.group.visible = !c.active;
-    if(app.__paintState?.mesh) app.__paintState.mesh.visible = !c.active;
+    if(app.__survival?.visuals) app.__survival.visuals.group.visible = !c.active && !app.__runner?.active;
+    if(app.__paintState?.mesh) app.__paintState.mesh.visible = !c.active && !app.__runner?.active;
     c.group.visible = c.active;
     app.__survival?.ui?.paint(true);
   }
@@ -124,6 +69,23 @@ export function installHub(app) {
     scene.getCurrentCamera().updateCameraOptions();
     c.hubCamera = { ...scene.player.cameraOptions };
     c.group=buildHub(scene);
+    c.resolvePlayerCollision=()=>{
+      if(!c.active||c.busy||!c.group?.visible)return false;
+      const player=c.scene.player,position=player.base.position;
+      if(!resolveHubCollision(position,c.group.userData.colliders,c.group.position))return false;
+      player.body?.position?.set(position.x,player.body.position.y,position.z);
+      c.scene.physics.playerPosition?.set(position.x,c.scene.physics.playerPosition.y,position.z);
+      player.updatePlayerPosUniforms?.();
+      return true;
+    };
+    if(!scene.player.__hubCollisionHooked) {
+      scene.player.__hubCollisionHooked=true;
+      const after=scene.player.afterUpdate.bind(scene.player);
+      scene.player.afterUpdate=function(){
+        after();
+        c.resolvePlayerCollision();
+      };
+    }
     c.active=true;
     const run=app.__survival.run;
     c.savedPhase=run.phase;
@@ -146,6 +108,7 @@ export function installHub(app) {
     } finally { c.busy=false; enter.disabled=false; }
   };
   c.return = async () => {
+    if(app.__runner?.active) return c.returnFromRunner();
     if(c.active||c.busy||app.__survival.run.phase==='resetting') return;
     c.busy=true;
     c.levelPosition=c.scene.player.base.position.clone();
@@ -164,6 +127,28 @@ export function installHub(app) {
       paint();
     } finally { c.busy=false; }
   };
+  c.enterRunner = async () => {
+    if(!c.active||c.busy||app.$store.isCustomizeOpen) return;
+    c.busy=true;
+    try {
+      await relocate(c.scene.getPoint('Spawn').position);
+      c.active=false;
+      app.__runner.open(c.scene);
+      paint();
+    } finally {c.busy=false;}
+  };
+  c.returnFromRunner = async () => {
+    if(!app.__runner?.active||c.busy) return;
+    c.busy=true;
+    try {
+      app.__runner.close();
+      c.active=true;
+      c.scene.player.updateOptions({},c.hubCamera);
+      c.scene.getCurrentCamera().updateCameraOptions();
+      await relocate(c.scene.getPoint('Spawn').position);
+      paint();
+    } finally {c.busy=false;}
+  };
   enter.onclick=()=>c.enter();
   c.enterLevel=c.enter;
   back.onclick=()=>c.return();
@@ -175,6 +160,7 @@ export function installHub(app) {
       c.scene.getCurrentCamera().unlockPlayer('survival');
       const p=c.scene.player.base.position;
       if(Math.hypot(p.x-island.cx-30,p.z-island.cz-10)<3.8) c.enter();
+      else if(Math.hypot(p.x-island.cx-30,p.z-island.cz+13)<3.8) c.enterRunner();
     });
   },50);
   return c;

@@ -61,6 +61,68 @@ function makeVisuals(scene, run) {
   const haloMat = material(0xffe38c, 0.28);
   const pulseMat = material(0x93efff, 0.3);
 
+  // Carved sockets make the resource sites readable without covering the paint
+  // field. Every stone face and inlay shares one static vertex-colored mesh.
+  const detailPositions = [], detailColors = [];
+  function detailFace(a, b, c, color, shade = 1) {
+    for (const p of [a, b, c]) {
+      detailPositions.push(...p);
+      detailColors.push(((color >> 16) & 255) / 255 * shade, ((color >> 8) & 255) / 255 * shade, (color & 255) / 255 * shade);
+    }
+  }
+  function stoneRing(at, inner, outer, y, color, sides = 12) {
+    for (let i = 0; i < sides; i++) {
+      const a = i * Math.PI * 2 / sides, b = (i + 1) * Math.PI * 2 / sides;
+      const p = (angle, radius) => [at.x + Math.cos(angle) * radius, y, at.z + Math.sin(angle) * radius];
+      detailFace(p(a, inner), p(b, outer), p(a, outer), color);
+      detailFace(p(a, inner), p(b, inner), p(b, outer), color);
+    }
+  }
+  function plinth(p, size, shrine) {
+    const at = world(p), bottom = GLORB_ISLAND.floorY + .03;
+    const levels = shrine
+      ? [[size * .88, 0], [size, .16], [size, .46], [size * .87, .68], [size * .87, .79]]
+      : [[size * .86, 0], [size, .1], [size, .23], [size * .81, .36]];
+    const sides = shrine ? 12 : 8;
+    for (let j = 0; j < levels.length - 1; j++) {
+      const [r0, y0] = levels[j], [r1, y1] = levels[j + 1];
+      for (let i = 0; i < sides; i++) {
+        const a = i * Math.PI * 2 / sides, b = (i + 1) * Math.PI * 2 / sides;
+        const point = (angle, radius, y) => [at.x + Math.cos(angle) * radius, bottom + y, at.z + Math.sin(angle) * radius];
+        const v = [point(a, r0, y0), point(b, r0, y0), point(b, r1, y1), point(a, r1, y1)];
+        const color = j === 2 ? 0xa6a2b3 : 0x69647e;
+        const shade = .77 + .2 * ((Math.cos(a - .8) + 1) / 2);
+        detailFace(v[0], v[1], v[2], color, shade);
+        detailFace(v[0], v[2], v[3], color, shade);
+      }
+    }
+    const [topRadius, height] = levels[levels.length - 1], top = bottom + height;
+    stoneRing(at, 0, topRadius, top, 0xe2d8bc, sides);
+    stoneRing(at, topRadius * .82, topRadius * .9, top + .008, 0xeebf59, sides);
+    stoneRing(at, 0, topRadius * .57, top + .012, 0x514d66, sides);
+    if (shrine) {
+      // Twelve shallow diamond inlays sit between the core and the gold rim.
+      for (let i = 0; i < 12; i++) {
+        const a = i * Math.PI / 6, radius = topRadius * .7;
+        const point = (r, tangent) => [at.x + Math.cos(a) * r - Math.sin(a) * tangent, top + .014, at.z + Math.sin(a) * r + Math.cos(a) * tangent];
+        const v = [point(radius - .19, 0), point(radius, .09), point(radius + .19, 0), point(radius, -.09)];
+        detailFace(v[0], v[1], v[2], 0xbd9141);
+        detailFace(v[0], v[2], v[3], 0xbd9141);
+      }
+    }
+  }
+  run.pods.forEach(p => plinth(p, 1.55, false));
+  run.shrines.forEach(p => plinth(p, 3.15, true));
+  const detailGeometry = new BufferGeometry();
+  detailGeometry.setAttribute("position", new BufferAttribute(new Float32Array(detailPositions), 3));
+  detailGeometry.setAttribute("color", new BufferAttribute(new Float32Array(detailColors), 3));
+  detailGeometry.computeBoundingSphere();
+  const details = new Mesh(detailGeometry, material(0xffffff, 1, true));
+  details.name = "glorb-survival-carved-bases";
+  group.add(details);
+  // Replays already dispose the shared crystal geometry, which owns this batch.
+  geometry.addEventListener("dispose", () => detailGeometry.dispose());
+
   function flat(p, radius, m, y = 3.93) {
     const mesh = new Mesh(disc, m);
     const at = world(p);
@@ -197,7 +259,7 @@ export function installSurvival(app) {
       controller.ui?.paint(true);
       app.__hub?.attach(scene);
     }
-    if (app.__hub?.active) {
+    if (app.__hub?.active || app.__runner?.active) {
       scene.getCurrentCamera().unlockPlayer("survival");
       document.documentElement.classList.remove("survival-blocked", "glorb-hurt");
       return;
@@ -375,7 +437,15 @@ export function installSurvivalHud(app, host) {
       card.append(steps, el("p", { class: "survival-small", text: "Drag anywhere to move. WASD / arrows also work. E restores a nearby shrine or casts a pulse. Space jumps." }), button("Let's paint", () => c.start()));
     } else if (r.phase === "won" || r.phase === "lost") {
       title.textContent = r.phase === "won" ? "Colour wins!" : "The storm got us.";
-      card.append(el("p", { text: r.endReason }), el("p", { class: "survival-result", text: `${Math.floor(r.coverage * 100)}% painted · ${r.restored}/3 shrines · ${mmss(r.elapsed)}` }), el("p", { class: "survival-small", text: r.phase === "won" ? "Try another route or a different upgrade order." : "Tip: restore the first shrine early, then craft a wide brush. Return to shrines to heal." }), button("Play Again", () => c.replay()));
+      const resultActions = el("div", { class: "survival-result-actions" });
+      resultActions.append(button("Play Again", () => c.replay()));
+      if (r.phase === "won" && app.__hub) {
+        resultActions.append(button("BACK TO HUB", async () => {
+          await c.replay();
+          await app.__hub.return();
+        }, "secondary"));
+      }
+      card.append(el("p", { text: r.endReason }), el("p", { class: "survival-result", text: `${Math.floor(r.coverage * 100)}% painted · ${r.restored}/3 shrines · ${mmss(r.elapsed)}` }), el("p", { class: "survival-small", text: r.phase === "won" ? "Try another route or a different upgrade order." : "Tip: restore the first shrine early, then craft a wide brush. Return to shrines to heal." }), resultActions);
     } else if (r.phase === "resetting") {
       title.textContent = "Fresh paint, fresh start.";
     } else {
@@ -401,7 +471,7 @@ export function installSurvivalHud(app, host) {
   }
   const project = new Vector3();
   function paint(force = false) {
-    if (app.__hub?.active) {
+    if (app.__hub?.active || app.__runner?.active) {
       hud.hidden = true;
       modal.hidden = true;
       screenKey = "";
