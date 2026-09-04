@@ -50,7 +50,7 @@ export function installStartScreen(app, host) {
   });
   const button = ctaButton({
     text: app.$l("cta.start"),
-    color: "white",
+    color: "red",
     extraClass: "start-btn pointer",
     onClick: () => startJourney(app),
   });

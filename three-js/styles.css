@@ -280,6 +280,17 @@ html.glorb-playing .start-btn {
   pointer-events: auto !important;
 }
 
+.page-intro .start-btn.cta,
+.start .start-btn.cta {
+  background-color: #f8b3b7 !important;
+}
+
+.page-intro .start-btn .cta-content,
+.start .start-btn .cta-content {
+  background-color: #e53935 !important;
+  color: #fff !important;
+}
+
 .menu.is-open .menu-overlay[data-v-2fd699fb] {
   pointer-events: none !important;
 }

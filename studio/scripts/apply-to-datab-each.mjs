@@ -1077,7 +1077,7 @@ if (isMain) {
       quests: [{ id: "AvenMain", title: "Demo quest", icon: "fintech-aven" }],
       characters: [{ id: "Intro", gradientID: 1, face: 0, script: "Intro", scriptArgs: {} }],
       dialogs: [{ id: "Intro", first: "Hello", nodes: [{ id: "Hello", bubbles: ["Welcome aboard, newcomer..."], next: [] }] }],
-      locale: { cta: { start: "Start the journey" } },
+      locale: { cta: { start: "GO GO GO" } },
       notifications: [{ id: "QuestCompleted", type: "quest", title: "Quest complete", description: "Completed quests" }],
     });
     if (sample.scenes.Scene_IslandWest.props[0].asset !== "Barrel") {
@@ -1096,7 +1096,7 @@ if (isMain) {
     if (branded.dialogs_en.Intro.Hello.bubbles[0] !== "Welcome aboard, newcomer...") {
       throw new Error("self-test: intro dialogue missing");
     }
-    if (branded.locale?.cta?.start !== "Start the journey") {
+    if (branded.locale?.cta?.start !== "GO GO GO") {
       throw new Error("self-test: locale start CTA missing");
     }
     const withBooths = packFromUnknown({

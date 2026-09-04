@@ -3,7 +3,7 @@ import { installApiNotif } from "./hud/api-notif.js";
 import { installChrome } from "./hud/chrome.js?v=dance-7";
 import { installDialog } from "./hud/dialog.js?v=dialog-mouth-1";
 import { installItemNotification, installSpinner } from "./hud/pickups.js";
-import { installStartScreen } from "./hud/start.js";
+import { installStartScreen } from "./hud/start.js?v=go-go-go";
 
 function waitForHost() {
   return new Promise((resolve) => {

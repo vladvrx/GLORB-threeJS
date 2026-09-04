@@ -1,6 +1,6 @@
 # glorb
 
-Playable **Three.js r150** island: intro boat, LETS GO, dialogue, then a square of land in the water that you paint. There is no phone and no map.
+Playable **Three.js r150** island: intro boat, GO GO GO, dialogue, then a square of land in the water that you paint. There is no phone and no map.
 
 This tree only keeps files that slice loads. Unused islands, scenery GLBs, partner art, dump pages, and duplicate bundles are gone.
 
@@ -14,7 +14,7 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) (or `/`)
 
 ## What you play
 
-1. Preloader with the glorb mark, then **LETS GO**.
+1. Preloader with the glorb mark, then **GO GO GO**.
 2. Intro camera down to the red/yellow boat and the Hello / Yes / No thanks graph.
 3. Boat to **GLORB** (`IslandWest`): one solid square of land. Walking paints it. The bottom bar is coverage; **100%** ends the game.
 4. Header, mute, centered talk bubbles, bottom hints.
@@ -38,7 +38,7 @@ Open [http://127.0.0.1:43180](http://127.0.0.1:43180). The only editable maps ar
 
 - Root `index.html` holds **all** JS and CSS (engine, HUD, shaders, Draco decoder text).
 - `reference/` holds the hashed GLBs, audio, fonts, UI images, and `draco_decoder.wasm`.
-- `direct-port/` holds `site.json` (LETS GO) and recovered CSS.
+- `direct-port/` holds `site.json` (GO GO GO) and recovered CSS.
 
 On phones the zip adds `html.phone` and tries `screen.orientation.lock('portrait')`.
 
