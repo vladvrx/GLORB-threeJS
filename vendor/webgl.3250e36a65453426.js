@@ -4328,6 +4328,20 @@ async function Tr(e, t, s, i) {
     material: r
   });
 }
+function flattenIslandWestBase(geo, floorY) {
+  if (!geo || !geo.attributes || !geo.attributes.position) return;
+  const arr = geo.attributes.position.array;
+  const cx = -153.8588555, cz = 13.567255, rx = 49.573394, rz = 53.0196447;
+  for (let i = 0; i < arr.length; i += 3) {
+    const nx = (arr[i] - cx) / rx;
+    const nz = (arr[i + 2] - cz) / rz;
+    arr[i + 1] = nx * nx + nz * nz <= 1.05 ? floorY : -1.25;
+  }
+  geo.attributes.position.needsUpdate = true;
+  if (geo.computeVertexNormals) geo.computeVertexNormals();
+  if (geo.computeBoundingBox) geo.computeBoundingBox();
+  if (geo.computeBoundingSphere) geo.computeBoundingSphere();
+}
 const Or = [["index", 1], ["position", 3], ["uv", 2], ["normal", 3]],
   Pr = ["Int8", "Uint8", "Uint8Clamped", "Int16", "Uint16", "Int32", "Uint32", "Float32", "Float64"].map(e => e + "Array");
 function Ar(e, t, s) {
@@ -4738,7 +4752,7 @@ function Er(e, t) {
       const e = v[n] = [];
       for (let t = 0; t < b; t++) e[t] = Dt();
     }
-    if (r.physicsInstancePromise = e.initPhysics(o), await tr(!0), !r.propsCollider) {
+    if (r.physicsInstancePromise = e.initPhysics(o), await tr(!0), !r.propsCollider && (o !== "IslandWest" || window.__GLORB_STUDIO__)) {
       const e = [...(l.props || []), ...(r.props || [])];
       for (let s = 0, i = e.length; s < i; s++) {
         const i = e[s],
@@ -4776,7 +4790,11 @@ function Er(e, t) {
         }
       }
     }
-    if (await tr(!0), r.groundCollider || (r.baseGroundCollider && (d.add(r.baseGroundCollider), await tr()), c && (d.add(r.base), await tr())), await tr(!0), r.propsCollider || r.baseCollider && (u.add(r.baseCollider), await tr()), await tr(!0), r.groundCollider || (r.groundCollider = d.merge(), await tr()), await tr(!0), r.propsCollider || (r.propsCollider = u.merge(), await tr()), await tr(!0), !r.chunks) {
+    if (o === "IslandWest") {
+      flattenIslandWestBase(r.base, 3.8);
+      flattenIslandWestBase(r.baseGroundCollider, 3.8);
+    }
+    if (await tr(!0), r.groundCollider || (r.baseGroundCollider && (d.add(r.baseGroundCollider), await tr()), c && (d.add(r.base), await tr())), await tr(!0), r.propsCollider || (o === "IslandWest" && !window.__GLORB_STUDIO__ ? 0 : r.baseCollider && (u.add(r.baseCollider), await tr())), await tr(!0), r.groundCollider || (r.groundCollider = d.merge(), await tr()), await tr(!0), o === "IslandWest" && !window.__GLORB_STUDIO__ ? (r.propsCollider = null) : r.propsCollider || (r.propsCollider = u.merge(), await tr()), await tr(!0), !r.chunks) {
       const e = new Map(),
         t = r.chunks = [];
       for (let s = 0; s < v.length; s++) {
@@ -4824,6 +4842,10 @@ function Er(e, t) {
         const i = new Uint8Array(e, 8, n);
         s += l, t.attributes.cheapAO = new O(i, 1, !0), r.ao.active = !0;
       } else r.ao.active = !1;
+    }
+    if (o === "IslandWest" && r.base && r.base.attributes && r.base.attributes.cheapAO) {
+      r.base.attributes.cheapAO.array.fill(210);
+      r.base.attributes.cheapAO.needsUpdate = true;
     }
     const S = [];
     r.propsCollider && S.push([r.propsCollider, "props"]), r.groundCollider && S.push([r.groundCollider, "ground"]);

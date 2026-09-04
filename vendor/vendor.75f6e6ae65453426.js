@@ -29544,6 +29544,7 @@ class Hz extends BL {
   initActors() {
     const e = this.manifest.actors;
     this.actors = {};
+    if (this.id === "IslandWest" && !window.__GLORB_STUDIO__) return;
     for (let t in e) {
       const s = e[t],
         i = _z[s.className];
@@ -30846,7 +30847,7 @@ class xF extends Hz {
   init() {
     super.init(), this.playerCam = this.camera = this.add(dF), this.player = this.add(IN), this.water = this.add(Yz.use()), this.canPausePhysics = !1, this.add(Ez, {
       defaultAmbiance: "Main"
-    }), this.partnerHalos = this.add(JN), this.watchSignal(this.webgl.store.isCustomizing, this.onCustomizing), this.initState();
+    }), this.partnerHalos = this.add(JN), this.grass && this.grass.base && (this.grass.base.visible = !1), this.webgl.store.grass && (this.webgl.store.grass.radius = 0), this.watchSignal(this.webgl.store.isCustomizing, this.onCustomizing), this.initState();
   }
   onPhysicsReady() {
     this.physics.setGravity(70);

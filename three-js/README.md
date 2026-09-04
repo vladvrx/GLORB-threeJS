@@ -2,7 +2,7 @@
 
 Playable glorb on the original **Three.js r150** engine (`loadWebGL`) plus the recovered HUD for the start screen, dialogue, and menus. There is no in-game phone and no map.
 
-The island, shaders, splats, cameras, NPCs, and intro boat are the recovered WebGL runtime loading the hashed GLBs from `reference/assets`.
+The island, shaders, splats, cameras, and intro boat are the recovered WebGL runtime loading the hashed GLBs from `reference/assets`. **IslandWest** is a flat oval of land — scenery is left for Glorb Studio, not the main game.
 
 ## Run
 
