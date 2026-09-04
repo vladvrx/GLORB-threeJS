@@ -2,9 +2,6 @@ import { w as watch } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { circleButton, unwrap } from "./dom.js";
 import { getIslandPlayer } from "./jump.js?v=jump-6";
 
-const ARM_UP = 1.32;
-const ELBOW_BEND = 0.2;
-
 function flag(value) {
   return !!unwrap(value);
 }
@@ -32,41 +29,44 @@ function danceArmBones(player) {
   return map;
 }
 
-function rememberIdleArms(player) {
-  const clip = player.animation?.animationID || player.currentAnimation;
-  if (clip && clip !== "T-Pose" && clip !== "Idle") return;
-  if (Number(player.speed) > 0.01) return;
-  const bones = danceArmBones(player);
-  if (!bones) return;
-  const rest = player.__danceArmRest || (player.__danceArmRest = {});
-  for (const key of Object.keys(bones)) {
-    const bone = bones[key];
-    if (!bone) continue;
-    if (rest[key]) rest[key].copy(bone.quaternion);
-    else rest[key] = bone.quaternion.clone();
-  }
+function armScratch(player, sample) {
+  if (player.__danceArmScratch) return player.__danceArmScratch;
+  const Vec3 = sample.position.constructor;
+  player.__danceArmScratch = {
+    origin: new Vec3(),
+    end: new Vec3(),
+    from: new Vec3(),
+    to: new Vec3(0, 1, 0),
+    axis: new Vec3(),
+  };
+  return player.__danceArmScratch;
+}
+
+function raiseArm(shoulder, elbow, scratch) {
+  if (!shoulder || !elbow) return;
+  shoulder.updateWorldMatrix(true, false);
+  elbow.updateWorldMatrix(true, false);
+  shoulder.getWorldPosition(scratch.origin);
+  elbow.getWorldPosition(scratch.end);
+  scratch.from.copy(scratch.end).sub(scratch.origin);
+  if (scratch.from.lengthSq() < 1e-8) return;
+  scratch.from.normalize();
+  scratch.to.set(0, 1, 0);
+  const align = scratch.from.dot(scratch.to);
+  if (align > 0.92) return;
+  scratch.axis.copy(scratch.from).cross(scratch.to);
+  if (scratch.axis.lengthSq() < 1e-8) scratch.axis.set(1, 0, 0);
+  else scratch.axis.normalize();
+  const angle = Math.acos(Math.max(-1, Math.min(1, align)));
+  shoulder.rotateOnWorldAxis(scratch.axis, Math.min(angle, 1.45));
 }
 
 function applyRaisedArms(player) {
   const bones = danceArmBones(player);
   if (!bones) return;
-  const rest = player.__danceArmRest;
-  if (bones.shoulderL) {
-    if (rest?.shoulderL) bones.shoulderL.quaternion.copy(rest.shoulderL);
-    bones.shoulderL.rotateZ(ARM_UP);
-  }
-  if (bones.shoulderR) {
-    if (rest?.shoulderR) bones.shoulderR.quaternion.copy(rest.shoulderR);
-    bones.shoulderR.rotateZ(-ARM_UP);
-  }
-  if (bones.elbowL) {
-    if (rest?.elbowL) bones.elbowL.quaternion.copy(rest.elbowL);
-    bones.elbowL.rotateZ(ELBOW_BEND);
-  }
-  if (bones.elbowR) {
-    if (rest?.elbowR) bones.elbowR.quaternion.copy(rest.elbowR);
-    bones.elbowR.rotateZ(-ELBOW_BEND);
-  }
+  const scratch = armScratch(player, bones.shoulderL);
+  raiseArm(bones.shoulderL, bones.elbowL, scratch);
+  raiseArm(bones.shoulderR, bones.elbowR, scratch);
 }
 
 function typingTarget(event) {
@@ -111,8 +111,6 @@ function hookPlayer(player, state) {
       stillJoystick(this);
       keepAction(this);
       applyRaisedArms(this);
-    } else {
-      rememberIdleArms(this);
     }
   };
 }
@@ -140,7 +138,6 @@ export function startDance(app) {
   const player = getIslandPlayer(app);
   if (!player || player.hidden) return false;
   hookPlayer(player, state);
-  rememberIdleArms(player);
   if (state.holding) {
     keepAction(player);
     paintHoldUi(true);
@@ -201,9 +198,7 @@ export function installDance(app) {
 
   const attach = () => {
     const player = getIslandPlayer(app);
-    if (!player) return;
-    hookPlayer(player, state);
-    if (!state.holding) rememberIdleArms(player);
+    if (player) hookPlayer(player, state);
   };
   attach();
   const timer = window.setInterval(attach, 400);
