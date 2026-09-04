@@ -1,10 +1,31 @@
+import { w as watch } from "../../../vendor/vendor.75f6e6ae65453426.js";
 import { ctaButton, el, playUiSound, unwrap } from "../dom.js";
+
+function sceneId(app) {
+  const scenes = app.$webgl?.scenes;
+  return unwrap(scenes?.currentSceneID) || scenes?.current?.id || null;
+}
+
+function playingOnIsland(app) {
+  if (sceneId(app) !== "IslandWest") return false;
+  const store = app.$store;
+  if (!store) return false;
+  const tutorial = Number(unwrap(store.sceneStates?.Tutorial) ?? 0);
+  return Number(unwrap(store.sceneState)) >= tutorial;
+}
 
 function syncIntroLogo(app) {
   const intro = app.$webgl?.store?.intro;
-  const show = !!intro && unwrap(intro.startJourneyVisible) && !unwrap(intro.journeyStarted);
+  if (playingOnIsland(app) && intro && !unwrap(intro.journeyStarted)) {
+    intro.journeyStarted.set(true);
+  }
+  const show = !!intro
+    && unwrap(intro.startJourneyVisible)
+    && !unwrap(intro.journeyStarted)
+    && !playingOnIsland(app);
   document.documentElement.classList.toggle("intro-cta-visible", show);
-  document.documentElement.classList.toggle("journey-started", !!unwrap(intro?.journeyStarted));
+  document.documentElement.classList.toggle("journey-started", !!unwrap(intro?.journeyStarted) || playingOnIsland(app));
+  document.documentElement.classList.toggle("glorb-playing", playingOnIsland(app));
   if (!show) document.querySelector(".databeach-home-logo")?.remove();
 }
 
@@ -43,11 +64,13 @@ export function installStartScreen(app, host) {
   host.prepend(page);
 
   const sync = () => {
+    syncIntroLogo(app);
     const intro = app.$webgl?.store?.intro;
     const vueStart = vueStartButton();
     const visible = !!intro
       && unwrap(intro.startJourneyVisible)
       && !unwrap(intro.journeyStarted)
+      && !playingOnIsland(app)
       && !vueStart;
     layer.hidden = !visible;
     page.hidden = !visible;
@@ -57,8 +80,9 @@ export function installStartScreen(app, host) {
   const bind = () => {
     const intro = app.$webgl?.store?.intro;
     if (!intro?.startJourneyVisible?.watchImmediate) return false;
-    intro.startJourneyVisible.watchImmediate(() => { sync(); syncIntroLogo(app); });
-    intro.journeyStarted.watchImmediate(() => { sync(); syncIntroLogo(app); });
+    intro.startJourneyVisible.watchImmediate(() => { sync(); });
+    intro.journeyStarted.watchImmediate(() => { sync(); });
+    watch(() => [sceneId(app), unwrap(app.$store?.sceneState)], () => sync());
     return true;
   };
   if (!bind()) {

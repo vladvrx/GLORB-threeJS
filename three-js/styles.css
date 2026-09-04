@@ -95,9 +95,13 @@
   z-index: 16;
 }
 
-html.journey-started .page-intro {
+html.journey-started .page-intro,
+html.glorb-playing .page-intro,
+html.glorb-playing .start,
+html.glorb-playing .start-btn {
   z-index: 0;
   pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 .dialog-bubble[data-v-9946fd7c],
