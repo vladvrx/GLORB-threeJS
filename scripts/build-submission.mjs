@@ -37,6 +37,7 @@ const css=CSS.map(file=>fs.readFileSync(path.join(ROOT,file),'utf8').replace(/ur
 const studio=fs.readFileSync(path.join(ROOT,'reference/assets/studio-bridge.js'),'utf8');
 const bootstrap=`
 document.documentElement.classList.remove('no-js');
+globalThis.__GLORB_ASSET_BASE__ = new URL('./', document.baseURI).pathname;
 const dataResponse = await fetch('./direct-port/data/site.json');
 if (!dataResponse.ok) throw new Error('Missing local game data');
 window.__DATA = await dataResponse.json();

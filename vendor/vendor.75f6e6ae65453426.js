@@ -3218,7 +3218,8 @@ const Zb = {
       if (Wb.get(e)) return Promise.resolve(Wb.get(e));
       if (qb[e]) return qb[e];
       if (!e.startsWith("http") && !e.startsWith("/")) {
-        e = "/" + e;
+        const t = globalThis.__GLORB_ASSET_BASE__;
+        e = t ? t.replace(/\/$/, "") + "/" + e.replace(/^\.\//, "") : "/" + e;
       }
       let s;
       return s = t.loader && jb[t.loader] ? jb[t.loader].function(e, t) : function (e, t) {
