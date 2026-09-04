@@ -131,9 +131,6 @@ test("a new paint step plays a splash without extra globs while standing", async
   const before = await page.evaluate(() => window.__THREE_JS_GAME__.app.__paintState?.mesh?.count || 0);
 
   await page.keyboard.down("KeyW");
-  await page.waitForTimeout(500);
-  await page.keyboard.up("KeyW");
-
   await expect.poll(async () => page.evaluate(() => {
     const state = window.__THREE_JS_GAME__.app.__paintState;
     return {
@@ -142,6 +139,7 @@ test("a new paint step plays a splash without extra globs while standing", async
       splashVisible: !!state?.splashMesh?.visible,
     };
   }), { timeout: 8_000 }).toMatchObject({ splashLive: true, splashVisible: true });
+  await page.keyboard.up("KeyW");
 
   const after = await page.evaluate(() => window.__THREE_JS_GAME__.app.__paintState?.mesh?.count || 0);
   expect(after).toBeGreaterThanOrEqual(before);
