@@ -71,6 +71,7 @@ test("phone drag walks the character without freezing on paint", async ({ page }
       frozen: Number(app.$webgl?.store?.frozenPlayerDelay) || 0,
       overlay: !document.querySelector("#threejs-hud .paint-complete-overlay")?.hidden,
       meterTop: document.querySelector("#threejs-hud .paint-meter")?.getBoundingClientRect().top ?? 0,
+      meterBottom: document.querySelector("#threejs-hud .paint-meter")?.getBoundingClientRect().bottom ?? 0,
       viewport: window.innerHeight,
     };
   });
@@ -81,7 +82,8 @@ test("phone drag walks the character without freezing on paint", async ({ page }
   expect(before.scale).toBe(1);
   expect(before.frozen).toBe(0);
   expect(before.overlay).toBe(false);
-  expect(before.meterTop).toBeGreaterThan(before.viewport * 0.55);
+  expect(before.meterTop).toBeGreaterThan(before.viewport * 0.85);
+  expect(before.viewport - before.meterBottom).toBeLessThan(40);
   await expect.poll(async () => page.evaluate(() => [...document.querySelectorAll(".start-btn")].some((node) => {
     const style = window.getComputedStyle(node);
     return style.visibility !== "hidden" && style.display !== "none" && node.getClientRects().length > 0;

@@ -92,6 +92,7 @@ test("standing on GLORB paints the ground and fills the paint bar", async ({ pag
       painted: state?.painted ?? 0,
       frozen: Number(window.__THREE_JS_GAME__.app.$webgl?.store?.frozenPlayerDelay) || 0,
       meterTop: rect?.top ?? 0,
+      meterBottom: rect?.bottom ?? 0,
       viewport: window.innerHeight,
     };
   });
@@ -99,7 +100,8 @@ test("standing on GLORB paints the ground and fills the paint bar", async ({ pag
   expect(coverage.total).toBeGreaterThan(80);
   expect(coverage.painted).toBeLessThan(coverage.total);
   expect(coverage.frozen).toBe(0);
-  expect(coverage.meterTop).toBeGreaterThan(coverage.viewport * 0.55);
+  expect(coverage.meterTop).toBeGreaterThan(coverage.viewport * 0.85);
+  expect(coverage.viewport - coverage.meterBottom).toBeLessThan(40);
 });
 
 test("covering the island shows Painted and ends the game", async ({ page }) => {

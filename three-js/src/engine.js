@@ -10,9 +10,9 @@ import {
   w as watch,
 } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { ThreeJsRoot } from "./root.js";
-import { installHud } from "./hud.js?v=paint-4";
+import { installHud } from "./hud.js?v=paint-5";
 import { installJump } from "./jump.js?v=jump-5";
-import { installPaint } from "./paint.js?v=paint-4";
+import { installPaint } from "./paint.js?v=paint-5";
 
 function suppressRemovedHints(app) {
   const blocked = new Set(["customize", "map", "fintech", "partner"]);

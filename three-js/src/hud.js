@@ -1,6 +1,6 @@
 import { w as watch } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { installApiNotif } from "./hud/api-notif.js";
-import { installChrome } from "./hud/chrome.js?v=paint-4";
+import { installChrome } from "./hud/chrome.js?v=paint-5";
 import { installDialog } from "./hud/dialog.js?v=dialog-mouth-1";
 import { installItemNotification, installSpinner } from "./hud/pickups.js";
 import { installStartScreen } from "./hud/start.js";

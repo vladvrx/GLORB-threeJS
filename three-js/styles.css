@@ -541,10 +541,12 @@ canvas,
   position: fixed;
   left: 50%;
   top: auto;
-  bottom: max(18px, calc(var(--app-padding, 24px) + env(safe-area-inset-bottom, 0px)));
+  right: auto;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   z-index: 9;
   width: min(42vw, 280px);
+  margin: 0;
   pointer-events: none;
 }
 
@@ -638,7 +640,7 @@ canvas,
 
 @media (max-width: 749px) {
   #threejs-hud .paint-meter {
-    bottom: max(18px, calc(var(--app-padding, 16px) + env(safe-area-inset-bottom, 0px)));
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
     width: min(46vw, 200px);
   }
 }
