@@ -354,7 +354,8 @@ function stampAt(state, x, z, y, radius, splash) {
   const minR = rowOf(z - radius, state.rows);
   const maxR = rowOf(z + radius, state.rows);
   let added = 0;
-  let spinIndex = 0;
+  let spinIndex = cellIndex(colOf(x, state.cols), rowOf(z, state.rows), state.cols);
+  if (markCell(state, spinIndex, y)) added += 1;
   for (let row = minR; row <= maxR; row += 1) {
     for (let col = minC; col <= maxC; col += 1) {
       const { x: cx, z: cz } = cellCenter(col, row);
