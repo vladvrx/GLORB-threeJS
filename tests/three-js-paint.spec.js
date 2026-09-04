@@ -130,15 +130,9 @@ test("a new paint step plays a splash without extra globs while standing", async
 
   const before = await page.evaluate(() => window.__THREE_JS_GAME__.app.__paintState?.mesh?.count || 0);
 
-  await page.evaluate(() => {
-    const app = window.__THREE_JS_GAME__.app;
-    const player = app.$webgl?.scenes?.current?.player;
-    if (player?.base?.position) {
-      player.base.position.x += 1.2;
-      player.base.position.z += 0.4;
-    }
-    app.__paintState.lastCell = -1;
-  });
+  await page.keyboard.down("KeyW");
+  await page.waitForTimeout(500);
+  await page.keyboard.up("KeyW");
 
   await expect.poll(async () => page.evaluate(() => {
     const state = window.__THREE_JS_GAME__.app.__paintState;
@@ -147,7 +141,7 @@ test("a new paint step plays a splash without extra globs while standing", async
       splashLive: !!state?.splashLive,
       splashVisible: !!state?.splashMesh?.visible,
     };
-  }), { timeout: 5_000 }).toMatchObject({ splashLive: true, splashVisible: true });
+  }), { timeout: 8_000 }).toMatchObject({ splashLive: true, splashVisible: true });
 
   const after = await page.evaluate(() => window.__THREE_JS_GAME__.app.__paintState?.mesh?.count || 0);
   expect(after).toBeGreaterThanOrEqual(before);

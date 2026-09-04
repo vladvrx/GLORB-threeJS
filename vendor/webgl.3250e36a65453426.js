@@ -4265,6 +4265,7 @@ async function Tr(e, t, s, i) {
       const s = e.actors,
         i = t.dynamicPropsAllocs,
         o = t.dynamicPropsVertices;
+      if (!i || !o || !Object.keys(i).length) return;
       for (let a in s) {
         const e = s[a];
         for (let s in e.dynamicProps) {
@@ -4623,7 +4624,9 @@ function Er(e, t) {
       } = Hn(e, a, 0, u),
       O = e.app.$characters.npcs,
       P = e.app.$characters.colors.databeach;
+    const blankWest = a === "IslandWest" && !window.__GLORB_STUDIO__;
     for (let n in h.actors) {
+      if (blankWest) break;
       const e = h.actors[n];
       let s;
       if ("NPC" === e.type) {
@@ -4640,7 +4643,7 @@ function Er(e, t) {
     S.forEach(e => {
       w.add(e);
     });
-    const A = [...new Set([...e.preloadAssets, ...(d ? [] : h.assets), ...(d ? [] : M), ...x, ...S])];
+    const A = [...new Set([...e.preloadAssets, ...(d || blankWest ? [] : h.assets), ...(d || blankWest ? [] : M), ...x, ...(blankWest ? [] : S)])];
     for (let C = 0, R = A.length; C < R; C++) {
       const e = A[C],
         s = c.assets[e];
@@ -4763,6 +4766,8 @@ function Er(e, t) {
       }
     }
     if (await tr(!0), !r.dynamicPropsAllocs) {
+      if (o === "IslandWest" && !window.__GLORB_STUDIO__) r.dynamicPropsAllocs = {};
+      else {
       const e = l.actors,
         s = r.dynamicPropsAllocs = {};
       for (let i in e) {
@@ -4789,10 +4794,18 @@ function Er(e, t) {
           }), await tr();
         }
       }
+      }
     }
     if (o === "IslandWest") {
       flattenIslandWestBase(r.base, 3.8);
       flattenIslandWestBase(r.baseGroundCollider, 3.8);
+      if (!window.__GLORB_STUDIO__) {
+        r.chunks = [];
+        r.dynamicPropsAllocs = {};
+        r.dynamicPropsVertices = {};
+        r.props = [];
+        r.propsCollider = null;
+      }
     }
     if (await tr(!0), r.groundCollider || (r.baseGroundCollider && (d.add(r.baseGroundCollider), await tr()), c && (d.add(r.base), await tr())), await tr(!0), r.propsCollider || (o === "IslandWest" && !window.__GLORB_STUDIO__ ? 0 : r.baseCollider && (u.add(r.baseCollider), await tr())), await tr(!0), r.groundCollider || (r.groundCollider = d.merge(), await tr()), await tr(!0), o === "IslandWest" && !window.__GLORB_STUDIO__ ? (r.propsCollider = null) : r.propsCollider || (r.propsCollider = u.merge(), await tr()), await tr(!0), !r.chunks) {
       const e = new Map(),

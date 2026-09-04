@@ -29522,7 +29522,7 @@ class Hz extends BL {
       this.resources.textures.terrainSplatting && (t.uniforms.map.value = this.resources.textures.terrainSplatting), this.main = new sP(e, t), this.main.frustumCulled = !1, this.main.receiveShadow = !0, this.main.renderOrder = this.webgl.store.renderOrder.islandBase, this.main.matrixAutoUpdate = !1, this.main.manualMatrixUpdate = !0, this.main.updateMatrixWorld(), this.addObject3D(this.main);
     }
     this.fog = this.base.fog = new rB(), this.fog.near = Math.max(0, 20), this.fog.far = 200, this.chunks = [], this.sortedChunks = [];
-    for (let e = 0, t = (this.resources.chunks || []).length; e < t; e++) {
+    if (this.id !== "IslandWest" || window.__GLORB_STUDIO__) for (let e = 0, t = (this.resources.chunks || []).length; e < t; e++) {
       const t = this.webgl.resources.use(this.resources.chunks[e]),
         s = new sP(t, bO.use({
           biome: this.biome
@@ -29534,7 +29534,7 @@ class Hz extends BL {
       const t = this.chunks[e].geometry.boundingBox;
       this.bbox.union(t);
     }
-    this.recomputeCenter(), this.sky = this.add(YL.use()), this.lights = this.add(OL), this.biome.disableWind || (this.wind = this.add(eO.use())), this.grass = this.add(uO.use());
+    this.recomputeCenter(), this.sky = this.add(YL.use()), this.lights = this.add(OL), this.biome.disableWind || (this.wind = this.add(eO.use())), (this.id !== "IslandWest" || window.__GLORB_STUDIO__) && (this.grass = this.add(uO.use()));
   }
   afterInit() {
     this.initActors(), this.watchSignal(this.webgl.store.chunksCastShadow, e => {
@@ -30847,7 +30847,7 @@ class xF extends Hz {
   init() {
     super.init(), this.playerCam = this.camera = this.add(dF), this.player = this.add(IN), this.water = this.add(Yz.use()), this.canPausePhysics = !1, this.add(Ez, {
       defaultAmbiance: "Main"
-    }), this.partnerHalos = this.add(JN), this.grass && this.grass.base && (this.grass.base.visible = !1), this.webgl.store.grass && (this.webgl.store.grass.radius = 0), this.watchSignal(this.webgl.store.isCustomizing, this.onCustomizing), this.initState();
+    }), this.partnerHalos = this.add(JN), window.__GLORB_STUDIO__ || (this.grass && this.grass.base && (this.grass.base.visible = !1), this.webgl.store.grass && (this.webgl.store.grass.radius = 0), this.chunks && this.chunks.forEach(e => e.visible = !1)), this.watchSignal(this.webgl.store.isCustomizing, this.onCustomizing), this.initState();
   }
   onPhysicsReady() {
     this.physics.setGravity(70);
