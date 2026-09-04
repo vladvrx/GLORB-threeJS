@@ -1,0 +1,96 @@
+{
+  "npcs": {
+    "Intro": {
+      "gradientID": 31,
+      "face": 1,
+      "script": "Intro",
+      "scriptArgs": {
+        "scene": "IslandWest",
+        "point": "PortSpawnB"
+      }
+    }
+  },
+  "colors": {
+    "coastal": {
+      "gradientID": 0
+    },
+    "coastal_alt": {
+      "gradientID": 0
+    },
+    "aspiration": {
+      "gradientID": 1
+    },
+    "cobble": {
+      "gradientID": 2
+    },
+    "trail": {
+      "gradientID": 3
+    },
+    "till": {
+      "gradientID": 4
+    },
+    "x1": {
+      "gradientID": 5
+    },
+    "prosper": {
+      "gradientID": 6
+    },
+    "pylon": {
+      "gradientID": 7
+    },
+    "one": {
+      "gradientID": 8
+    },
+    "kikoff": {
+      "gradientID": 9
+    },
+    "salve": {
+      "gradientID": 10
+    },
+    "bluevine": {
+      "gradientID": 11
+    },
+    "greenwood": {
+      "gradientID": 12
+    },
+    "lendingpoint": {
+      "gradientID": 13
+    },
+    "possible": {
+      "gradientID": 14
+    },
+    "tempkey": {
+      "gradientID": 15
+    },
+    "npc0": {
+      "gradientID": 22
+    },
+    "npc1": {
+      "gradientID": 23
+    },
+    "npc2": {
+      "gradientID": 24
+    },
+    "npc3": {
+      "gradientID": 25
+    },
+    "npcSick": {
+      "gradientID": 26
+    },
+    "character0": {
+      "gradientID": 27
+    },
+    "character1": {
+      "gradientID": 28
+    },
+    "character2": {
+      "gradientID": 29
+    },
+    "character3": {
+      "gradientID": 30
+    },
+    "character4": {
+      "gradientID": 31
+    }
+  }
+}
