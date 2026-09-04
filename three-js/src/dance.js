@@ -2,51 +2,8 @@ import { w as watch } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { circleButton, unwrap } from "./dom.js";
 import { getIslandPlayer } from "./jump.js?v=jump-6";
 
-const DANCE_TIME_SCALE = 0.7;
-const ARM_UP = 2.2;
-const ELBOW_BEND = 0.18;
-
 function flag(value) {
   return !!unwrap(value);
-}
-
-function findBone(bones, suffix) {
-  for (let i = 0; i < bones.length; i += 1) {
-    const bone = bones[i];
-    if (bone?.name?.endsWith(suffix)) return bone;
-  }
-  return null;
-}
-
-function danceArmBones(player) {
-  if (player.__danceArmBones) return player.__danceArmBones;
-  const bones = player.mesh?.skeleton?.bones;
-  if (!bones?.length) return null;
-  const map = {
-    shoulderL: findBone(bones, "Shoulder_L"),
-    shoulderR: findBone(bones, "Shoulder_R"),
-    elbowL: findBone(bones, "Elbow_L"),
-    elbowR: findBone(bones, "Elbow_R"),
-  };
-  if (!map.shoulderL || !map.shoulderR) return null;
-  player.__danceArmBones = map;
-  return map;
-}
-
-function applyRaisedArms(player) {
-  const bones = danceArmBones(player);
-  if (!bones) return;
-  bones.shoulderL.rotateZ(ARM_UP);
-  bones.shoulderR.rotateZ(-ARM_UP);
-  if (bones.elbowL) bones.elbowL.rotateZ(ELBOW_BEND);
-  if (bones.elbowR) bones.elbowR.rotateZ(-ELBOW_BEND);
-}
-
-function setDanceTimeScale(player, scale) {
-  const clips = player?.animations;
-  if (!clips) return;
-  if (clips.Action) clips.Action.timeScale = scale;
-  if (clips.JetpackAction) clips.JetpackAction.timeScale = scale;
 }
 
 function typingTarget(event) {
@@ -79,6 +36,15 @@ function stillJoystick(player) {
   if (stick.directionTarget?.setScalar) stick.directionTarget.setScalar(0);
 }
 
+function keepAction(player) {
+  if (!player) return;
+  const clip = player.animation?.animationID || player.currentAnimation;
+  if (clip !== "Action" && clip !== "JetpackAction") {
+    if (typeof player.actionStart === "function") player.actionStart("Default");
+    else player.setAnimation?.("Action");
+  }
+}
+
 function hookPlayer(player, state) {
   if (!player || player.__danceHooked) return;
   player.__danceHooked = true;
@@ -90,20 +56,8 @@ function hookPlayer(player, state) {
     if (state.holding) {
       stillJoystick(this);
       keepAction(this);
-      setDanceTimeScale(this, DANCE_TIME_SCALE);
-      applyRaisedArms(this);
     }
   };
-}
-
-function keepAction(player) {
-  if (!player) return;
-  const clip = player.animation?.animationID || player.currentAnimation;
-  if (clip !== "Action" && clip !== "JetpackAction") {
-    if (typeof player.actionStart === "function") player.actionStart("Default");
-    else player.setAnimation?.("Action");
-  }
-  setDanceTimeScale(player, DANCE_TIME_SCALE);
 }
 
 function paintHoldUi(holding) {
@@ -129,7 +83,6 @@ export function startDance(app) {
   stillJoystick(player);
   if (typeof player.actionStart === "function") player.actionStart("Default");
   else player.setAnimation?.("Action");
-  setDanceTimeScale(player, DANCE_TIME_SCALE);
   state.holding = true;
   paintHoldUi(true);
   return true;
@@ -145,7 +98,6 @@ export function stopDance(app) {
   paintHoldUi(false);
   const player = getIslandPlayer(app);
   if (!player) return true;
-  setDanceTimeScale(player, 1);
   if (app.__paintState?.complete) return true;
   if (typeof player.actionDone === "function") player.actionDone();
   else player.setIdleAnimation?.();

@@ -61,7 +61,7 @@ async function boot() {
   document.documentElement.classList.remove("no-js");
   initializePageBehavior({ logoUrl, cursorUrl });
   window.__DATA = await loadSiteData();
-  const { startEngine } = await import("./engine.js?v=dance-6");
+  const { startEngine } = await import("./engine.js?v=dance-7");
   return startEngine();
 }
 
