@@ -2,8 +2,71 @@ import { w as watch } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { circleButton, unwrap } from "./dom.js";
 import { getIslandPlayer } from "./jump.js?v=jump-6";
 
+const ARM_UP = 1.32;
+const ELBOW_BEND = 0.2;
+
 function flag(value) {
   return !!unwrap(value);
+}
+
+function findBone(bones, suffix) {
+  for (let i = 0; i < bones.length; i += 1) {
+    const bone = bones[i];
+    if (bone?.name?.endsWith(suffix)) return bone;
+  }
+  return null;
+}
+
+function danceArmBones(player) {
+  if (player.__danceArmBones) return player.__danceArmBones;
+  const bones = player.mesh?.skeleton?.bones;
+  if (!bones?.length) return null;
+  const map = {
+    shoulderL: findBone(bones, "Shoulder_L"),
+    shoulderR: findBone(bones, "Shoulder_R"),
+    elbowL: findBone(bones, "Elbow_L"),
+    elbowR: findBone(bones, "Elbow_R"),
+  };
+  if (!map.shoulderL || !map.shoulderR) return null;
+  player.__danceArmBones = map;
+  return map;
+}
+
+function rememberIdleArms(player) {
+  const clip = player.animation?.animationID || player.currentAnimation;
+  if (clip && clip !== "T-Pose" && clip !== "Idle") return;
+  if (Number(player.speed) > 0.01) return;
+  const bones = danceArmBones(player);
+  if (!bones) return;
+  const rest = player.__danceArmRest || (player.__danceArmRest = {});
+  for (const key of Object.keys(bones)) {
+    const bone = bones[key];
+    if (!bone) continue;
+    if (rest[key]) rest[key].copy(bone.quaternion);
+    else rest[key] = bone.quaternion.clone();
+  }
+}
+
+function applyRaisedArms(player) {
+  const bones = danceArmBones(player);
+  if (!bones) return;
+  const rest = player.__danceArmRest;
+  if (bones.shoulderL) {
+    if (rest?.shoulderL) bones.shoulderL.quaternion.copy(rest.shoulderL);
+    bones.shoulderL.rotateZ(ARM_UP);
+  }
+  if (bones.shoulderR) {
+    if (rest?.shoulderR) bones.shoulderR.quaternion.copy(rest.shoulderR);
+    bones.shoulderR.rotateZ(-ARM_UP);
+  }
+  if (bones.elbowL) {
+    if (rest?.elbowL) bones.elbowL.quaternion.copy(rest.elbowL);
+    bones.elbowL.rotateZ(ELBOW_BEND);
+  }
+  if (bones.elbowR) {
+    if (rest?.elbowR) bones.elbowR.quaternion.copy(rest.elbowR);
+    bones.elbowR.rotateZ(-ELBOW_BEND);
+  }
 }
 
 function typingTarget(event) {
@@ -47,6 +110,9 @@ function hookPlayer(player, state) {
     if (state.holding) {
       stillJoystick(this);
       keepAction(this);
+      applyRaisedArms(this);
+    } else {
+      rememberIdleArms(this);
     }
   };
 }
@@ -74,6 +140,7 @@ export function startDance(app) {
   const player = getIslandPlayer(app);
   if (!player || player.hidden) return false;
   hookPlayer(player, state);
+  rememberIdleArms(player);
   if (state.holding) {
     keepAction(player);
     paintHoldUi(true);
@@ -134,7 +201,9 @@ export function installDance(app) {
 
   const attach = () => {
     const player = getIslandPlayer(app);
-    if (player) hookPlayer(player, state);
+    if (!player) return;
+    hookPlayer(player, state);
+    if (!state.holding) rememberIdleArms(player);
   };
   attach();
   const timer = window.setInterval(attach, 400);

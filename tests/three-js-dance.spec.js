@@ -89,6 +89,26 @@ test("holding the dance button plays the interact Action clip", async ({ page })
     };
   }), { timeout: 8_000 }).toMatchObject({ holding: true, clip: "Action", pressed: "true" });
 
+  await page.waitForTimeout(120);
+  const arms = await page.evaluate(() => {
+    const player = window.__THREE_JS_GAME__.app.$webgl?.scenes?.current?.player;
+    const bones = player?.mesh?.skeleton?.bones || [];
+    const find = (suffix) => bones.find((bone) => bone?.name?.endsWith(suffix));
+    const Vec = player.mesh.position.constructor;
+    const elbow = find("Elbow_L");
+    const hip = find("Hip_L");
+    if (!elbow || !hip) return { ok: false };
+    const elbowPos = new Vec();
+    const hipPos = new Vec();
+    elbow.updateWorldMatrix(true, false);
+    hip.updateWorldMatrix(true, false);
+    elbow.getWorldPosition(elbowPos);
+    hip.getWorldPosition(hipPos);
+    return { ok: true, elbowY: elbowPos.y, hipY: hipPos.y };
+  });
+  expect(arms.ok).toBe(true);
+  expect(arms.elbowY).toBeGreaterThan(arms.hipY + 0.35);
+
   await button.dispatchEvent("pointerup", { pointerId: 1, button: 0, pointerType: "mouse" });
   await expect.poll(async () => page.evaluate(() => {
     const app = window.__THREE_JS_GAME__.app;
