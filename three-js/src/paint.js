@@ -8,11 +8,14 @@ import {
 } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { el, playUiSound, unwrap } from "./dom.js";
 import { getIslandPlayer } from "./jump.js?v=jump-5";
+import {
+  WEST_MAX_X,
+  WEST_MAX_Z,
+  WEST_MIN_X,
+  WEST_MIN_Z,
+  onIsland,
+} from "./island.js?v=paint-9";
 
-const WEST_MIN_X = -217.414489;
-const WEST_MAX_X = -90.303222;
-const WEST_MIN_Z = -62.174738;
-const WEST_MAX_Z = 89.309248;
 const CELL = 1;
 const WALK_RADIUS = 0.22;
 const JUMP_RADIUS = 0.7;
@@ -22,10 +25,6 @@ const FLOOR_MAX = 0.32;
 const PAINT_COLOR = 0x8fd4ff;
 const DOUBLE_SIDE = 2;
 const MIN_LAND = 80;
-const LAND_CX = (WEST_MIN_X + WEST_MAX_X) * 0.5;
-const LAND_CZ = (WEST_MIN_Z + WEST_MAX_Z) * 0.5;
-const LAND_RX = ((WEST_MAX_X - WEST_MIN_X) * 0.5) * 0.78;
-const LAND_RZ = ((WEST_MAX_Z - WEST_MIN_Z) * 0.5) * 0.7;
 const GLOB_COUNT = 3;
 const GLOB_RADII = [0.27, 0.22, 0.2];
 const GLOB_SPREAD = [0.08, 0.2, 0.19];
@@ -79,9 +78,7 @@ function rowOf(z, rows) {
 }
 
 function inland(x, z) {
-  const nx = (x - LAND_CX) / LAND_RX;
-  const nz = (z - LAND_CZ) / LAND_RZ;
-  return nx * nx + nz * nz <= 1;
+  return onIsland(x, z);
 }
 
 class PaintInstances extends Mesh {
@@ -181,7 +178,7 @@ function publish(state) {
     state.ratio = 1;
     return;
   }
-  state.percent = state.painted > 0 ? Math.max(1, Math.min(99, Math.round(state.ratio * 100))) : 0;
+  state.percent = Math.min(99, Math.floor(state.ratio * 100));
 }
 
 function attachVisual(state, scene) {
@@ -596,7 +593,7 @@ export function installPaintHud(app, host) {
     meter.toggleAttribute("hidden", !show);
     const value = state?.percent ?? 0;
     percent.textContent = `${value}%`;
-    const width = state?.complete ? 100 : (state?.painted ? Math.max(2.5, (state.ratio || 0) * 100) : 0);
+    const width = state?.complete ? 100 : (state?.ratio || 0) * 100;
     fill.style.width = `${Math.round(width * 10) / 10}%`;
     track.setAttribute("aria-valuenow", String(value));
     const done = !!state?.complete;

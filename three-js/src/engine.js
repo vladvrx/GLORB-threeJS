@@ -10,9 +10,12 @@ import {
   w as watch,
 } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { ThreeJsRoot } from "./root.js";
-import { installHud } from "./hud.js?v=paint-8";
+import { GLORB_ISLAND } from "./island.js?v=paint-9";
+import { installHud } from "./hud.js?v=paint-9";
 import { installJump } from "./jump.js?v=jump-5";
-import { installPaint } from "./paint.js?v=paint-8";
+import { installPaint } from "./paint.js?v=paint-9";
+
+window.__GLORB_ISLAND__ = GLORB_ISLAND;
 
 function suppressRemovedHints(app) {
   const blocked = new Set(["customize", "map", "fintech", "partner"]);

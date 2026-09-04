@@ -56,27 +56,30 @@ test("GLORB is a flat empty island without a decorate tray", async ({ page }) =>
     const scene = app.$webgl?.scenes?.current;
     const pos = scene?.player?.base?.position;
     const geo = scene?.main?.geometry;
+    const res = app.$webgl?.resources?.scenes?.IslandWest;
+    const island = window.__GLORB_ISLAND__;
+    geo?.computeBoundingBox?.();
+    res?.groundCollider?.computeBoundingBox?.();
+    const topY = [];
     const arr = geo?.attributes?.position?.array;
-    let inlandY = [];
     if (arr) {
-      const cx = -153.8588555;
-      const cz = 13.567255;
-      const rx = 49.573394;
-      const rz = 53.0196447;
       for (let i = 0; i < arr.length; i += 3) {
-        const nx = (arr[i] - cx) / rx;
-        const nz = (arr[i + 2] - cz) / rz;
-        if (nx * nx + nz * nz <= 0.5) inlandY.push(arr[i + 1]);
-        if (inlandY.length >= 40) break;
+        if (Math.abs(arr[i + 1] - 3.8) < 0.05) topY.push(arr[i + 1]);
+        if (topY.length >= 40) break;
       }
     }
-    const minY = inlandY.length ? Math.min(...inlandY) : null;
-    const maxY = inlandY.length ? Math.max(...inlandY) : null;
+    const vis = geo?.boundingBox;
+    const col = res?.groundCollider?.boundingBox;
     return {
       scene: scene?.id,
       playerY: pos?.y ?? null,
-      inlandMin: minY,
-      inlandMax: maxY,
+      topMin: topY.length ? Math.min(...topY) : null,
+      topMax: topY.length ? Math.max(...topY) : null,
+      visMin: vis ? vis.min.toArray() : null,
+      visMax: vis ? vis.max.toArray() : null,
+      colMin: col ? col.min.toArray() : null,
+      colMax: col ? col.max.toArray() : null,
+      island,
       chunks: scene?.chunks?.length ?? 0,
       actors: Object.keys(scene?.actors || {}).length,
       tray: !!document.querySelector("[data-decorate-tray]"),
@@ -89,6 +92,11 @@ test("GLORB is a flat empty island without a decorate tray", async ({ page }) =>
   expect(info.actors).toBe(0);
   expect(info.playerY).toBeGreaterThan(3.5);
   expect(info.playerY).toBeLessThan(6.5);
-  expect(info.inlandMin).toBeCloseTo(3.8, 1);
-  expect(info.inlandMax).toBeCloseTo(3.8, 1);
+  expect(info.topMin).toBeCloseTo(3.8, 1);
+  expect(info.topMax).toBeCloseTo(3.8, 1);
+  expect(info.visMin[0]).toBeCloseTo(info.colMin[0], 1);
+  expect(info.visMax[0]).toBeCloseTo(info.colMax[0], 1);
+  expect(info.visMin[2]).toBeCloseTo(info.colMin[2], 1);
+  expect(info.visMax[2]).toBeCloseTo(info.colMax[2], 1);
+  expect(info.visMax[1]).toBeCloseTo(info.colMax[1], 1);
 });

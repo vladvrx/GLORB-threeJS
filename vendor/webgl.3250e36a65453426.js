@@ -4331,21 +4331,34 @@ async function Tr(e, t, s, i) {
 }
 function flattenIslandWestBase(geo, floorY) {
   if (!geo || !geo.attributes || !geo.attributes.position) return;
+  const i = glorbIsland();
   const arr = geo.attributes.position.array;
-  const cx = -153.8588555, cz = 13.567255, rx = 49.573394, rz = 53.0196447;
-  for (let i = 0; i < arr.length; i += 3) {
-    const nx = (arr[i] - cx) / rx;
-    const nz = (arr[i + 2] - cz) / rz;
-    arr[i + 1] = nx * nx + nz * nz <= 1.05 ? floorY : -1.25;
+  const cx = i.cx, cz = i.cz, rx = i.rx, rz = i.rz;
+  for (let n = 0; n < arr.length; n += 3) {
+    const nx = (arr[n] - cx) / rx;
+    const nz = (arr[n + 2] - cz) / rz;
+    arr[n + 1] = nx * nx + nz * nz <= 1 ? floorY : -1.25;
   }
   geo.attributes.position.needsUpdate = true;
   if (geo.computeVertexNormals) geo.computeVertexNormals();
   if (geo.computeBoundingBox) geo.computeBoundingBox();
   if (geo.computeBoundingSphere) geo.computeBoundingSphere();
 }
+function glorbIsland() {
+  const i = window.__GLORB_ISLAND__;
+  return i && i.rx ? i : {
+    cx: -153.8588555,
+    cz: 13.567255,
+    rx: 52,
+    rz: 56,
+    floorY: 3.8,
+    thickness: 2.4
+  };
+}
 function makeFlatIslandSlab(floorY) {
-  const cx = -153.8588555, cz = 13.567255, rx = 52, rz = 56;
-  const y1 = floorY, y0 = floorY - 2.4;
+  const i = glorbIsland();
+  const cx = i.cx, cz = i.cz, rx = i.rx, rz = i.rz;
+  const y1 = floorY, y0 = floorY - (i.thickness || 2.4);
   const x0 = cx - rx, x1 = cx + rx, z0 = cz - rz, z1 = cz + rz;
   const geo = new P();
   geo.setAttribute("position", new O(new Float32Array([
@@ -4361,6 +4374,54 @@ function makeFlatIslandSlab(floorY) {
     3, 7, 4, 3, 4, 0
   ]);
   if (geo.computeVertexNormals) geo.computeVertexNormals();
+  if (geo.computeBoundingBox) geo.computeBoundingBox();
+  if (geo.computeBoundingSphere) geo.computeBoundingSphere();
+  return geo;
+}
+function makeFlatIslandTerrain(floorY) {
+  const i = glorbIsland();
+  const cx = i.cx, cz = i.cz, rx = i.rx, rz = i.rz;
+  const y1 = floorY, y0 = floorY - (i.thickness || 2.4);
+  const x0 = cx - rx, x1 = cx + rx, z0 = cz - rz, z1 = cz + rz;
+  const sx = 16, sz = 16;
+  const pos = [], nrm = [], uv = [], ao = [], idx = [];
+  function vert(x, y, z, nx, ny, nz, u, v) {
+    pos.push(x, y, z);
+    nrm.push(nx, ny, nz);
+    uv.push(u, v);
+    ao.push(210);
+  }
+  for (let iz = 0; iz <= sz; iz++) {
+    for (let ix = 0; ix <= sx; ix++) {
+      const u = ix / sx, v = iz / sz;
+      vert(x0 + u * (x1 - x0), y1, z0 + v * (z1 - z0), 0, 1, 0, u, v);
+    }
+  }
+  for (let iz = 0; iz < sz; iz++) {
+    for (let ix = 0; ix < sx; ix++) {
+      const a = iz * (sx + 1) + ix;
+      idx.push(a, a + 1, a + sx + 1, a + 1, a + sx + 2, a + sx + 1);
+    }
+  }
+  function quad(ax, ay, az, bx, by, bz, cx, cy, cz, dx, dy, dz, nx, ny, nz) {
+    const i0 = pos.length / 3;
+    vert(ax, ay, az, nx, ny, nz, 0, 0);
+    vert(bx, by, bz, nx, ny, nz, 1, 0);
+    vert(cx, cy, cz, nx, ny, nz, 1, 1);
+    vert(dx, dy, dz, nx, ny, nz, 0, 1);
+    idx.push(i0, i0 + 1, i0 + 2, i0, i0 + 2, i0 + 3);
+  }
+  quad(x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1, 0, 0, 1);
+  quad(x1, y0, z0, x0, y0, z0, x0, y1, z0, x1, y1, z0, 0, 0, -1);
+  quad(x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0, -1, 0, 0);
+  quad(x1, y0, z1, x1, y0, z0, x1, y1, z0, x1, y1, z1, 1, 0, 0);
+  quad(x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1, 0, -1, 0);
+  const geo = new P();
+  geo.setAttribute("position", new O(new Float32Array(pos), 3));
+  geo.setAttribute("normal", new O(new Float32Array(nrm), 3));
+  geo.setAttribute("uv", new O(new Float32Array(uv), 2));
+  geo.setAttribute("cheapAO", new O(new Uint8Array(ao), 1, !0));
+  geo.setIndex(idx);
   if (geo.computeBoundingBox) geo.computeBoundingBox();
   if (geo.computeBoundingSphere) geo.computeBoundingSphere();
   return geo;
@@ -4819,8 +4880,6 @@ function Er(e, t) {
       }
     }
     if (o === "IslandWest") {
-      flattenIslandWestBase(r.base, 3.8);
-      flattenIslandWestBase(r.baseGroundCollider, 3.8);
       if (!window.__GLORB_STUDIO__) {
         r.chunks = [];
         r.dynamicPropsAllocs = {};
@@ -4828,12 +4887,18 @@ function Er(e, t) {
         r.props = [];
         r.propsCollider = null;
         r.groundCollider = null;
+        r.base = makeFlatIslandTerrain(3.8);
         r.baseGroundCollider = makeFlatIslandSlab(3.8);
+        r.boundingBox = r.base.boundingBox;
+        r.boundingSphere = r.base.boundingSphere;
         if (r.points) {
           for (const k in r.points) {
             if (r.points[k] && r.points[k].position && r.points[k].position.y < 4.2) r.points[k].position.y = 4.2;
           }
         }
+      } else {
+        flattenIslandWestBase(r.base, 3.8);
+        flattenIslandWestBase(r.baseGroundCollider, 3.8);
       }
     }
     if (await tr(!0), r.groundCollider || (r.baseGroundCollider && (d.add(r.baseGroundCollider), await tr()), c && (o !== "IslandWest" || window.__GLORB_STUDIO__) && (d.add(r.base), await tr())), await tr(!0), r.propsCollider || (o === "IslandWest" && !window.__GLORB_STUDIO__ ? 0 : r.baseCollider && (u.add(r.baseCollider), await tr())), await tr(!0), r.groundCollider || (r.groundCollider = d.merge(), await tr()), await tr(!0), o === "IslandWest" && !window.__GLORB_STUDIO__ ? (r.propsCollider = null) : r.propsCollider || (r.propsCollider = u.merge(), await tr()), await tr(!0), !r.chunks) {

@@ -16,7 +16,7 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) (or `/`)
 
 1. Preloader with the glorb mark, then **LETS GO**.
 2. Intro camera down to the red/yellow boat and the Hello / Yes / No thanks graph.
-3. Boat to **GLORB** (`IslandWest`): a blank flat oval in the neon water. Trees, booths, and NPCs stay out of this build.
+3. Boat to **GLORB** (`IslandWest`): one solid flat chunk of land in the neon water. Trees, booths, and NPCs stay out of this build.
 4. Header, mute, centered talk bubbles, bottom hints.
 5. **Jump** with Space or the small button in the bottom-right. In the air the character spreads their legs and raises their arms.
 6. Walking paints a light-blue trail on GLORB. The bottom bar is how much ground is covered. At **100%** the island is painted and the game ends. On a phone, drag anywhere on the island to walk.

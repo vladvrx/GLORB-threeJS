@@ -71,7 +71,7 @@ test("standing on GLORB paints the ground and fills the paint bar", async ({ pag
 
   await expect.poll(async () => page.evaluate(() => {
     const state = window.__THREE_JS_GAME__.app.__paintState;
-    return !!state?.ready && state.percent > 0;
+    return !!state?.ready && state.painted > 0;
   }), { timeout: 20_000 }).toBe(true);
 
   const hud = await page.evaluate(() => {
@@ -79,8 +79,8 @@ test("standing on GLORB paints the ground and fills the paint bar", async ({ pag
     const fill = document.querySelector("#threejs-hud .paint-meter-fill")?.style.width;
     return { percent, fill };
   });
-  expect(hud.percent).toMatch(/^[1-9]\d*%$/);
-  expect(Number.parseFloat(hud.fill)).toBeGreaterThan(0);
+  expect(hud.percent).toMatch(/^\d+%$/);
+  expect(Number.parseFloat(hud.fill)).toBeGreaterThanOrEqual(0);
 
   const coverage = await page.evaluate(() => {
     const state = window.__THREE_JS_GAME__.app.__paintState;
@@ -97,8 +97,12 @@ test("standing on GLORB paints the ground and fills the paint bar", async ({ pag
     };
   });
   expect(coverage.complete).toBe(false);
-  expect(coverage.total).toBeGreaterThan(80);
+  expect(coverage.total).toBe(104 * 112);
   expect(coverage.painted).toBeLessThan(coverage.total);
+  expect(coverage.painted).toBeGreaterThan(0);
+  const expectedPercent = Math.min(99, Math.floor((coverage.painted / coverage.total) * 100));
+  expect(hud.percent).toBe(`${expectedPercent}%`);
+  expect(Number.parseFloat(hud.fill)).toBeCloseTo((coverage.painted / coverage.total) * 100, 0);
   expect(coverage.frozen).toBe(0);
   expect(coverage.meterTop).toBeGreaterThan(coverage.viewport * 0.85);
   expect(coverage.viewport - coverage.meterBottom).toBeLessThan(40);
