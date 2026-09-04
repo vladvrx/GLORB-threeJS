@@ -3871,7 +3871,7 @@ const Rn = "./reference/assets/sprites.d8373bb465453426.json",
     avif: i
   },
   Ln = {};
-Dn("noise", "./reference/assets/noise_perlin.956753cf65453426.png"), Dn("clouds", "./reference/assets/clouds.657c06ba65453426.png?v=clouds-1"), Ln.sprites = kn, Ln.spritesData = Rn;
+Dn("noise", "./reference/assets/noise_perlin.956753cf65453426.png"), Dn("clouds", "./reference/assets/clouds.657c06ba65453426.png"), Ln.sprites = kn, Ln.spritesData = Rn;
 const En = Ln;
 function Fn(e) {
   const t = p.threeRenderer.capabilities.isWebGL2,
