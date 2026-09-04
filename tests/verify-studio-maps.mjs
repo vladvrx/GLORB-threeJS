@@ -31,7 +31,8 @@ if (!paint.points?.["Spawn.001"]) fail("paint square is missing Spawn.001");
 
 const catalog = bundle.catalog ?? [];
 const blocked = catalog.filter((asset) =>
-  /^(Stand|underStand|Bike|Circuit|RaceBike)/i.test(asset.id) || /Ufo/i.test(asset.id),
+  /^(Stand|underStand|Bike|Circuit|Race|CarRace|BorderRace|InitRace|PitStop|StartLine|BoatRace)/i.test(asset.id) ||
+  /Ufo/i.test(asset.id),
 );
 if (blocked.length) fail(`studio catalog still has ${blocked.map((item) => item.id).join(", ")}`);
 
