@@ -9,7 +9,7 @@ export function buildHub(scene) {
   group.position.set(island.cx, island.floorY, island.cz);
   const positions = [], colors = [];
   const colliders=[];
-  const C = { floor:0x08090b, cream:0xffe7af, path:0x101216, grass:0x83ba89, moss:0x619c78, leaf:0x42936b, leafLight:0x79bc78, stone:0xc8d1bb, darkStone:0x97afaa, wood:0xa57854, bark:0xc69d69, mint:0x5ec5a8, violet:0x9474bd, gold:0xeebf62 };
+  const C = { floor:0x08090b, cream:0xffe7af, path:0x101216, grass:0x39e95a, moss:0x619c78, leaf:0x42936b, leafLight:0x79bc78, stone:0xc8d1bb, darkStone:0x97afaa, wood:0xa57854, bark:0xc69d69, mint:0x5ec5a8, violet:0x9474bd, gold:0xeebf62 };
   const circleCollider=(x,z,radius)=>colliders.push({kind:'circle',x,z,radius});
   const boxCollider=(x,z,width,depth,turn=0)=>colliders.push({kind:'box',x,z,width,depth,turn});
   function tri(a,b,c,color,shade=1) {
@@ -89,7 +89,7 @@ export function buildHub(scene) {
       const a=j/10*Math.PI*2,r=.85+grassRandom()*.25;
       return [px+Math.cos(a)*rx*r,pz+Math.sin(a)*rz*r];
     });
-    polygon(edge,.074,[0x8abe8e,0x79b281,0x8bbf8b,0x7bb586][grassPatches%4]);
+    polygon(edge,.074,[0x27c947,0x4ff365,0x22db49,0x62f878][grassPatches%4]);
     grassPatches++;
   }
   // Short folded blades catch a bright face and a dark face at the fixed camera.
@@ -105,8 +105,8 @@ export function buildHub(scene) {
       const root=[x,.081,z],tip=[x+dx*bend*size,height,z+dz*bend*size];
       const left=[x-dz*.105*size,.087,z+dx*.105*size];
       const right=[x+dz*.105*size,.087,z-dx*.105*size];
-      tri(left,tip,root,grassTufts%3?0x679f70:0x8fc18c);
-      tri(root,tip,right,grassTufts%3?0x9bc791:0x75ae7e);
+      tri(left,tip,root,grassTufts%3?0x13b43f:0x6dff82);
+      tri(root,tip,right,grassTufts%3?0x52ef6d:0x9aff9a);
     }
     grassTufts++;
     if(grassTufts%5===0&&clearGrass(x+.85,z+.6,.7)) {
@@ -116,7 +116,7 @@ export function buildHub(scene) {
         const root=[cx,.082,cz],tip=[cx+dx*.4,.083,cz+dz*.4];
         const left=[cx+dx*.22-dz*.17,.083,cz+dz*.22+dx*.17];
         const right=[cx+dx*.22+dz*.17,.083,cz+dz*.22-dx*.17];
-        tri(root,left,tip,0xa1c995);tri(root,tip,right,0x94bf8c);
+        tri(root,left,tip,0x9aff9a);tri(root,tip,right,0x72f57e);
       }
       cloverMarks++;
     }
