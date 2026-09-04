@@ -31082,7 +31082,7 @@ function buildHub(scene) {
   group.position.set(GLORB_ISLAND.cx, GLORB_ISLAND.floorY, GLORB_ISLAND.cz);
   const positions = [], colors = [];
   const colliders = [];
-  const C2 = { floor: 526603, cream: 16770991, path: 1053206, grass: 8632969, moss: 6397048, leaf: 4363115, leafLight: 7978104, stone: 13160891, darkStone: 9940906, wood: 10844244, bark: 13016425, mint: 6210984, violet: 9729213, gold: 15646562 };
+  const C2 = { floor: 526603, cream: 16770991, path: 1053206, grass: 3795290, moss: 6397048, leaf: 4363115, leafLight: 7978104, stone: 13160891, darkStone: 9940906, wood: 10844244, bark: 13016425, mint: 6210984, violet: 9729213, gold: 15646562 };
   const circleCollider = (x, z, radius) => colliders.push({ kind: "circle", x, z, radius });
   const boxCollider = (x, z, width, depth, turn = 0) => colliders.push({ kind: "box", x, z, width, depth, turn });
   function tri(a, b, c, color2, shade = 1) {
@@ -31182,7 +31182,7 @@ function buildHub(scene) {
       const a = j / 10 * Math.PI * 2, r = 0.85 + grassRandom() * 0.25;
       return [px2 + Math.cos(a) * rx2 * r, pz2 + Math.sin(a) * rz2 * r];
     });
-    polygon(edge, 0.074, [9092750, 7975553, 9158539, 8107398][grassPatches % 4]);
+    polygon(edge, 0.074, [2607431, 5239653, 2284361, 6486136][grassPatches % 4]);
     grassPatches++;
   }
   let grassTufts = 0, cloverMarks = 0;
@@ -31196,8 +31196,8 @@ function buildHub(scene) {
       const root = [x, 0.081, z], tip = [x + dx2 * bend * size, height, z + dz2 * bend * size];
       const left = [x - dz2 * 0.105 * size, 0.087, z + dx2 * 0.105 * size];
       const right = [x + dz2 * 0.105 * size, 0.087, z - dx2 * 0.105 * size];
-      tri(left, tip, root, grassTufts % 3 ? 6791024 : 9421196);
-      tri(root, tip, right, grassTufts % 3 ? 10209169 : 7712382);
+      tri(left, tip, root, grassTufts % 3 ? 1291327 : 7208834);
+      tri(root, tip, right, grassTufts % 3 ? 5435245 : 10157978);
     }
     grassTufts++;
     if (grassTufts % 5 === 0 && clearGrass(x + 0.85, z + 0.6, 0.7)) {
@@ -31207,8 +31207,8 @@ function buildHub(scene) {
         const root = [cx2, 0.082, cz2], tip = [cx2 + dx2 * 0.4, 0.083, cz2 + dz2 * 0.4];
         const left = [cx2 + dx2 * 0.22 - dz2 * 0.17, 0.083, cz2 + dz2 * 0.22 + dx2 * 0.17];
         const right = [cx2 + dx2 * 0.22 + dz2 * 0.17, 0.083, cz2 + dz2 * 0.22 - dx2 * 0.17];
-        tri(root, left, tip, 10602901);
-        tri(root, tip, right, 9748364);
+        tri(root, left, tip, 10157978);
+        tri(root, tip, right, 7533950);
       }
       cloverMarks++;
     }
