@@ -14,8 +14,8 @@ const WEST_MAX_X = -90.303222;
 const WEST_MIN_Z = -62.174738;
 const WEST_MAX_Z = 89.309248;
 const CELL = 1;
-const WALK_RADIUS = 0.48;
-const JUMP_RADIUS = 1.03;
+const WALK_RADIUS = 0.22;
+const JUMP_RADIUS = 0.7;
 const STAMP_SCALE = 0.72;
 const STAMP_Y = 0.1;
 const WATER_Y = 0.55;
@@ -213,7 +213,7 @@ function paintCell(state, index, y) {
 }
 
 function stampAt(state, x, z, y, radius) {
-  const reach = radius + CELL * 0.5;
+  const reach = radius + CELL * 0.35;
   const reachSq = reach * reach;
   const minC = colOf(x - radius, state.cols);
   const maxC = colOf(x + radius, state.cols);
