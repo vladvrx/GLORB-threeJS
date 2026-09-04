@@ -6715,7 +6715,7 @@ const VueWebGLComponent = {
         a.addEventListener("load", t), a.addEventListener("error", () => s(new Error(`Unable to preload CSS for ${e}`)));
       }) : void 0;
     })).then(() => e());
-  }(() => import("./webgl.3250e36a65453426.js?v=paint-map"), []);
+  }(() => import("./webgl.3250e36a65453426.js?v=studio-apply-1788546250683"), []);
 const Uc = "./reference/assets/Asset_Algae.e4fb453265453426.glb",
   Hc = "./reference/assets/Asset_AlgaeGroup.df25307b65453426.glb",
   Gc = "./reference/assets/Asset_ArrowSign.6f0ccda865453426.glb",
@@ -7090,7 +7090,7 @@ const Uc = "./reference/assets/Asset_Algae.e4fb453265453426.glb",
   }, Symbol.toStringTag, {
     value: "Module"
   })),
-  tv = JSON.parse('{"name":"IslandWest","bounds":[[-217.414489,-21.549696,-62.174738000000005],[-90.303222,17.128553,89.309248]],"useBaseAsCollider":true,"points":{"Spawn.001":[-144.80751,3.800204,23.634537,1,1,1,0,-0.70538,0,0.708829],"PortSpawnB.001":[-144.80751,3.800204,23.634537,1,1,1,0,-0.70538,0,0.708829]},"assets":[],"actors":[],"props":[],"areas":{},"curves":{}}'),
+  tv = JSON.parse('{"name":"IslandWest","bounds":[[-217.414489,-21.549696,-62.174738],[-90.303222,17.128553,89.309248]],"useBaseAsCollider":true,"points":{"Spawn.001":[-144.80751,3.800204,23.634537,1,1,1,0,-0.70538,0,0.708829],"PortSpawnB.001":[-144.80751,3.800204,23.634537,1,1,1,0,-0.70538,0,0.708829]},"assets":[],"actors":[],"props":[],"areas":{},"curves":{}}'),
   sv = Object.freeze(Object.defineProperty({
     __proto__: null,
     default: tv
@@ -33338,7 +33338,7 @@ const GU = [["router", function (e = {}) {
   async function n() {
     if (i) return i;
     let s;
-    i = io(), s || (s = await fetch(Fb + "?v=studio-apply-1788463216270").then(e => e.json()));
+    i = io(), s || (s = await fetch(Fb + "?v=studio-apply-1788546250683").then(e => e.json()));
     const n = cv.$manifest.content;
     Object.assign(e, s.partners);
     for (let t in e) {
@@ -33385,7 +33385,7 @@ const GU = [["router", function (e = {}) {
   async function n() {
     if (s) return s;
     let i;
-    s = io(), i || (i = await fetch(Ub + "?v=studio-apply-1788463216270").then(e => e.json())), Object.assign(e, i.colors), Object.assign(t, i.npcs), s.resolve();
+    s = io(), i || (i = await fetch(Ub + "?v=studio-apply-1788546250683").then(e => e.json())), Object.assign(e, i.colors), Object.assign(t, i.npcs), s.resolve();
   }
   return function (e) {
     const t = e.config.globalProperties;
@@ -33444,7 +33444,7 @@ const GU = [["router", function (e = {}) {
   async function l() {
     if (a) return a;
     let t;
-    a = io(), t || (t = await fetch(Gb + "?v=studio-apply-1788463216270").then(e => e.json()));
+    a = io(), t || (t = await fetch(Gb + "?v=studio-apply-1788546250683").then(e => e.json()));
     for (let e in t) {
       const s = t[e],
         i = s.__first__;
@@ -33564,7 +33564,7 @@ const GU = [["router", function (e = {}) {
   async function r() {
     if (e) return e;
     let s;
-    e = io(), s || (s = await fetch(Vb + "?v=studio-apply-1788463216270").then(e => e.json())), Object.assign(t, s);
+    e = io(), s || (s = await fetch(Vb + "?v=studio-apply-1788546250683").then(e => e.json())), Object.assign(t, s);
     for (let e in t) {
       const s = t[e],
         i = s.type.toLowerCase();
@@ -33620,7 +33620,7 @@ const GU = [["router", function (e = {}) {
   async function n() {
     if (i) return i;
     let e;
-    i = io(), e || (e = await fetch(Oy + "?v=studio-apply-1788463216270").then(e => e.json()));
+    i = io(), e || (e = await fetch(Oy + "?v=studio-apply-1788546250683").then(e => e.json()));
     for (let t in e) {
       const i = e[t],
         n = s.rawList[i.id] = {

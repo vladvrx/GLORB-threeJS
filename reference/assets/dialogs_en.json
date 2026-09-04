@@ -5,7 +5,7 @@
       "id": "Hello",
       "isSpeak": true,
       "bubbles": [
-        "Welcome aboard, newcomer..."
+        "HELLO HELLO HELLO HELLO"
       ],
       "before": [
         {
@@ -26,7 +26,7 @@
       "id": "Hello2",
       "isSpeak": true,
       "bubbles": [
-        "Come check out what us and the Glorbs found!"
+        "WE FOUND MORE LAND TO PAINT "
       ],
       "before": [
         {
@@ -47,7 +47,7 @@
       "id": "Hello3",
       "isSpeak": true,
       "bubbles": [
-        "We need your help restoring the power back on the island, can you help us?"
+        "ARE YOU COMING"
       ],
       "before": [
         {
@@ -70,7 +70,7 @@
       "choices": {
         "Yes": {
           "id": "Yes",
-          "value": "Yes",
+          "value": "YES YES YES ",
           "next": [
             {
               "action": "GOTO",
@@ -80,7 +80,7 @@
         },
         "No": {
           "id": "No",
-          "value": "No thanks",
+          "value": "WHAT",
           "next": [
             {
               "action": "GOTO",
@@ -94,7 +94,7 @@
       "id": "Skip",
       "isSpeak": true,
       "bubbles": [
-        "No problem, I&#39;ll drop you off on <strong>GLORB</strong>"
+        "<strong>GLORB</strong>"
       ],
       "before": [
         {
@@ -114,15 +114,15 @@
   "dev": {
     "__first__": "Test",
     "Test": {
-      "isSpeak": true,
       "id": "Test",
+      "isSpeak": true,
+      "bubbles": [
+        "Hello world"
+      ],
       "next": [
         {
           "action": "END"
         }
-      ],
-      "bubbles": [
-        "Hello world"
       ]
     }
   }

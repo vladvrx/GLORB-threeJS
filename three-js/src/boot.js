@@ -16,7 +16,7 @@ function routerBasePath() {
 
 async function loadSiteData() {
   const url = new URL(siteDataUrl);
-  url.searchParams.set("v", "cam-back");
+  url.searchParams.set("v", "studio-apply-1788546250683");
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Site data returned HTTP ${response.status}`);
   const data = await response.json();
@@ -61,7 +61,7 @@ async function boot() {
   document.documentElement.classList.remove("no-js");
   initializePageBehavior({ logoUrl, cursorUrl });
   window.__DATA = await loadSiteData();
-  const { startEngine } = await import("./engine.js?v=dance-7");
+  const { startEngine } = await import("./engine.js?v=studio-apply-1788546250683");
   return startEngine();
 }
 

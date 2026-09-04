@@ -678,10 +678,12 @@ function writeBridge(file, scenes) {
     const text = fs.readFileSync(file, "utf8");
     const marker = "window.__STUDIO_OVERLAY__=";
     const start = text.indexOf(marker);
-    const end = text.indexOf(";window.__STUDIO_APPLY__", start);
+    const end = text.indexOf("window.__STUDIO_APPLY__", start);
     if (start >= 0 && end > start) {
       try {
-        const existing = JSON.parse(text.slice(start + marker.length, end));
+        let raw = text.slice(start + marker.length, end).trim();
+        if (raw.endsWith(";")) raw = raw.slice(0, -1);
+        const existing = JSON.parse(raw);
         for (const key of ["IslandIntro", "Scene_IslandIntro"]) {
           if (existing[key]) overlay[key] = existing[key];
         }
