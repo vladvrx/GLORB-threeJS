@@ -3,8 +3,8 @@ import { circleButton, unwrap } from "./dom.js";
 import { getIslandPlayer } from "./jump.js?v=jump-6";
 
 const DANCE_TIME_SCALE = 0.7;
-const ARM_UP = 1.08;
-const ELBOW_BEND = 0.22;
+const ARM_UP = 2.2;
+const ELBOW_BEND = 0.18;
 
 function flag(value) {
   return !!unwrap(value);
