@@ -14,7 +14,7 @@ import {
   WEST_MIN_X,
   WEST_MIN_Z,
   onIsland,
-} from "./island.js?v=paint-10";
+} from "./island.js?v=paint-11";
 
 const CELL = 1;
 const WALK_RADIUS = 0.22;
@@ -26,7 +26,7 @@ const PAINT_COLOR = 0x8fd4ff;
 const DOUBLE_SIDE = 2;
 const MIN_LAND = 80;
 const GLOB_COUNT = 3;
-const GLOB_RADII = [0.405, 0.33, 0.3];
+const GLOB_RADII = [0.6075, 0.495, 0.45];
 const GLOB_SPREAD = [0.08, 0.2, 0.19];
 const GLOB_SEGMENTS = 8;
 const TAU = Math.PI * 2;
