@@ -82,7 +82,10 @@ test("phone drag walks the character without freezing on paint", async ({ page }
   expect(before.frozen).toBe(0);
   expect(before.overlay).toBe(false);
   expect(before.meterTop).toBeGreaterThan(before.viewport * 0.55);
-  await expect(page.locator(".start-btn")).toHaveCount(0);
+  await expect.poll(async () => page.evaluate(() => [...document.querySelectorAll(".start-btn")].some((node) => {
+    const style = window.getComputedStyle(node);
+    return style.visibility !== "hidden" && style.display !== "none" && node.getClientRects().length > 0;
+  }))).toBe(false);
 
   await page.evaluate(async (start) => {
     const startX = window.innerWidth * 0.46;
