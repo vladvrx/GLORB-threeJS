@@ -32,14 +32,26 @@ function danceArmBones(player) {
 function armScratch(player, sample) {
   if (player.__danceArmScratch) return player.__danceArmScratch;
   const Vec3 = sample.position.constructor;
+  const Mat4 = sample.matrixWorld.constructor;
   player.__danceArmScratch = {
     origin: new Vec3(),
     end: new Vec3(),
     from: new Vec3(),
     to: new Vec3(0, 1, 0),
     axis: new Vec3(),
+    localAxis: new Vec3(),
+    invWorld: new Mat4(),
   };
   return player.__danceArmScratch;
+}
+
+function rotateBoneOnWorldAxis(bone, worldAxis, angle, scratch) {
+  bone.updateWorldMatrix(true, false);
+  scratch.invWorld.copy(bone.matrixWorld).invert();
+  scratch.localAxis.copy(worldAxis).transformDirection(scratch.invWorld);
+  if (scratch.localAxis.lengthSq() < 1e-8) return;
+  scratch.localAxis.normalize();
+  bone.rotateOnAxis(scratch.localAxis, angle);
 }
 
 function raiseArm(shoulder, elbow, scratch) {
@@ -58,7 +70,7 @@ function raiseArm(shoulder, elbow, scratch) {
   if (scratch.axis.lengthSq() < 1e-8) scratch.axis.set(1, 0, 0);
   else scratch.axis.normalize();
   const angle = Math.acos(Math.max(-1, Math.min(1, align)));
-  shoulder.rotateOnWorldAxis(scratch.axis, Math.min(angle, 1.45));
+  rotateBoneOnWorldAxis(shoulder, scratch.axis, Math.min(angle, 1.45), scratch);
 }
 
 function applyRaisedArms(player) {

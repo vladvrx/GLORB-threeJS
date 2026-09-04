@@ -11,9 +11,9 @@ import {
 } from "../../vendor/vendor.75f6e6ae65453426.js";
 import { ThreeJsRoot } from "./root.js";
 import { GLORB_ISLAND } from "./island.js?v=paint-11";
-import { installHud } from "./hud.js?v=dance-3";
+import { installHud } from "./hud.js?v=dance-4";
 import { installJump } from "./jump.js?v=jump-6";
-import { installDance } from "./dance.js?v=dance-3";
+import { installDance } from "./dance.js?v=dance-4";
 import { installPaint } from "./paint.js?v=dance-1";
 
 window.__GLORB_ISLAND__ = GLORB_ISLAND;
