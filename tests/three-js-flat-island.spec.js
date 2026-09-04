@@ -87,8 +87,8 @@ test("GLORB is a flat empty island without a decorate tray", async ({ page }) =>
   expect(info.tray).toBe(false);
   expect(info.chunks).toBe(0);
   expect(info.actors).toBe(0);
-  expect(info.playerY).toBeGreaterThan(3);
-  expect(info.playerY).toBeLessThan(6);
+  expect(info.playerY).toBeGreaterThan(3.5);
+  expect(info.playerY).toBeLessThan(6.5);
   expect(info.inlandMin).toBeCloseTo(3.8, 1);
   expect(info.inlandMax).toBeCloseTo(3.8, 1);
 });

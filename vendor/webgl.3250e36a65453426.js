@@ -4343,6 +4343,28 @@ function flattenIslandWestBase(geo, floorY) {
   if (geo.computeBoundingBox) geo.computeBoundingBox();
   if (geo.computeBoundingSphere) geo.computeBoundingSphere();
 }
+function makeFlatIslandSlab(floorY) {
+  const cx = -153.8588555, cz = 13.567255, rx = 52, rz = 56;
+  const y1 = floorY, y0 = floorY - 2.4;
+  const x0 = cx - rx, x1 = cx + rx, z0 = cz - rz, z1 = cz + rz;
+  const geo = new P();
+  geo.setAttribute("position", new O(new Float32Array([
+    x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1,
+    x0, y1, z0, x1, y1, z0, x1, y1, z1, x0, y1, z1
+  ]), 3));
+  geo.setIndex([
+    0, 1, 2, 0, 2, 3,
+    4, 6, 5, 4, 7, 6,
+    0, 4, 5, 0, 5, 1,
+    1, 5, 6, 1, 6, 2,
+    2, 6, 7, 2, 7, 3,
+    3, 7, 4, 3, 4, 0
+  ]);
+  if (geo.computeVertexNormals) geo.computeVertexNormals();
+  if (geo.computeBoundingBox) geo.computeBoundingBox();
+  if (geo.computeBoundingSphere) geo.computeBoundingSphere();
+  return geo;
+}
 const Or = [["index", 1], ["position", 3], ["uv", 2], ["normal", 3]],
   Pr = ["Int8", "Uint8", "Uint8Clamped", "Int16", "Uint16", "Int32", "Uint32", "Float32", "Float64"].map(e => e + "Array");
 function Ar(e, t, s) {
@@ -4805,9 +4827,16 @@ function Er(e, t) {
         r.dynamicPropsVertices = {};
         r.props = [];
         r.propsCollider = null;
+        r.groundCollider = null;
+        r.baseGroundCollider = makeFlatIslandSlab(3.8);
+        if (r.points) {
+          for (const k in r.points) {
+            if (r.points[k] && r.points[k].position && r.points[k].position.y < 4.2) r.points[k].position.y = 4.2;
+          }
+        }
       }
     }
-    if (await tr(!0), r.groundCollider || (r.baseGroundCollider && (d.add(r.baseGroundCollider), await tr()), c && (d.add(r.base), await tr())), await tr(!0), r.propsCollider || (o === "IslandWest" && !window.__GLORB_STUDIO__ ? 0 : r.baseCollider && (u.add(r.baseCollider), await tr())), await tr(!0), r.groundCollider || (r.groundCollider = d.merge(), await tr()), await tr(!0), o === "IslandWest" && !window.__GLORB_STUDIO__ ? (r.propsCollider = null) : r.propsCollider || (r.propsCollider = u.merge(), await tr()), await tr(!0), !r.chunks) {
+    if (await tr(!0), r.groundCollider || (r.baseGroundCollider && (d.add(r.baseGroundCollider), await tr()), c && (o !== "IslandWest" || window.__GLORB_STUDIO__) && (d.add(r.base), await tr())), await tr(!0), r.propsCollider || (o === "IslandWest" && !window.__GLORB_STUDIO__ ? 0 : r.baseCollider && (u.add(r.baseCollider), await tr())), await tr(!0), r.groundCollider || (r.groundCollider = d.merge(), await tr()), await tr(!0), o === "IslandWest" && !window.__GLORB_STUDIO__ ? (r.propsCollider = null) : r.propsCollider || (r.propsCollider = u.merge(), await tr()), await tr(!0), !r.chunks) {
       const e = new Map(),
         t = r.chunks = [];
       for (let s = 0; s < v.length; s++) {
