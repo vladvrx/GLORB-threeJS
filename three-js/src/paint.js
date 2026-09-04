@@ -16,7 +16,6 @@ const WEST_MAX_Z = 89.309248;
 const CELL = 1;
 const WALK_RADIUS = 0.22;
 const JUMP_RADIUS = 0.7;
-const STAMP_SCALE = 0.72;
 const STAMP_Y = 0.1;
 const WATER_Y = 0.55;
 const FLOOR_MAX = 0.32;
@@ -27,6 +26,15 @@ const LAND_CX = (WEST_MIN_X + WEST_MAX_X) * 0.5;
 const LAND_CZ = (WEST_MIN_Z + WEST_MAX_Z) * 0.5;
 const LAND_RX = ((WEST_MAX_X - WEST_MIN_X) * 0.5) * 0.78;
 const LAND_RZ = ((WEST_MAX_Z - WEST_MIN_Z) * 0.5) * 0.7;
+const GLOB_COUNT = 3;
+const GLOB_RADII = [0.27, 0.22, 0.2];
+const GLOB_SPREAD = [0.08, 0.2, 0.19];
+const GLOB_SEGMENTS = 8;
+const TAU = Math.PI * 2;
+const SPLASH_SLOTS = 8;
+const SPLASH_PARTS = 4;
+const SPLASH_MS = 280;
+const HIDDEN_Y = -40;
 
 function flag(value) {
   return !!unwrap(value);
@@ -104,13 +112,16 @@ function makeStampMatrix(matrix, x, y, z, radius) {
   return matrix;
 }
 
-function createVisual(capacity, renderOrder) {
-  const geometry = new CircleGeometry(1, 14);
-  geometry.rotateX(-Math.PI / 2);
-  const material = new MeshBasicMaterial({
+function hideInstance(mesh, matrix, index) {
+  makeStampMatrix(matrix, 0, HIDDEN_Y, 0, 0.0001);
+  mesh.setMatrixAt(index, matrix);
+}
+
+function createMaterial(opacity) {
+  return new MeshBasicMaterial({
     color: PAINT_COLOR,
     transparent: true,
-    opacity: 0.92,
+    opacity,
     depthWrite: false,
     fog: true,
     side: DOUBLE_SIDE,
@@ -118,12 +129,24 @@ function createVisual(capacity, renderOrder) {
     polygonOffsetFactor: -2,
     polygonOffsetUnits: -2,
   });
-  const mesh = new PaintInstances(geometry, material, capacity);
+}
+
+function createVisuals(paintCapacity, renderOrder) {
+  const geometry = new CircleGeometry(1, GLOB_SEGMENTS);
+  geometry.rotateX(-Math.PI / 2);
+  const mesh = new PaintInstances(geometry, createMaterial(0.92), paintCapacity);
   mesh.name = "glorb-paint";
   mesh.renderOrder = renderOrder;
   mesh.matrixAutoUpdate = true;
   mesh.frustumCulled = false;
-  return mesh;
+  const splash = new PaintInstances(geometry, createMaterial(0.5), SPLASH_SLOTS * SPLASH_PARTS);
+  splash.name = "glorb-paint-splash";
+  splash.renderOrder = renderOrder + 1;
+  splash.matrixAutoUpdate = true;
+  splash.frustumCulled = false;
+  splash.count = splash.capacity;
+  splash.visible = false;
+  return { mesh, splash };
 }
 
 function markLand(state) {
@@ -165,20 +188,51 @@ function attachVisual(state, scene) {
   if (!scene?.base || state.mesh?.parent === scene.base) return;
   detachVisual(state);
   const order = (scene.webgl?.store?.renderOrder?.grass ?? 8) + 1;
-  const mesh = createVisual(state.cellCount, order);
+  const capacity = Math.max(state.total, MIN_LAND) * GLOB_COUNT;
+  const { mesh, splash } = createVisuals(capacity, order);
   scene.base.add(mesh);
+  scene.base.add(splash);
   state.mesh = mesh;
+  state.splashMesh = splash;
   state.scene = scene;
+  hideAllSplashes(state);
 }
 
 function detachVisual(state) {
   const mesh = state.mesh;
-  if (!mesh) return;
-  mesh.parent?.remove(mesh);
-  mesh.geometry?.dispose?.();
-  mesh.material?.dispose?.();
+  const splash = state.splashMesh;
+  mesh?.parent?.remove(mesh);
+  splash?.parent?.remove(splash);
+  mesh?.material?.dispose?.();
+  splash?.material?.dispose?.();
+  mesh?.geometry?.dispose?.();
   state.mesh = null;
+  state.splashMesh = null;
   state.scene = null;
+  state.splashLive = false;
+}
+
+function resetSplashes(state) {
+  const now = performance.now();
+  for (let i = 0; i < SPLASH_SLOTS; i += 1) {
+    const slot = state.splashes[i];
+    slot.born = 0;
+    slot.x = 0;
+    slot.y = 0;
+    slot.z = 0;
+    slot.big = 0;
+  }
+  state.splashClock = now;
+  state.splashLive = false;
+  hideAllSplashes(state);
+}
+
+function hideAllSplashes(state) {
+  const mesh = state.splashMesh;
+  if (!mesh) return;
+  for (let i = 0; i < mesh.capacity; i += 1) hideInstance(mesh, state.matrix, i);
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.visible = false;
 }
 
 function resetCoverage(state) {
@@ -187,32 +241,115 @@ function resetCoverage(state) {
   state.percent = 0;
   state.complete = false;
   state.wasAirborne = false;
+  state.lastCell = -1;
   state.marked.fill(0);
   state.heights.fill(0);
   if (state.mesh) state.mesh.count = 0;
+  resetSplashes(state);
   markLand(state);
 }
 
-function paintCell(state, index, y) {
+function markCell(state, index, y) {
   if (!state.land[index] || state.marked[index]) return false;
   state.marked[index] = 1;
   state.painted += 1;
   if (Number.isFinite(y)) state.heights[index] = y;
-  const mesh = state.mesh;
-  if (mesh && mesh.count < mesh.capacity) {
-    const col = index % state.cols;
-    const row = Math.floor(index / state.cols);
-    const { x, z } = cellCenter(col, row);
-    const stampY = (Number.isFinite(y) ? y : state.heights[index] || 0) + STAMP_Y;
-    makeStampMatrix(state.matrix, x, stampY, z, CELL * STAMP_SCALE);
-    mesh.setMatrixAt(mesh.count, state.matrix);
-    mesh.count += 1;
-    mesh.instanceMatrix.needsUpdate = true;
-  }
   return true;
 }
 
-function stampAt(state, x, z, y, radius) {
+function addThreeGlobs(state, x, z, y, spin, flush) {
+  const mesh = state.mesh;
+  if (!mesh) return;
+  const stampY = (Number.isFinite(y) ? y : 0) + STAMP_Y;
+  const room = mesh.capacity - mesh.count;
+  const n = room < GLOB_COUNT ? room : GLOB_COUNT;
+  for (let i = 0; i < n; i += 1) {
+    const angle = spin + i * (TAU / 3);
+    const spread = GLOB_SPREAD[i];
+    makeStampMatrix(
+      state.matrix,
+      x + Math.cos(angle) * spread,
+      stampY,
+      z + Math.sin(angle) * spread,
+      GLOB_RADII[i],
+    );
+    mesh.setMatrixAt(mesh.count, state.matrix);
+    mesh.count += 1;
+  }
+  if (flush !== false) mesh.instanceMatrix.needsUpdate = true;
+}
+
+function spawnSplash(state, x, z, y, big) {
+  const slots = state.splashes;
+  let pick = 0;
+  let oldest = state.splashClock + 1;
+  for (let i = 0; i < SPLASH_SLOTS; i += 1) {
+    if (slots[i].born === 0) {
+      pick = i;
+      break;
+    }
+    if (slots[i].born < oldest) {
+      oldest = slots[i].born;
+      pick = i;
+    }
+  }
+  const slot = slots[pick];
+  slot.born = state.splashClock || performance.now();
+  slot.x = x;
+  slot.y = (Number.isFinite(y) ? y : 0) + STAMP_Y + 0.04;
+  slot.z = z;
+  slot.big = big ? 1 : 0;
+  state.splashLive = true;
+  if (state.splashMesh) state.splashMesh.visible = true;
+}
+
+function tickSplash(state) {
+  const mesh = state.splashMesh;
+  if (!mesh || !state.splashLive) return;
+  const now = state.splashClock;
+  let live = 0;
+  for (let i = 0; i < SPLASH_SLOTS; i += 1) {
+    const slot = state.splashes[i];
+    const base = i * SPLASH_PARTS;
+    if (slot.born === 0) {
+      for (let p = 0; p < SPLASH_PARTS; p += 1) hideInstance(mesh, state.matrix, base + p);
+      continue;
+    }
+    const age = (now - slot.born) / SPLASH_MS;
+    if (age >= 1) {
+      slot.born = 0;
+      for (let p = 0; p < SPLASH_PARTS; p += 1) hideInstance(mesh, state.matrix, base + p);
+      continue;
+    }
+    live += 1;
+    const t = age * age;
+    const grow = 1 - (1 - age) * (1 - age);
+    const big = slot.big ? 1.35 : 1;
+    const fade = 1 - t;
+    makeStampMatrix(state.matrix, slot.x, slot.y, slot.z, (0.16 + grow * 0.62) * big * Math.max(0.08, fade));
+    mesh.setMatrixAt(base, state.matrix);
+    for (let d = 0; d < 3; d += 1) {
+      const ang = slot.born * 0.012 + d * (TAU / 3);
+      const dist = (0.06 + age * 0.38) * big;
+      const dropR = 0.11 * (1 - t) * big;
+      makeStampMatrix(
+        state.matrix,
+        slot.x + Math.cos(ang) * dist,
+        slot.y + 0.05 + age * 0.16 - t * 0.2,
+        slot.z + Math.sin(ang) * dist,
+        Math.max(0.02, dropR),
+      );
+      mesh.setMatrixAt(base + 1 + d, state.matrix);
+    }
+  }
+  mesh.instanceMatrix.needsUpdate = true;
+  if (!live) {
+    state.splashLive = false;
+    mesh.visible = false;
+  }
+}
+
+function stampAt(state, x, z, y, radius, splash) {
   const reach = radius + CELL * 0.35;
   const reachSq = reach * reach;
   const minC = colOf(x - radius, state.cols);
@@ -220,15 +357,23 @@ function stampAt(state, x, z, y, radius) {
   const minR = rowOf(z - radius, state.rows);
   const maxR = rowOf(z + radius, state.rows);
   let added = 0;
+  let spinIndex = 0;
   for (let row = minR; row <= maxR; row += 1) {
     for (let col = minC; col <= maxC; col += 1) {
       const { x: cx, z: cz } = cellCenter(col, row);
       const dx = cx - x;
       const dz = cz - z;
       if (dx * dx + dz * dz > reachSq) continue;
-      if (paintCell(state, cellIndex(col, row, state.cols), y)) added += 1;
+      const index = cellIndex(col, row, state.cols);
+      if (markCell(state, index, y)) {
+        added += 1;
+        spinIndex = index;
+      }
     }
   }
+  if (!added) return 0;
+  addThreeGlobs(state, x, z, y, spinIndex * 1.618);
+  if (splash) spawnSplash(state, x, z, y, radius > WALK_RADIUS);
   return added;
 }
 
@@ -239,6 +384,7 @@ function completePaint(app, state) {
   state.ratio = 1;
   state.percent = 100;
   document.documentElement.classList.add("paint-complete");
+  resetSplashes(state);
   const player = getIslandPlayer(app);
   const scene = player?.scene || app.$webgl?.scenes?.current;
   try {
@@ -256,8 +402,10 @@ function completePaint(app, state) {
 }
 
 function tickPaint(app, state) {
+  state.splashClock = performance.now();
   if (state.complete) {
     if (app.$webgl?.store) app.$webgl.store.frozenPlayerDelay = 1000;
+    tickSplash(state);
     publish(state);
     return;
   }
@@ -270,10 +418,12 @@ function tickPaint(app, state) {
   if (!scene) return;
   attachVisual(state, scene);
   if (!westPlayable(app) || flag(app.$store?.isTransitionActive) || flag(app.$store?.isDialogVisible)) {
+    tickSplash(state);
     publish(state);
     return;
   }
   if (!player || player.hidden || !player.canMove) {
+    tickSplash(state);
     publish(state);
     return;
   }
@@ -285,6 +435,7 @@ function tickPaint(app, state) {
     return;
   }
   if (pos.y < WATER_Y + 0.2) {
+    tickSplash(state);
     publish(state);
     return;
   }
@@ -294,14 +445,24 @@ function tickPaint(app, state) {
   state.wasAirborne = airborne;
   const onFloor = dist <= FLOOR_MAX || physics?.playerIsCollidingGround;
   if (airborne && dist > 0.55) {
+    tickSplash(state);
     publish(state);
     return;
   }
   if (!onFloor && !landed) {
+    tickSplash(state);
     publish(state);
     return;
   }
-  stampAt(state, pos.x, pos.z, pos.y, landed ? JUMP_RADIUS : WALK_RADIUS);
+  const under = cellIndex(colOf(pos.x, state.cols), rowOf(pos.z, state.rows), state.cols);
+  if (!landed && under === state.lastCell) {
+    tickSplash(state);
+    publish(state);
+    return;
+  }
+  state.lastCell = under;
+  stampAt(state, pos.x, pos.z, pos.y, landed ? JUMP_RADIUS : WALK_RADIUS, true);
+  tickSplash(state);
   publish(state);
   if (state.ready && state.painted >= state.total) completePaint(app, state);
 }
@@ -334,6 +495,14 @@ function bindFrame(app, state) {
   }
 }
 
+function makeSplashSlots() {
+  const slots = new Array(SPLASH_SLOTS);
+  for (let i = 0; i < SPLASH_SLOTS; i += 1) {
+    slots[i] = { born: 0, x: 0, y: 0, z: 0, big: 0 };
+  }
+  return slots;
+}
+
 export function installPaint(app) {
   if (app.__paintState) return app.__paintState;
   const { cols, rows, total } = cellCount();
@@ -348,12 +517,17 @@ export function installPaint(app) {
     complete: false,
     ready: false,
     wasAirborne: false,
+    lastCell: -1,
     land: new Uint8Array(total),
     marked: new Uint8Array(total),
     heights: new Float32Array(total),
     mesh: null,
+    splashMesh: null,
     scene: null,
     matrix: new Matrix4(),
+    splashes: makeSplashSlots(),
+    splashLive: false,
+    splashClock: 0,
   };
   markLand(state);
   app.__paintState = state;
@@ -362,8 +536,11 @@ export function installPaint(app) {
     const y = getIslandPlayer(app)?.base?.position?.y;
     for (let i = 0; i < state.cellCount; i += 1) {
       if (!state.land[i] || state.marked[i]) continue;
-      paintCell(state, i, y);
+      if (!markCell(state, i, y)) continue;
+      const { x, z } = cellCenter(i % state.cols, Math.floor(i / state.cols));
+      addThreeGlobs(state, x, z, y, i * 1.618, false);
     }
+    if (state.mesh) state.mesh.instanceMatrix.needsUpdate = true;
     publish(state);
     completePaint(app, state);
   };

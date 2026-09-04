@@ -102,6 +102,56 @@ test("standing on GLORB paints the ground and fills the paint bar", async ({ pag
   expect(coverage.frozen).toBe(0);
   expect(coverage.meterTop).toBeGreaterThan(coverage.viewport * 0.85);
   expect(coverage.viewport - coverage.meterBottom).toBeLessThan(40);
+
+  const globs = await page.evaluate(() => {
+    const state = window.__THREE_JS_GAME__.app.__paintState;
+    return {
+      painted: state?.painted ?? 0,
+      count: state?.mesh?.count ?? 0,
+      hasSplash: !!state?.splashMesh,
+      splashParts: state?.splashMesh?.capacity ?? 0,
+    };
+  });
+  expect(globs.painted).toBeGreaterThan(0);
+  expect(globs.count % 3).toBe(0);
+  expect(globs.count).toBeGreaterThanOrEqual(3);
+  expect(globs.count).toBeLessThanOrEqual(globs.painted * 3);
+  expect(globs.hasSplash).toBe(true);
+  expect(globs.splashParts).toBe(32);
+});
+
+test("a new paint step plays a splash without extra globs while standing", async ({ page }) => {
+  await waitForGame(page);
+  await enterWestPlaying(page);
+
+  await expect.poll(async () => page.evaluate(() => window.__THREE_JS_GAME__.app.__paintState?.painted || 0), {
+    timeout: 15_000,
+  }).toBeGreaterThan(0);
+
+  const before = await page.evaluate(() => window.__THREE_JS_GAME__.app.__paintState?.mesh?.count || 0);
+
+  await page.evaluate(() => {
+    const app = window.__THREE_JS_GAME__.app;
+    const player = app.$webgl?.scenes?.current?.player;
+    if (player?.base?.position) {
+      player.base.position.x += 1.2;
+      player.base.position.z += 0.4;
+    }
+    app.__paintState.lastCell = -1;
+  });
+
+  await expect.poll(async () => page.evaluate(() => {
+    const state = window.__THREE_JS_GAME__.app.__paintState;
+    return {
+      count: state?.mesh?.count ?? 0,
+      splashLive: !!state?.splashLive,
+      splashVisible: !!state?.splashMesh?.visible,
+    };
+  }), { timeout: 5_000 }).toMatchObject({ splashLive: true, splashVisible: true });
+
+  const after = await page.evaluate(() => window.__THREE_JS_GAME__.app.__paintState?.mesh?.count || 0);
+  expect(after).toBeGreaterThanOrEqual(before);
+  expect(after % 3).toBe(0);
 });
 
 test("covering the island shows Painted and ends the game", async ({ page }) => {
