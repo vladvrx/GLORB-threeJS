@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     "*.cursorusercontent.com",
   ],
   transpilePackages: ["three"],
+  agentRules: false,
 };
 
 export default nextConfig;
