@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "node server.mjs",
     "start": "node server.mjs",
+    "studio": "npm run dev --prefix studio",
     "zip": "node scripts/zip.mjs"
   }
 }

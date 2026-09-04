@@ -21,7 +21,16 @@ Open [http://127.0.0.1:43219/three-js](http://127.0.0.1:43219/three-js) (or `/`)
 5. **Jump** with Space or the small button in the bottom-right.
 6. **Dance** with E or the matching button in the bottom-left. Hold it for the original interact animation.
 
-Decorating belongs in **Glorb Studio**, not this game.
+Decorating belongs in **Glorb Studio** (`studio/`), not this game.
+
+## Studio
+
+```bash
+npm install --prefix studio
+npm run studio
+```
+
+Open [http://127.0.0.1:43180](http://127.0.0.1:43180). The only editable maps are **Island West** and the **paint square**.
 
 ## Jam packaging
 
@@ -42,4 +51,5 @@ On phones the zip adds `html.phone` and tries `screen.orientation.lock('portrait
 | `vendor/` | `loadWebGL` + Vue plugin vendor |
 | `reference/assets/` | Intro + square-island GLBs, character, audio, UI |
 | `direct-port/` | `site.json`, recovered CSS |
+| `studio/` | Glorb Studio — Island West + paint square editor |
 | `scripts/prune-to-paint-map.mjs` | Keep-list for this slice |
