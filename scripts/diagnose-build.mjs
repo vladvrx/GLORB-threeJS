@@ -1,0 +1,12 @@
+import {chromium} from '@playwright/test';
+const browser=await chromium.launch({channel:'msedge',headless:true});
+const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+const problems=[];
+page.on('pageerror',e=>problems.push(e.stack));
+page.on('console',m=>{if(['error','warn'].includes(m.type()))problems.push(m.type()+': '+m.text());});
+page.on('response',r=>{if(r.status()>=400)problems.push(r.status()+' '+r.url());});
+await page.goto(process.env.GLORB_URL||'http://127.0.0.1:43220/three-js');
+await page.waitForTimeout(6500);
+console.log(JSON.stringify({problems,text:await page.locator('body').innerText()},null,2));
+await page.screenshot({path:'test-results/diagnostic.png'});
+await browser.close();

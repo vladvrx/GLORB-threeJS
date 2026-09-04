@@ -72,6 +72,7 @@ export function startDance(app) {
   const state = app.__danceState;
   if (!state) return false;
   if (playBlocked(app)) return false;
+  if (app.__survival && !app.__survival.action()) return false;
   const player = getIslandPlayer(app);
   if (!player || player.hidden) return false;
   hookPlayer(player, state);

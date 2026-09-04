@@ -101,16 +101,14 @@
     "phone": {
       "title": {
         "partner": "The Partners",
-        "cp": "Data B-each Points",
         "customize": "Customize Avatar",
         "quest": "The Quests",
         "fintech": "The Fintechs"
       },
       "desc": {
         "partner": "<strong>Learn about each brand and the products and services they offer.</strong>",
-        "cp": "<strong>Unlock new accessories with your Data B-each Points. Those with a fire icon will give you a magic skill!</strong>",
         "customize": "<strong>Choose your alien color.</strong>",
-        "quest": "<strong>Complete quests to earn Data B-each Points.</strong>",
+        "quest": "<strong>Complete quests to explore the island.</strong>",
         "fintech": "<strong>Learn about each brand and the products and services they offer.</strong>"
       },
       "new": {

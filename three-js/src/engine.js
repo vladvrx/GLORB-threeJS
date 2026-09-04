@@ -15,6 +15,8 @@ import { installHud } from "./hud.js?v=go-go-go";
 import { installJump } from "./jump.js?v=jump-6";
 import { installDance } from "./dance.js?v=dance-7";
 import { installPaint } from "./paint.js?v=dance-1";
+import { installSurvival } from "./survival.js";
+import { installHub } from "./hub.js";
 
 window.__GLORB_ISLAND__ = GLORB_ISLAND;
 
@@ -196,6 +198,8 @@ export async function startEngine() {
     });
     vueApp.mount("#app");
     keepOnlyWestIslandMusic(app);
+    installHub(app);
+    installSurvival(app);
     installJump(app);
     installDance(app);
     installPaint(app);

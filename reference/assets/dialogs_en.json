@@ -110,20 +110,5 @@
         }
       ]
     }
-  },
-  "dev": {
-    "__first__": "Test",
-    "Test": {
-      "id": "Test",
-      "isSpeak": true,
-      "bubbles": [
-        "Hello world"
-      ],
-      "next": [
-        {
-          "action": "END"
-        }
-      ]
-    }
   }
 }

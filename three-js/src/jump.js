@@ -30,6 +30,7 @@ function typingTarget(event) {
 }
 
 function playBlocked(app) {
+  if (app.__survival?.scene && !app.__hub?.active && app.__survival.run.phase !== "playing") return true;
   const store = app.$store;
   if (!store) return true;
   if (flag(store.isDialogVisible)) return true;

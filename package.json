@@ -8,6 +8,15 @@
     "dev": "node server.mjs",
     "start": "node server.mjs",
     "studio": "npm run dev --prefix studio",
-    "zip": "node scripts/zip.mjs"
+    "zip": "node scripts/build-submission.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@babel/generator": "^7.29.0",
+    "@babel/parser": "^7.29.0",
+    "@babel/traverse": "^7.29.0",
+    "@playwright/test": "^1.55.1",
+    "esbuild": "^0.25.9"
   }
 }

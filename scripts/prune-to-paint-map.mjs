@@ -53,7 +53,6 @@ const KEEP_NAME_RE = [
   /^zipline\./,
   /^interactions-yes-/,
   /^interactions-no-/,
-  /^rotate-background\./,
   /^blank-tech-company\./,
   /^studio-bridge\.js$/,
   /^studio-preloader\.css$/,

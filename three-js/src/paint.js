@@ -6,8 +6,9 @@ import {
   bz as CircleGeometry,
   w as watch,
 } from "../../vendor/vendor.75f6e6ae65453426.js";
-import { el, playUiSound, unwrap } from "./dom.js";
+import { unwrap } from "./dom.js";
 import { getIslandPlayer } from "./jump.js?v=jump-6";
+import { RULES, spend } from "./survival-model.js";
 import {
   WEST_MAX_X,
   WEST_MAX_Z,
@@ -16,18 +17,18 @@ import {
   onIsland,
 } from "./island.js?v=paint-11";
 
-const CELL = 1;
-const WALK_RADIUS = 0.22;
-const JUMP_RADIUS = 0.7;
+const CELL = 2;
+const WALK_RADIUS = 2.6;
+const JUMP_RADIUS = 5;
 const STAMP_Y = 0.1;
 const WATER_Y = 0.55;
 const FLOOR_MAX = 0.32;
 const PAINT_COLOR = 0x8fd4ff;
 const DOUBLE_SIDE = 2;
 const MIN_LAND = 80;
-const GLOB_COUNT = 3;
-const GLOB_RADII = [0.6075, 0.495, 0.45];
-const GLOB_SPREAD = [0.08, 0.2, 0.19];
+const GLOB_COUNT = 1;
+const GLOB_RADII = [1.48];
+const GLOB_SPREAD = [0];
 const GLOB_SEGMENTS = 8;
 const TAU = Math.PI * 2;
 const SPLASH_SLOTS = 8;
@@ -162,11 +163,6 @@ function markLand(state) {
 }
 
 function publish(state) {
-  if (state.complete) {
-    state.ratio = 1;
-    state.percent = 100;
-    return;
-  }
   if (!state.ready || state.total < MIN_LAND) {
     state.ratio = 0;
     state.percent = 0;
@@ -203,6 +199,9 @@ function attachVisual(state, scene) {
   state.mesh = mesh;
   state.splashMesh = splash;
   state.scene = scene;
+  mesh.count = capacity;
+  for (let index = 0; index < capacity; index++) hideInstance(mesh, state.matrix, index);
+  mesh.instanceMatrix.needsUpdate = true;
   hideAllSplashes(state);
 }
 
@@ -247,21 +246,26 @@ function resetCoverage(state) {
   state.painted = 0;
   state.ratio = 0;
   state.percent = 0;
-  state.complete = false;
   state.wasAirborne = false;
   state.lastCell = -1;
   state.marked.fill(0);
   state.heights.fill(0);
-  if (state.mesh) state.mesh.count = 0;
+  if (state.mesh) {
+    for (let index = 0; index < state.mesh.capacity; index++) hideInstance(state.mesh, state.matrix, index);
+    state.mesh.instanceMatrix.needsUpdate = true;
+  }
   resetSplashes(state);
   markLand(state);
 }
 
 function markCell(state, index, y) {
   if (!state.land[index] || state.marked[index]) return false;
+  if (state.run && !state.freePaint && (state.run.phase !== "playing" || !spend(state.run, RULES.paintCost))) return false;
   state.marked[index] = 1;
   state.painted += 1;
   if (Number.isFinite(y)) state.heights[index] = y;
+  const { x, z } = cellCenter(index % state.cols, Math.floor(index / state.cols));
+  addThreeGlobs(state, x, z, y, index * 1.618, false);
   return true;
 }
 
@@ -269,8 +273,8 @@ function addThreeGlobs(state, x, z, y, spin, flush) {
   const mesh = state.mesh;
   if (!mesh) return;
   const stampY = (Number.isFinite(y) ? y : 0) + STAMP_Y;
-  const room = mesh.capacity - mesh.count;
-  const n = room < GLOB_COUNT ? room : GLOB_COUNT;
+  const index = cellIndex(colOf(x, state.cols), rowOf(z, state.rows), state.cols);
+  const n = GLOB_COUNT;
   for (let i = 0; i < n; i += 1) {
     const angle = spin + i * (TAU / 3);
     const spread = GLOB_SPREAD[i];
@@ -281,8 +285,7 @@ function addThreeGlobs(state, x, z, y, spin, flush) {
       z + Math.sin(angle) * spread,
       GLOB_RADII[i],
     );
-    mesh.setMatrixAt(mesh.count, state.matrix);
-    mesh.count += 1;
+    mesh.setMatrixAt(index * GLOB_COUNT + i, state.matrix);
   }
   if (flush !== false) mesh.instanceMatrix.needsUpdate = true;
 }
@@ -381,41 +384,16 @@ function stampAt(state, x, z, y, radius, splash) {
     }
   }
   if (!added) return 0;
-  addThreeGlobs(state, x, z, y, spinIndex * 1.618);
+  if (state.mesh) state.mesh.instanceMatrix.needsUpdate = true;
   if (splash) spawnSplash(state, x, z, y, radius > WALK_RADIUS);
   return added;
 }
 
-function completePaint(app, state) {
-  if (state.complete) return;
-  if (!state.ready || state.total < MIN_LAND || state.painted < state.total) return;
-  state.complete = true;
-  state.ratio = 1;
-  state.percent = 100;
-  document.documentElement.classList.add("paint-complete");
-  resetSplashes(state);
-  const player = getIslandPlayer(app);
-  const scene = player?.scene || app.$webgl?.scenes?.current;
-  try {
-    scene?.getCurrentCamera?.()?.lockPlayer?.("paint-complete");
-  } catch {
-    /* camera lock is optional */
-  }
-  if (app.$webgl?.store) app.$webgl.store.frozenPlayerDelay = 60_000;
-  try {
-    player?.playEmote?.("Victory");
-  } catch {
-    /* emote clip may be missing */
-  }
-  playUiSound(app, "sfx_quest_inauguration");
-}
-
 function tickPaint(app, state) {
   state.splashClock = performance.now();
-  if (state.complete) {
-    if (app.$webgl?.store) app.$webgl.store.frozenPlayerDelay = 1000;
+  state.run = app.__survival?.run;
+  if (state.run && state.run.phase !== "playing") {
     tickSplash(state);
-    publish(state);
     return;
   }
   if (sceneId(app) !== "IslandWest") {
@@ -471,10 +449,11 @@ function tickPaint(app, state) {
     return;
   }
   state.lastCell = under;
-  stampAt(state, pos.x, pos.z, pos.y, landed ? JUMP_RADIUS : WALK_RADIUS, true);
+  const brush = state.run?.upgrades.brush || 0;
+  stampAt(state, pos.x, pos.z, pos.y, (landed ? JUMP_RADIUS : WALK_RADIUS) + brush * 1.7, true);
   tickSplash(state);
   publish(state);
-  if (state.ready && state.painted >= state.total) completePaint(app, state);
+  if (state.run) state.run.coverage = state.ratio;
 }
 
 function bindFrame(app, state) {
@@ -524,7 +503,6 @@ export function installPaint(app) {
     total: 0,
     ratio: 0,
     percent: 0,
-    complete: false,
     ready: false,
     wasAirborne: false,
     lastCell: -1,
@@ -541,23 +519,34 @@ export function installPaint(app) {
   };
   markLand(state);
   app.__paintState = state;
-  app.__paintFillAll = () => {
+  app.__resetPaint = () => { resetCoverage(state); publish(state); };
+  app.__paintArea = (x, z, radius, free = false) => {
     attachVisual(state, getIslandPlayer(app)?.scene || app.$webgl?.scenes?.current);
-    const y = getIslandPlayer(app)?.base?.position?.y;
-    for (let i = 0; i < state.cellCount; i += 1) {
-      if (!state.land[i] || state.marked[i]) continue;
-      if (!markCell(state, i, y)) continue;
-      const { x, z } = cellCenter(i % state.cols, Math.floor(i / state.cols));
-      addThreeGlobs(state, x, z, y, i * 1.618, false);
-    }
-    if (state.mesh) state.mesh.instanceMatrix.needsUpdate = true;
+    state.freePaint = free;
+    const added = stampAt(state, x, z, 3.8, radius, true);
+    state.freePaint = false;
     publish(state);
-    completePaint(app, state);
+    if (state.run) state.run.coverage = state.ratio;
+    return added;
+  };
+  app.__erasePaint = (predicate) => {
+    let changed = false;
+    for (let i = 0; i < state.cellCount; i++) {
+      if (!state.marked[i]) continue;
+      const { x, z } = cellCenter(i % state.cols, Math.floor(i / state.cols));
+      if (!predicate(x, z)) continue;
+      state.marked[i] = 0;
+      state.painted--;
+      if (state.mesh) hideInstance(state.mesh, state.matrix, i);
+      changed = true;
+    }
+    if (changed && state.mesh) state.mesh.instanceMatrix.needsUpdate = true;
+    publish(state);
+    if (state.run) state.run.coverage = state.ratio;
   };
 
   bindFrame(app, state);
   watch(() => sceneId(app), (id) => {
-    document.documentElement.classList.remove("paint-complete");
     detachVisual(state);
     resetCoverage(state);
     if (id === "IslandWest") {
@@ -567,56 +556,4 @@ export function installPaint(app) {
     publish(state);
   });
   return state;
-}
-
-export function installPaintHud(app, host) {
-  const meter = el("div", { class: "paint-meter", "data-paint-meter": "" });
-  const copy = el("div", { class: "paint-meter-copy" });
-  const label = el("span", { class: "paint-meter-label", text: "Paint" });
-  const percent = el("span", { class: "paint-meter-percent", text: "0%" });
-  copy.append(label, percent);
-  const track = el("div", { class: "paint-meter-track", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": "0", "aria-label": "Island painted" });
-  const fill = el("div", { class: "paint-meter-fill" });
-  track.append(fill);
-  meter.append(copy, track);
-  host.append(meter);
-
-  const overlay = el("div", { class: "paint-complete-overlay", hidden: true, role: "dialog", "aria-label": "Game over" });
-  overlay.append(
-    el("p", { class: "paint-complete-kicker", text: "GLORB" }),
-    el("h1", { class: "paint-complete-title", text: "Painted!" }),
-    el("p", { class: "paint-complete-body", text: "The whole island is light blue." }),
-  );
-  host.append(overlay);
-
-  const meterVisible = () => {
-    const store = app.$store;
-    return sceneId(app) === "IslandWest"
-      && westPlayable(app)
-      && !flag(store?.isTransitionActive)
-      && !flag(store?.isCustomizeOpen)
-      && !flag(store?.isCinematicActive)
-      && !flag(store?.isDialogVisible);
-  };
-
-  const paintHud = () => {
-    const state = app.__paintState;
-    const show = meterVisible() && !state?.complete;
-    meter.classList.toggle("is-visible", show);
-    meter.toggleAttribute("hidden", !show);
-    const value = state?.percent ?? 0;
-    percent.textContent = `${value}%`;
-    const width = state?.complete ? 100 : (state?.ratio || 0) * 100;
-    fill.style.width = `${Math.round(width * 10) / 10}%`;
-    track.setAttribute("aria-valuenow", String(value));
-    const done = !!state?.complete;
-    overlay.hidden = !done;
-    overlay.classList.toggle("is-visible", done);
-  };
-
-  const loop = () => {
-    paintHud();
-    requestAnimationFrame(loop);
-  };
-  requestAnimationFrame(loop);
 }

@@ -2,7 +2,7 @@ import { w as watch } from "../../../vendor/vendor.75f6e6ae65453426.js";
 import { circleButton, el, playUiSound, svgIcon, unwrap } from "../dom.js";
 import { installJumpButton } from "../jump.js?v=jump-6";
 import { installDanceButton } from "../dance.js?v=dance-7";
-import { installPaintHud } from "../paint.js?v=dance-1";
+import { installSurvivalHud } from "../survival.js";
 import { installInteraction } from "./interaction.js";
 
 function flag(value) {
@@ -162,11 +162,6 @@ function installJoystick(app, host) {
 
 function installRotateDevice(app) {
   const layer = el("div", { class: "rotate-device", "data-v-442a7017": "" });
-  const picture = el("img", {
-    src: "./reference/assets/rotate-background.70bb5a6b65453426.webp",
-    alt: "",
-    "data-v-442a7017": "",
-  });
   const wrap = el("div", { class: "rotate-wrapper", "data-v-442a7017": "" });
   const icons = el("div", { class: "icon-wrapper", "data-v-442a7017": "" });
   const rotate = el("div", { class: "icon-rotate", "data-v-442a7017": "" });
@@ -182,7 +177,7 @@ function installRotateDevice(app) {
   rotate.append(left, phone, right);
   icons.append(rotate);
   wrap.append(icons);
-  layer.append(picture, wrap);
+  layer.append(wrap);
   document.body.append(layer);
 
   const media = window.matchMedia("only screen and (max-width: 1024px) and (orientation: landscape)");
@@ -203,6 +198,6 @@ export function installChrome(app, host) {
   installInteraction(app, host);
   try { installJumpButton(app, host); } catch (error) { console.error("Three.js jump button failed", error); }
   try { installDanceButton(app, host); } catch (error) { console.error("Three.js dance button failed", error); }
-  try { installPaintHud(app, host); } catch (error) { console.error("Three.js paint meter failed", error); }
+  try { installSurvivalHud(app, host); } catch (error) { console.error("Survival HUD failed", error); }
   try { installRotateDevice(app); } catch (error) { console.error("Three.js rotate overlay failed", error); }
 }

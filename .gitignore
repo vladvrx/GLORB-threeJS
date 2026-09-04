@@ -8,6 +8,8 @@ npm-debug.log*
 .zip-stage/
 playwright-report/
 test-results/
+test-results-*/
 glorb.zip
+deliverables/
 studio/node_modules/
 studio/.next/

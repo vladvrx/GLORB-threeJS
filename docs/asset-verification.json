@@ -1,0 +1,44 @@
+{
+  "preserved": {
+    "character.df6ab95f65453426.glb": "2df41ec834f1d0371c499cb217da629547ccba32654b67dc8854ff02ec801ca8",
+    "Asset_BoatYellow.9ec7874765453426.glb": "aff636fc95a4575868da494c026eb4a16aadf97c311d9b617f34b4d81507ad76",
+    "databeach-logo.png": "58e90baccf0366b03596f05380e13d5dd35cf92673513ce42cb53bbd34081eaa"
+  },
+  "generated": {
+    "glorb-air.wav": {
+      "bytes": 264644,
+      "seconds": 6,
+      "peak": 0.07647705078125,
+      "rms": 0.014249298236775154
+    },
+    "glorb-arrival-island.glb": {
+      "bytes": 11456,
+      "meshes": 1
+    },
+    "glorb-island.glb": {
+      "bytes": 2424,
+      "meshes": 1
+    },
+    "glorb-music.wav": {
+      "bytes": 1411244,
+      "seconds": 32,
+      "peak": 0.15618896484375,
+      "rms": 0.045487777251748275
+    },
+    "glorb-palm.glb": {
+      "bytes": 7156,
+      "meshes": 1
+    },
+    "glorb-rock.glb": {
+      "bytes": 4148,
+      "meshes": 1
+    },
+    "glorb-sounds.wav": {
+      "bytes": 4402988,
+      "seconds": 99.84,
+      "peak": 0.238006591796875,
+      "rms": 0.0722046733422679
+    }
+  },
+  "introMatchesOriginal": true
+}
