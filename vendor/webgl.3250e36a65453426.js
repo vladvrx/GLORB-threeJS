@@ -93,13 +93,13 @@ const us = Object.freeze(Object.defineProperty({
   })),
   Os = Object.freeze(Object.defineProperty({
     __proto__: null,
-    default: "vec3 wColor=gl_FragColor.xyz-wet*0.09;vec3 underwaterColor=(wColor*waterTopColor)*UNDERWATER_MULT+0.4;\n#ifdef IS_MAP_MODE\nif(hasWater>0.9999){discard;}\n#else\nwColor=mix(wColor,underwaterColor,hasWater*0.8);wColor=mix(wColor,waterColor,hasWater*waterDepth);float waterStreak=smoothstep(0.15,0.0,abs(sin(vWorldPos.x*0.07+vWorldPos.z*2.8+time*0.4)));wColor=mix(wColor,vec3(0.),hasWater*waterStreak*0.55);wColor=mix(wColor,vec3(0.),hasFoam);\n#endif\n#if defined(IS_BIOME_TESTLAB)\nfloat d=distance(vWorldPos.xz,vec2(0.));wColor=mix(wColor,gl_FragColor.xyz,step(40.,d));\n#endif\ngl_FragColor.xyz=vec3(wColor);"
+    default: "vec3 wColor=gl_FragColor.xyz-wet*0.09;vec3 underwaterColor=(wColor*waterTopColor)*UNDERWATER_MULT+0.4;\n#ifdef IS_MAP_MODE\nif(hasWater>0.9999){discard;}\n#else\nwColor=mix(wColor,underwaterColor,hasWater*0.8);wColor=mix(wColor,waterColor,hasWater*waterDepth);float waterStreak=smoothstep(0.48,0.10,abs(sin(vWorldPos.x*0.04+vWorldPos.z*0.9+time*0.35)));wColor=mix(wColor,vec3(0.),hasWater*waterStreak*0.8);wColor=mix(wColor,vec3(0.),hasFoam);\n#endif\n#if defined(IS_BIOME_TESTLAB)\nfloat d=distance(vWorldPos.xz,vec2(0.));wColor=mix(wColor,gl_FragColor.xyz,step(40.,d));\n#endif\ngl_FragColor.xyz=vec3(wColor);"
   }, Symbol.toStringTag, {
     value: "Module"
   })),
   Ps = Object.freeze(Object.defineProperty({
     __proto__: null,
-    default: "float wpy=vWorldPos.y;float waterDepth=1.-linearstep(WATER_MAX_DEPTH,WATER_BASE_LEVEL,wpy);float foamY=cos(vWorldPos.x*0.1+vWorldPos.z*0.1+time*1.4)*0.015-0.0075;float waterLevel=WATER_BASE_LEVEL+waterProgress+foamY;float wetBaseLevel=WATER_BASE_LEVEL-waterLevel*0.1;float wet=max(0.2,sin(time-PI*0.5))*smoothstep(wetBaseLevel+0.43,wetBaseLevel+0.3,wpy)*when_gt(wpy,waterLevel);float foamLine=smoothstep(0.16,0.0,abs(sin(vWorldPos.x*0.08+vWorldPos.z*2.2+time*0.5)));float hasFoam=when_gt(wpy,waterLevel)*when_lt(wpy,waterLevel+WATER_FOAM_HEIGHT)*foamLine;float hasWater=when_lt(wpy,waterLevel);"
+    default: "float wpy=vWorldPos.y;float waterDepth=1.-linearstep(WATER_MAX_DEPTH,WATER_BASE_LEVEL,wpy);float foamY=cos(vWorldPos.x*0.1+vWorldPos.z*0.1+time*1.4)*0.015-0.0075;float waterLevel=WATER_BASE_LEVEL+waterProgress+foamY;float wetBaseLevel=WATER_BASE_LEVEL-waterLevel*0.1;float wet=max(0.2,sin(time-PI*0.5))*smoothstep(wetBaseLevel+0.43,wetBaseLevel+0.3,wpy)*when_gt(wpy,waterLevel);float foamLine=smoothstep(0.42,0.08,abs(sin(vWorldPos.x*0.045+vWorldPos.z*0.85+time*0.45)));float hasFoam=when_gt(wpy,waterLevel)*when_lt(wpy,waterLevel+WATER_FOAM_HEIGHT)*foamLine;float hasWater=when_lt(wpy,waterLevel);"
   }, Symbol.toStringTag, {
     value: "Module"
   })),
