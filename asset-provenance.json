@@ -1,0 +1,122 @@
+[
+  {
+    "file": "assets/glorb-logo.png",
+    "provenance": "Entrant-owned logo supplied as example5.png; copied without alteration",
+    "bytes": 343557,
+    "sha256": "7112bae8a6c347d230a34e8d4581f8f405fa47c8c64de9dfb1c55740bb0c0d28"
+  },
+  {
+    "file": "reference/assets/character.df6ab95f65453426.glb",
+    "provenance": "Entrant-confirmed character rights",
+    "bytes": 738664,
+    "sha256": "2df41ec834f1d0371c499cb217da629547ccba32654b67dc8854ff02ec801ca8"
+  },
+  {
+    "file": "reference/assets/Asset_BoatYellow.9ec7874765453426.glb",
+    "provenance": "Entrant-confirmed UFO rights, including embedded texture",
+    "bytes": 20156,
+    "sha256": "aff636fc95a4575868da494c026eb4a16aadf97c311d9b617f34b4d81507ad76"
+  },
+  {
+    "file": "reference/assets/Character_Texture.2c62815965453426.png",
+    "provenance": "Entrant-confirmed character smiley artwork rights",
+    "bytes": 45236,
+    "sha256": "89111e1e7eea7973f91ca30058eb5ae85d8f169a971051838c6c5478cdc6f293"
+  },
+  {
+    "file": "reference/assets/clouds.657c06ba65453426.png",
+    "provenance": "Entrant-confirmed sky artwork rights",
+    "bytes": 115046,
+    "sha256": "726b13ed2cb925cc6747b8ed382a8a2ef1183c4e74b025b1ac9057fc3a2ce23e"
+  },
+  {
+    "file": "reference/assets/glorb-island.glb",
+    "provenance": "Original project geometry, scripts/generate-original-assets.mjs",
+    "bytes": 2424,
+    "sha256": "cb55fbee91a5f74a9685e5c64923821198d87b6be33dce931575a6055342e7ab"
+  },
+  {
+    "file": "reference/assets/glorb-arrival-island.glb",
+    "provenance": "Original project geometry, scripts/generate-original-assets.mjs",
+    "bytes": 11456,
+    "sha256": "b5f26afead10a56997b532ac27c1caac68bf1b84097261e4472446206c8cbb74"
+  },
+  {
+    "file": "reference/assets/glorb-music.wav",
+    "provenance": "Original synthesized project music, scripts/generate-original-assets.mjs",
+    "bytes": 1411244,
+    "sha256": "0d12f928b2671a704944dbbc7531f11e0074f2d045f20591d11dc25f39575e27"
+  },
+  {
+    "file": "assets/fonts/Outfit.ttf",
+    "provenance": "Outfit, SIL Open Font License 1.1",
+    "bytes": 110884,
+    "sha256": "fc7287273e66929776e2ba54f144fe699080bec29f61bf649d70d871468aeade"
+  },
+  {
+    "file": "assets/fonts/OFL.txt",
+    "provenance": "Outfit license and copyright notice",
+    "bytes": 4389,
+    "sha256": "c676351bf8576b9aba743cd5eaa8c0e7ee0d51f805d720447b4df4ddb6a2e416"
+  },
+  {
+    "file": "vendor/three/three.module.js",
+    "provenance": "Official Three.js r150, MIT; addon imports adjusted to relative local paths",
+    "bytes": 1178890,
+    "sha256": "ffd2b4f8c3ba7f95731c552c2d15635d780e464639edf5ef5b0bd803d48e4ba0"
+  },
+  {
+    "file": "vendor/three/GLTFLoader.js",
+    "provenance": "Official Three.js r150, MIT; addon imports adjusted to relative local paths",
+    "bytes": 103024,
+    "sha256": "7dc9331eb76c04f7cc1aa146a05cfc77066132c3bf2b69da6fe0121d98ea0b0e"
+  },
+  {
+    "file": "vendor/three/DRACOLoader.js",
+    "provenance": "Official Three.js r150, MIT; addon imports adjusted to relative local paths",
+    "bytes": 13521,
+    "sha256": "2fe926a70896abe4195fe5bf7b71745f12da60a29ed3cd0ad48c8129109aeb42"
+  },
+  {
+    "file": "vendor/three/BufferGeometryUtils.js",
+    "provenance": "Official Three.js r150, MIT; addon imports adjusted to relative local paths",
+    "bytes": 30869,
+    "sha256": "a565eaf98f625d329837b1fb402be47e43fe94cda3e430acf77a5587073606e2"
+  },
+  {
+    "file": "vendor/three/LICENSE.txt",
+    "provenance": "Official Three.js r150, MIT; addon imports adjusted to relative local paths",
+    "bytes": 1081,
+    "sha256": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d"
+  },
+  {
+    "file": "vendor/draco/draco_decoder.js",
+    "provenance": "Official Draco distribution shipped by Three.js r150, Apache License 2.0",
+    "bytes": 512465,
+    "sha256": "8625489da79a805f4f2a7d511c3e52d8b4085608a9d2a4d5f4f9de5db0aea04f"
+  },
+  {
+    "file": "vendor/draco/draco_decoder.wasm",
+    "provenance": "Official Draco distribution shipped by Three.js r150, Apache License 2.0",
+    "bytes": 192420,
+    "sha256": "a680d927bed9cb864ddbd63521868891af2bfbe755092761b4837487618df8ac"
+  },
+  {
+    "file": "vendor/draco/draco_wasm_wrapper.js",
+    "provenance": "Official Draco distribution shipped by Three.js r150, Apache License 2.0",
+    "bytes": 58456,
+    "sha256": "8bb2952d2ba7d67e1414f8df819410cb0434a666be53f671fff75f68843d76f6"
+  },
+  {
+    "file": "vendor/draco/LICENSE.txt",
+    "provenance": "Official Draco distribution shipped by Three.js r150, Apache License 2.0",
+    "bytes": 13898,
+    "sha256": "d3709b0fb4b8a94bbb1d02b8a2e484f258b0d9c5c5a01f940391f3fe662cd1a4"
+  },
+  {
+    "file": "THIRD_PARTY_NOTICES.txt",
+    "provenance": "Runtime dependency and asset provenance notices",
+    "bytes": 2512,
+    "sha256": "a89013f163e322c4400fa8ffd521b823e4d76a4f3e0d55e185fe4b24355e9142"
+  }
+]

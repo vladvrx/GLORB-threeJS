@@ -1,0 +1,18 @@
+PLAY GLORB ON WINDOWS
+
+1. Right-click the ZIP and choose Extract All.
+2. Open the extracted folder.
+3. Double-click Start GLORB.cmd.
+4. Keep the launcher window open while playing. Closing it stops the server.
+
+The launcher uses Windows PowerShell and opens an available local browser address.
+It tries port 43219 first, then another port if that one is already in use.
+It serves files only on this computer. It does not download anything.
+Each launcher serves its own extracted folder even when another copy is open.
+
+Do not double-click index.html inside the ZIP. Windows extracts only that file,
+and browsers block JavaScript module/data loading from file:// addresses.
+
+On other systems, serve this extracted folder with a local static web server,
+then open its localhost address. The competition host can serve index.html
+directly; these launcher files are only for local play.
